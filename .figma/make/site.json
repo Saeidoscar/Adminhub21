@@ -1,0 +1,10 @@
+{
+  "description": "Connect employers with social media and e-commerce admins via a bilingual marketplace featuring dynamic contracts, custom pricing, and AI assistance.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
