@@ -1,8 +1,8 @@
-import { useState, useEffect, useRef } from 'react'
-import { Icon } from '../layout/Icon'
-import { useTheme } from '../design-system/ThemeProvider'
-import { callTool, detectIntent } from '../../lib/mcp-client'
-import type { McpTool } from '../../lib/mcp-client'
+import { useState, useEffect, useRef } from "react"
+import { Icon } from "../layout/Icon"
+import { useTheme } from "../../design-system/ThemeProvider"
+import { callTool, detectIntent } from "../../lib/mcp-client"
+import type { McpTool } from "../../lib/mcp-client"
 
 interface CommandPaletteProps {
   open: boolean
@@ -11,7 +11,7 @@ interface CommandPaletteProps {
 
 export function CommandPalette({ open, onClose }: CommandPaletteProps) {
   const { lang } = useTheme()
-  const [query, setQuery] = useState('')
+  const [query, setQuery] = useState("")
   const [tools, setTools] = useState<McpTool[]>([])
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<string | null>(null)
@@ -19,7 +19,7 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
 
   useEffect(() => {
     if (open) {
-      setQuery('')
+      setQuery("")
       setResult(null)
       inputRef.current?.focus()
       loadTools()
@@ -28,7 +28,7 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
 
   const loadTools = async () => {
     setLoading(true)
-    const t = await callTool('list-tools', {}, { language: lang })
+    const t = await callTool("list-tools", {}, { language: lang })
     setLoading(false)
   }
 
@@ -37,7 +37,11 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
     setLoading(true)
     setResult(null)
     const intent = await detectIntent(query, { language: lang })
-    const toolResult = await callTool(intent.intent as string, { text: query }, { language: lang })
+    const toolResult = await callTool(
+      intent.intent as string,
+      { text: query },
+      { language: lang },
+    )
     setResult(toolResult.text)
     setLoading(false)
   }
@@ -54,8 +58,12 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
             ref={inputRef}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-            placeholder={lang === 'fa' ? 'جستجو یا اجرای دستور...' : 'Search or run a command...'}
+            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+            placeholder={
+              lang === "fa"
+                ? "جستجو یا اجرای دستور..."
+                : "Search or run a command..."
+            }
             className="flex-1 bg-transparent text-text text-sm placeholder:text-muted outline-none"
           />
           <kbd className="hidden sm:inline-flex items-center px-2 py-0.5 rounded bg-surface2 border border-border text-xs text-muted font-mono">
@@ -77,7 +85,7 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
           )}
           {!loading && !result && (
             <div className="px-3 py-2 text-xs text-muted">
-              {lang === 'fa'
+              {lang === "fa"
                 ? 'مثلاً: "یک ادمین اینستاگرام پیدا کن" یا "قیمت‌گذاری برای مدیریت صفحه"'
                 : 'Try: "Find an Instagram admin" or "Suggest pricing for page management"'}
             </div>
@@ -85,11 +93,17 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
         </div>
         <div className="flex items-center justify-between px-4 py-2 border-t border-border bg-surface2">
           <span className="text-xs text-muted">
-            {lang === 'fa' ? 'پایه شده بر MCP Protocol' : 'Powered by MCP Protocol'}
+            {lang === "fa"
+              ? "پایه شده بر MCP Protocol"
+              : "Powered by MCP Protocol"}
           </span>
           <div className="flex gap-2">
-            <kbd className="hidden sm:inline-flex items-center px-2 py-0.5 rounded bg-card border border-border text-xs text-muted font-mono">↑↓</kbd>
-            <kbd className="hidden sm:inline-flex items-center px-2 py-0.5 rounded bg-card border border-border text-xs text-muted font-mono">↵</kbd>
+            <kbd className="hidden sm:inline-flex items-center px-2 py-0.5 rounded bg-card border border-border text-xs text-muted font-mono">
+              ↑↓
+            </kbd>
+            <kbd className="hidden sm:inline-flex items-center px-2 py-0.5 rounded bg-card border border-border text-xs text-muted font-mono">
+              ↵
+            </kbd>
           </div>
         </div>
       </div>

@@ -1,20 +1,33 @@
-import { Icon } from './Icon'
+import { Icon } from "./Icon"
+import { Link } from "react-router-dom"
 
 interface TopbarProps {
   pageTitle: string
-  lang: 'fa' | 'en'
+  lang: "fa" | "en"
   onToggleLang: () => void
   onToggleMobileMenu: () => void
   userName: string
   userInitial: string
-  theme?: 'light' | 'dark'
+  theme?: "light" | "dark"
   onToggleTheme?: () => void
-  fontSize?: 'sm' | 'md' | 'lg'
-  onChangeFontSize?: (size: 'sm' | 'md' | 'lg') => void
+  fontSize?: "sm" | "md" | "lg"
+  onChangeFontSize?: (size: "sm" | "md" | "lg") => void
   children?: React.ReactNode
 }
 
-export function Topbar({ pageTitle, lang, onToggleLang, onToggleMobileMenu, userName, userInitial, children, theme, onToggleTheme, fontSize, onChangeFontSize }: TopbarProps) {
+export function Topbar({
+  pageTitle,
+  lang,
+  onToggleLang,
+  onToggleMobileMenu,
+  userName,
+  userInitial,
+  children,
+  theme,
+  onToggleTheme,
+  fontSize,
+  onChangeFontSize,
+}: TopbarProps) {
   return (
     <div className="hidden lg:flex items-center justify-between px-8 py-4 bg-card border-b border-border flex-shrink-0">
       <div>
@@ -24,17 +37,17 @@ export function Topbar({ pageTitle, lang, onToggleLang, onToggleMobileMenu, user
         {children}
         {fontSize && onChangeFontSize && (
           <div className="flex items-center gap-1">
-            {(['sm', 'md', 'lg'] as const).map((size) => (
+            {(["sm", "md", "lg"] as const).map((size) => (
               <button
                 key={size}
                 onClick={() => onChangeFontSize(size)}
                 className={`flex items-center justify-center w-7 h-7 rounded-md text-xs font-bold transition-colors ${
                   fontSize === size
-                    ? 'bg-border text-navy'
-                    : 'bg-surface2 border border-border text-navy hover:bg-border'
+                    ? "bg-border text-navy"
+                    : "bg-surface2 border border-border text-navy hover:bg-border"
                 }`}
               >
-                {size === 'sm' ? 'S' : size === 'md' ? 'M' : 'L'}
+                {size === "sm" ? "S" : size === "md" ? "M" : "L"}
               </button>
             ))}
           </div>
@@ -44,14 +57,14 @@ export function Topbar({ pageTitle, lang, onToggleLang, onToggleMobileMenu, user
             onClick={onToggleTheme}
             className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface2 border border-border text-xs font-bold text-navy hover:bg-border transition-colors"
           >
-            <span>{theme === 'light' ? '🌙' : '☀️'}</span>
+            <span>{theme === "light" ? "🌙" : "☀️"}</span>
           </button>
         )}
         <button
           onClick={onToggleLang}
           className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface2 border border-border text-xs font-bold text-navy hover:bg-border transition-colors"
         >
-          <span>{lang === 'fa' ? '🇬🇧 EN' : '🇮🇷 FA'}</span>
+          <span>{lang === "fa" ? "🇬🇧 EN" : "🇮🇷 FA"}</span>
         </button>
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-full bg-navy flex items-center justify-center text-white text-xs font-bold">
@@ -64,7 +77,16 @@ export function Topbar({ pageTitle, lang, onToggleLang, onToggleMobileMenu, user
   )
 }
 
-export function MobileTopbar({ pageTitle, lang, onToggleLang, onToggleMobileMenu, theme, onToggleTheme, fontSize, onChangeFontSize }: TopbarProps) {
+export function MobileTopbar({
+  pageTitle,
+  lang,
+  onToggleLang,
+  onToggleMobileMenu,
+  theme,
+  onToggleTheme,
+  fontSize,
+  onChangeFontSize,
+}: TopbarProps) {
   return (
     <div className="lg:hidden flex items-center justify-between px-4 py-3 bg-card border-b border-border flex-shrink-0">
       <button
@@ -82,10 +104,14 @@ export function MobileTopbar({ pageTitle, lang, onToggleLang, onToggleMobileMenu
       <div className="flex items-center gap-2">
         {fontSize && onChangeFontSize && (
           <button
-            onClick={() => onChangeFontSize(fontSize === 'sm' ? 'md' : fontSize === 'md' ? 'lg' : 'sm')}
+            onClick={() =>
+              onChangeFontSize(
+                fontSize === "sm" ? "md" : fontSize === "md" ? "lg" : "sm",
+              )
+            }
             className="px-2.5 py-1.5 rounded-lg bg-surface2 border border-border text-xs font-bold text-navy"
           >
-            {fontSize === 'sm' ? 'A⁻' : fontSize === 'md' ? 'A' : 'A⁺'}
+            {fontSize === "sm" ? "A⁻" : fontSize === "md" ? "A" : "A⁺"}
           </button>
         )}
         {theme && onToggleTheme && (
@@ -93,14 +119,14 @@ export function MobileTopbar({ pageTitle, lang, onToggleLang, onToggleMobileMenu
             onClick={onToggleTheme}
             className="px-2.5 py-1.5 rounded-lg bg-surface2 border border-border text-xs font-bold text-navy"
           >
-            {theme === 'light' ? '🌙' : '☀️'}
+            {theme === "light" ? "🌙" : "☀️"}
           </button>
         )}
         <button
           onClick={onToggleLang}
           className="px-2.5 py-1.5 rounded-lg bg-surface2 border border-border text-xs font-bold text-navy"
         >
-          {lang === 'fa' ? 'EN' : 'FA'}
+          {lang === "fa" ? "EN" : "FA"}
         </button>
       </div>
     </div>
