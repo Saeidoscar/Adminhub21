@@ -11,7 +11,7 @@ import type {
   CustomOffer,
   PlatformKey,
   BillingCycle,
-} from "../lib/types"
+} from "@adminhub/shared"
 import {
   ADMIN_PROFILES,
   ALL_PACKAGES,

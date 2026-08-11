@@ -18,7 +18,7 @@ import type {
   PlatformConfig,
   CustomOffer,
   AdminProfile,
-} from "../lib/types"
+} from "@adminhub/shared"
 
 const PLATFORM_COLORS: Record<string, string> = {
   instagram: "badge-instagram",
@@ -29,7 +29,11 @@ const PLATFORM_COLORS: Record<string, string> = {
   linkedin: "badge-linkedin",
 }
 
-const BILLING_CYCLES: { value: string labelEn: string labelFa: string }[] = [
+const BILLING_CYCLES: {
+  value: string
+  labelEn: string
+  labelFa: string
+}[] = [
   { value: "monthly", labelEn: "Monthly Retainer", labelFa: "حقوق ماهیانه" },
   {
     value: "project",
@@ -39,7 +43,11 @@ const BILLING_CYCLES: { value: string labelEn: string labelFa: string }[] = [
   { value: "hourly", labelEn: "Hourly Rate", labelFa: "نرخ ساعتی" },
 ]
 
-const DURATION_OPTIONS: { value: string labelEn: string labelFa: string }[] = [
+const DURATION_OPTIONS: {
+  value: string
+  labelEn: string
+  labelFa: string
+}[] = [
   { value: "1", labelEn: "1 month", labelFa: "۱ ماه" },
   { value: "3", labelEn: "3 months", labelFa: "۳ ماه" },
   { value: "6", labelEn: "6 months", labelFa: "۶ ماه" },
@@ -254,7 +262,7 @@ function ProfileTab({
 }: {
   admin: AdminProfile
   lang: Lang
-  tr: any
+  tr: typeof t["en"] & typeof t["fa"]
 }) {
   const isFa = lang === "fa"
   return (
@@ -352,7 +360,7 @@ function PackagesTab({
   platformPackages: ContractPackage[]
   bundlePackages: ContractPackage[]
   lang: Lang
-  tr: any
+  tr: typeof t["en"] & typeof t["fa"]
   comparison: {
     selected: Set<string>
     has: (id: string) => boolean
@@ -430,7 +438,7 @@ function CustomOfferForm({
 }: {
   admin: AdminProfile
   lang: Lang
-  tr: any
+  tr: typeof t["en"] & typeof t["fa"]
   onSubmit: (offer: Omit<CustomOffer, "id" | "createdAt">) => Promise<void>
   offerSent: boolean
 }) {

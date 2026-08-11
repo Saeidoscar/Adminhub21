@@ -46,10 +46,17 @@ export type McpEvent = {
   type: "tool_started"
   tool: string
   input: Record<string, unknown>
-} | { type: "tool_result" tool: string result: unknown } | {
+} | {
+  type: "tool_result"
+  tool: string
+  result: unknown
+} | {
   type: "error"
   message: string
-} | { type: "session_updated" session: McpSession }
+} | {
+  type: "session_updated"
+  session: McpSession
+}
 
 let config: McpClientConfig = { baseUrl: "" }
 
@@ -294,7 +301,10 @@ function mockToolCall(
   opts?: McpCallOptions,
 ): McpResult {
   const isFa = opts?.language === "fa"
-  const responses: Record<string, { en: string fa: string }> = {
+  const responses: Record<string, {
+    en: string
+    fa: string
+  }> = {
     "find-admin": {
       en: "Looking for admins on Instagram with 4.5+ rating and engagement experience. Top matches: Arya Ahmadi (4.9★), Neda Farahani (5.0★). Estimated rate: $100-150/mo.",
       fa: "جستجو برای ادمین اینستاگرام با امتیاز ۴.۵+ و تجربه تعامل. بهترین مطابق‌ها: آریا احمدی (۴.۹★)، ندا فراهانی (۵.۰★). نرخ تخمینی: ۴۲-۶۳ میلیون تومان/ماه.",
@@ -371,5 +381,3 @@ async function mockConverse(
   updatedSession.messages.push({ role: "assistant", content: aiResponse })
   return { ...result, text: aiResponse, session: updatedSession }
 }
-
-void mockIntentDetection

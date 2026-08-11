@@ -3,11 +3,11 @@ import type {
   ContractPackage,
   CustomOffer,
   PlatformKey,
-} from "../lib/types"
+} from "@adminhub/shared"
 
 export const ADMIN_PROFILES: AdminProfile[] = [
   {
-    id: 1,
+    id: "1",
     nameEn: "Arya Ahmadi",
     nameFa: "آریا احمدی",
     photo: "photo-1507003211169-0a1dd7228f2d",
@@ -31,7 +31,7 @@ export const ADMIN_PROFILES: AdminProfile[] = [
     skillsFa: ["تولید ریلز", "رشد حساب", "استراتژی محتوا", "آنالیتیکس"],
   },
   {
-    id: 2,
+    id: "2",
     nameEn: "Sara Mohammadi",
     nameFa: "سارا محمدی",
     photo: "photo-1494790108377-be9c29b29330",
@@ -50,7 +50,7 @@ export const ADMIN_PROFILES: AdminProfile[] = [
     skillsFa: ["واتساپ بیزینس", "سفر مشتری", "طراحی قیف", "CRM"],
   },
   {
-    id: 3,
+    id: "3",
     nameEn: "Dariush Rezaei",
     nameFa: "داریوش رضایی",
     photo: "photo-1500648767791-00dcc994a43e",
@@ -74,7 +74,7 @@ export const ADMIN_PROFILES: AdminProfile[] = [
     skillsFa: ["سئو ترب", "تبلیغات دیجی‌کالا", "استراتژی قیمت", "مدیریت موجودی"],
   },
   {
-    id: 4,
+    id: "4",
     nameEn: "Mina Hosseini",
     nameFa: "مینا حسینی",
     photo: "photo-1438761681033-6461ffad8d80",
@@ -98,7 +98,7 @@ export const ADMIN_PROFILES: AdminProfile[] = [
     skillsFa: ["محتوای B2B", "تولید لید", "استراتژی لینکدین", "صدای برند"],
   },
   {
-    id: 5,
+    id: "5",
     nameEn: "Reza Karimi",
     nameFa: "رضا کریمی",
     photo: "photo-1472099645785-5658abf4ff4e",
@@ -122,7 +122,7 @@ export const ADMIN_PROFILES: AdminProfile[] = [
     skillsFa: ["کانال تلگرام", "مدیریت جامعه", "کمپین تعامل", "راه‌اندازی بات"],
   },
   {
-    id: 6,
+    id: "6",
     nameEn: "Neda Farahani",
     nameFa: "ندا فراهانی",
     photo: "photo-1534528741775-53994a69daeb",

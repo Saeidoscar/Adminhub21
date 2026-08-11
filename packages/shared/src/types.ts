@@ -1,4 +1,10 @@
-export type PlatformKey = "instagram" | "telegram" | "whatsapp" | "torob" | "digikala" | "linkedin"
+export type PlatformKey =
+  | "instagram"
+  | "telegram"
+  | "whatsapp"
+  | "torob"
+  | "digikala"
+  | "linkedin"
 
 export type BillingCycle = "monthly" | "project" | "hourly"
 
@@ -48,7 +54,7 @@ export interface CustomOffer {
 }
 
 export interface AdminProfile {
-  id: number
+  id: string
   nameEn: string
   nameFa: string
   photo: string

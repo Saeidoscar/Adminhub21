@@ -1,7 +1,11 @@
 import { type ReactNode, useState } from "react"
 
 interface TabsProps {
-  tabs: { id: string label: string icon?: ReactNode }[]
+  tabs: {
+    id: string
+    label: string
+    icon?: ReactNode
+  }[]
   activeId: string
   onChange: (id: string) => void
   className?: string

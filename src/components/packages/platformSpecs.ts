@@ -1,4 +1,4 @@
-import type { PlatformKey, PlatformConfig } from "../lib/types"
+import type { PlatformKey, PlatformConfig } from "@adminhub/shared"
 
 export interface PlatformLabel {
   en: string

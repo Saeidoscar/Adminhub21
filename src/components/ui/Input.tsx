@@ -82,7 +82,10 @@ export function Textarea({
 interface SelectProps {
   value: string
   onChange: (value: string) => void
-  options: { value: string label: string }[]
+  options: {
+    value: string
+    label: string
+  }[]
   label?: string
   className?: string
 }

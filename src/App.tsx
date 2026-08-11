@@ -16,6 +16,9 @@ import { useTheme } from "./design-system/ThemeProvider"
 import AdminPackagesPage from "./pages/AdminPackagesPage"
 import AdminPublicProfilePage from "./pages/AdminPublicProfilePage"
 import PackageComparisonPage from "./pages/PackageComparisonPage"
+import ToolsRentalPage from "./pages/ToolsRentalPage"
+import EditorsPage from "./pages/EditorsPage"
+import VibeCodersPage from "./pages/VibeCodersPage"
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -2001,7 +2004,11 @@ export default function App() {
                         : "dashboard"
   ) as Page
 
-  const navItems: { id: Page icon: string label: string }[] = [
+  const navItems: {
+    id: Page
+    icon: string
+    label: string
+  }[] = [
     { id: "dashboard", icon: "dashboard", label: tr.nav.dashboard },
     { id: "marketplace", icon: "marketplace", label: tr.nav.marketplace },
     { id: "toolsRental", icon: "camera", label: tr.nav.toolsRental },
@@ -2155,14 +2162,7 @@ export default function App() {
               path="/tools-rental"
               element={
                 <div className="flex-1 overflow-y-auto">
-                  <PlaceholderPage
-                    title={tr.nav.toolsRental}
-                    subtitle={
-                      lang === "fa"
-                        ? "بزودی قابل استفاده خواهد بود"
-                        : "Coming soon"
-                    }
-                  />
+                  <ToolsRentalPage tr={tr} lang={lang} />
                 </div>
               }
             />
@@ -2170,14 +2170,7 @@ export default function App() {
               path="/editors"
               element={
                 <div className="flex-1 overflow-y-auto">
-                  <PlaceholderPage
-                    title={tr.nav.editors}
-                    subtitle={
-                      lang === "fa"
-                        ? "بزودی قابل استفاده خواهد بود"
-                        : "Coming soon"
-                    }
-                  />
+                  <EditorsPage tr={tr} lang={lang} />
                 </div>
               }
             />
@@ -2185,14 +2178,7 @@ export default function App() {
               path="/vibe-coders"
               element={
                 <div className="flex-1 overflow-y-auto">
-                  <PlaceholderPage
-                    title={tr.nav.vibeCoders}
-                    subtitle={
-                      lang === "fa"
-                        ? "بزودی قابل استفاده خواهد بود"
-                        : "Coming soon"
-                    }
-                  />
+                  <VibeCodersPage tr={tr} lang={lang} />
                 </div>
               }
             />

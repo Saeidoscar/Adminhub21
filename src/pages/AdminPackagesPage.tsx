@@ -16,7 +16,7 @@ import type {
   BillingCycle,
   PackageType,
   PlatformConfig,
-} from "../lib/types"
+} from "@adminhub/shared"
 
 const PLATFORM_COLORS: Record<string, string> = {
   instagram: "badge-instagram",

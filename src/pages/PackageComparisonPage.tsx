@@ -7,7 +7,7 @@ import { usePackages } from "../contexts/PackageContext"
 import { adminById } from "../lib/mockPackages"
 import { platformLabel } from "../components/packages/platformSpecs"
 import { PLATFORM_SPECS } from "../components/packages/platformSpecs"
-import type { ContractPackage } from "../lib/types"
+import type { ContractPackage } from "@adminhub/shared"
 
 const PLATFORM_COLORS: Record<string, string> = {
   instagram: "badge-instagram",
