@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">AdminHub</string>
+    <string name="title_activity_main">AdminHub</string>
+    <string name="package_name">com.adminhub.app</string>
+    <string name="custom_url_scheme">com.adminhub.app</string>
+</resources>
