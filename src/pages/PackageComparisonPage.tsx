@@ -4,7 +4,6 @@ import { t, type Lang } from "../i18n"
 import { Icon } from "../components/layout/Icon"
 import { Button } from "../components/ui/Button"
 import { usePackages } from "../contexts/PackageContext"
-import { adminById } from "../lib/mockPackages"
 import { platformLabel } from "../components/packages/platformSpecs"
 import { PLATFORM_SPECS } from "../components/packages/platformSpecs"
 import type { ContractPackage } from "@adminhub/shared"
@@ -20,7 +19,7 @@ const PLATFORM_COLORS: Record<string, string> = {
 
 export default function PackageComparisonPage() {
   const navigate = useNavigate()
-  const { comparison, packages } = usePackages()
+  const { comparison, packages, admin: findAdmin } = usePackages()
   const [lang, setLang] = useState<Lang>("fa")
   const isFa = lang === "fa"
   const tr = t[lang]
@@ -82,7 +81,7 @@ export default function PackageComparisonPage() {
         }}
       >
         {selectedPkgs.map((pkg) => {
-          const adm = adminById(pkg.adminId)
+          const adm = findAdmin(pkg.adminId)
           return (
             <div
               key={pkg.id}

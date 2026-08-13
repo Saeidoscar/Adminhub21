@@ -6,7 +6,6 @@ import { Button } from "../components/ui/Button"
 import { Input, Textarea, Select } from "../components/ui/Input"
 import { Stars } from "../components/platform/Stars"
 import { usePackages } from "../contexts/PackageContext"
-import { adminById } from "../lib/mockPackages"
 import {
   platformLabel,
   PLATFORM_SPECS,
@@ -57,7 +56,7 @@ const DURATION_OPTIONS: {
 export default function AdminPublicProfilePage() {
   const { adminId } = useParams<{ adminId: string }>()
   const navigate = useNavigate()
-  const { packages, comparison, submitOffer } = usePackages()
+  const { packages, comparison, submitOffer, admin: findAdmin } = usePackages()
   const [lang, setLang] = useState<Lang>("fa")
   const [activeTab, setActiveTab] = useState<"profile" | "packages" | "custom">(
     "profile",
@@ -66,7 +65,7 @@ export default function AdminPublicProfilePage() {
 
   const isFa = lang === "fa"
   const tr = t[lang]
-  const admin = adminId ? adminById(adminId) : null
+  const admin = adminId ? findAdmin(adminId) : null
   const adminPackages = packages.filter(
     (p) => p.adminId === adminId && p.active !== false,
   )

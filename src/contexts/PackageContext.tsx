@@ -4,6 +4,7 @@ import {
   ReactNode,
   useState,
   useCallback,
+  useEffect,
 } from "react"
 import type {
   AdminProfile,
@@ -13,14 +14,15 @@ import type {
   BillingCycle,
 } from "@adminhub/shared"
 import {
-  ADMIN_PROFILES,
-  ALL_PACKAGES,
-  ALL_OFFERS,
-  adminById,
-  packagesByAdmin,
-  packageById,
-  packagesByPlatform,
-} from "../lib/mockPackages"
+  createOffer,
+  createPackage,
+  deletePackage as deletePackageApi,
+  getAuthToken,
+  listAdminProfiles,
+  listOffers,
+  listPackages,
+  updatePackage as updatePackageApi,
+} from "../lib/api"
 
 export interface PackageContextValue {
   admins: AdminProfile[]
@@ -29,7 +31,7 @@ export interface PackageContextValue {
   packagesForAdmin: (adminId: string) => ContractPackage[]
   pkg: (id: string) => ContractPackage | undefined
   packagesForPlatform: (platform: PlatformKey) => ContractPackage[]
-  refresh: () => void
+  refresh: () => Promise<void>
   addPackage: (
     input: Omit<ContractPackage, "id" | "createdAt" | "updatedAt">,
   ) => Promise<ContractPackage>
@@ -55,61 +57,75 @@ export function usePackages() {
 }
 
 export function PackageProvider({ children }: { children: ReactNode }) {
-  const [packages, setPackages] = useState<ContractPackage[]>([...ALL_PACKAGES])
-  const [offers, setOffers] = useState<CustomOffer[]>([...ALL_OFFERS])
+  const [admins, setAdmins] = useState<AdminProfile[]>([])
+  const [packages, setPackages] = useState<ContractPackage[]>([])
+  const [offers, setOffers] = useState<CustomOffer[]>([])
   const [selected, setSelected] = useState<Set<string>>(new Set())
 
-  const mutate = useCallback(
-    (fn: (list: ContractPackage[]) => ContractPackage[]) => {
-      setPackages(fn)
-    },
-    [],
-  )
+  const refresh = useCallback(async () => {
+    try {
+      const [nextAdmins, nextPackages] = await Promise.all([
+        listAdminProfiles(),
+        listPackages(),
+      ])
+      setAdmins(nextAdmins)
+      setPackages(nextPackages)
+    } catch (error) {
+      console.warn("Failed to load marketplace data", error)
+      setAdmins([])
+      setPackages([])
+    }
+
+    try {
+      if (getAuthToken()) {
+        const nextOffers = await listOffers()
+        setOffers(nextOffers)
+      } else {
+        setOffers([])
+      }
+    } catch (error) {
+      console.warn("Failed to load offers", error)
+      setOffers([])
+    }
+  }, [])
+
+  useEffect(() => {
+    void refresh()
+  }, [refresh])
 
   const addPackage = useCallback(
     async (
       input: Omit<ContractPackage, "id" | "createdAt" | "updatedAt">,
     ): Promise<ContractPackage> => {
-      const now = new Date().toISOString()
-      const pkg: ContractPackage = {
-        ...input,
-        id: `pkg-${Date.now()}`,
-        createdAt: now,
-        updatedAt: now,
-      }
-      mutate((list) => [pkg, ...list])
+      const pkg = await createPackage(input)
+      setPackages((list) => [pkg, ...list])
       return pkg
     },
-    [mutate],
+    [],
   )
 
   const updatePackage = useCallback(
     async (pkg: ContractPackage): Promise<ContractPackage> => {
-      const now = new Date().toISOString()
-      const updated = { ...pkg, updatedAt: now }
-      mutate((list) => list.map((p) => (p.id === pkg.id ? updated : p)))
+      const updated = await updatePackageApi(pkg.id, pkg)
+      setPackages((list) => list.map((item) => (item.id === pkg.id ? updated : item)))
       return updated
     },
-    [mutate],
+    [],
   )
 
   const deletePackage = useCallback(
     async (id: string): Promise<void> => {
-      mutate((list) => list.filter((p) => p.id !== id))
+      await deletePackageApi(id)
+      setPackages((list) => list.filter((item) => item.id !== id))
     },
-    [mutate],
+    [],
   )
 
   const submitOffer = useCallback(
     async (
       input: Omit<CustomOffer, "id" | "createdAt">,
     ): Promise<CustomOffer> => {
-      const now = new Date().toISOString()
-      const offer: CustomOffer = {
-        ...input,
-        id: `offer-${Date.now()}`,
-        createdAt: now,
-      }
+      const offer = await createOffer(input)
       setOffers((list) => [offer, ...list])
       return offer
     },
@@ -131,26 +147,36 @@ export function PackageProvider({ children }: { children: ReactNode }) {
     [],
   )
   const has = useCallback((id: string) => selected.has(id), [selected])
+  const admin = useCallback(
+    (id: string | number) =>
+      admins.find((profile) => String(profile.id) === String(id)),
+    [admins],
+  )
+  const pkg = useCallback(
+    (id: string) => packages.find((item) => item.id === id),
+    [packages],
+  )
   const packagesForAdmin = useCallback(
-    (adminId: string) => packagesByAdmin(adminId),
-    [],
+    (adminId: string) =>
+      packages.filter((item) => item.adminId === adminId && item.active !== false),
+    [packages],
   )
   const packagesForPlatform = useCallback(
-    (platform: PlatformKey) => packagesByPlatform(platform),
-    [],
+    (platform: PlatformKey) =>
+      packages.filter(
+        (item) => item.platforms.includes(platform) && item.active !== false,
+      ),
+    [packages],
   )
 
   const value: PackageContextValue = {
-    admins: ADMIN_PROFILES,
+    admins,
     packages,
-    admin: adminById,
+    admin,
     packagesForAdmin,
-    pkg: packageById,
+    pkg,
     packagesForPlatform,
-    refresh: () => {
-      setPackages([...ALL_PACKAGES])
-      setOffers([...ALL_OFFERS])
-    },
+    refresh,
     addPackage,
     updatePackage,
     deletePackage,
