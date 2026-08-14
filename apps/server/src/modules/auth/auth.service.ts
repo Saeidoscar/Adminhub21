@@ -4,12 +4,13 @@ import { adminProfiles, users } from "../../db/schema"
 import { ApiError } from "../../lib/errors"
 import { hashPassword, verifyPassword } from "../../lib/password"
 import { signToken } from "../../lib/tokens"
+import { createApiToken } from "../../lib/sanctum"
 import type { RegisterInput } from "./schemas"
 
 export type SafeUser = {
   id: string
   email: string
-  role: "employer" | "admin"
+  role: "employer" | "admin" | "super_admin"
   nameEn: string
   nameFa: string
   phone: string | null
@@ -36,9 +37,11 @@ function toSafeUser(row: typeof users.$inferSelect): SafeUser {
   }
 }
 
-async function issueTokens(row: typeof users.$inferSelect): Promise<AuthResult> {
+async function issueTokens(
+  row: typeof users.$inferSelect,
+): Promise<AuthResult> {
   const [accessToken, refreshToken] = await Promise.all([
-    signToken({ sub: row.id, role: row.role, type: "access" }),
+    createApiToken(row.id),
     signToken({ sub: row.id, role: row.role, type: "refresh" }),
   ])
   return { user: toSafeUser(row), accessToken, refreshToken }
@@ -53,7 +56,11 @@ export async function register(input: RegisterInput): Promise<AuthResult> {
     .where(eq(users.email, email))
     .limit(1)
   if (existing.length > 0) {
-    throw new ApiError(409, "An account with this email already exists", "EMAIL_TAKEN")
+    throw new ApiError(
+      409,
+      "An account with this email already exists",
+      "EMAIL_TAKEN",
+    )
   }
 
   const passwordHash = await hashPassword(input.password)

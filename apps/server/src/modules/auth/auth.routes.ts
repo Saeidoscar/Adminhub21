@@ -1,16 +1,18 @@
 import { Hono } from "hono"
-import { deleteCookie, getCookie, setCookie } from "hono/cookie"
 import { zValidator } from "@hono/zod-validator"
-import { env } from "../../env"
 import { ApiError } from "../../lib/errors"
-import { verifyToken, REFRESH_TTL_SECONDS } from "../../lib/tokens"
+import { deleteCookie, getCookie, setCookie } from "hono/cookie"
+import { env } from "../../env"
+import { REFRESH_TTL_SECONDS, verifyToken } from "../../lib/tokens"
+import { revokeApiToken } from "../../lib/sanctum"
 import { requireAuth } from "../../middleware/auth"
 import { loginSchema, registerSchema } from "./schemas"
 import * as service from "./auth.service"
-
-const REFRESH_COOKIE = "ah_refresh"
+import { sendOtpSchema, verifyOtpSchema } from "./otp.schemas"
+import * as otpService from "./otp.service"
 
 const authRoutes = new Hono()
+const REFRESH_COOKIE = "ah_refresh"
 
 function setRefreshCookie(c: Parameters<typeof setCookie>[0], token: string) {
   setCookie(c, REFRESH_COOKIE, token, {
@@ -22,19 +24,12 @@ function setRefreshCookie(c: Parameters<typeof setCookie>[0], token: string) {
   })
 }
 
-authRoutes.post(
-  "/register",
-  zValidator("json", registerSchema),
-  async (c) => {
-    const body = c.req.valid("json")
-    const result = await service.register(body)
-    setRefreshCookie(c, result.refreshToken)
-    return c.json(
-      { user: result.user, accessToken: result.accessToken },
-      201,
-    )
-  },
-)
+authRoutes.post("/register", zValidator("json", registerSchema), async (c) => {
+  const body = c.req.valid("json")
+  const result = await service.register(body)
+  setRefreshCookie(c, result.refreshToken)
+  return c.json({ user: result.user, accessToken: result.accessToken }, 201)
+})
 
 authRoutes.post("/login", zValidator("json", loginSchema), async (c) => {
   const body = c.req.valid("json")
@@ -42,6 +37,23 @@ authRoutes.post("/login", zValidator("json", loginSchema), async (c) => {
   setRefreshCookie(c, result.refreshToken)
   return c.json({ user: result.user, accessToken: result.accessToken })
 })
+
+authRoutes.post("/otp/send", zValidator("json", sendOtpSchema), async (c) => {
+  const body = c.req.valid("json")
+  const result = await otpService.sendOtp(body)
+  return c.json(result)
+})
+
+authRoutes.post(
+  "/otp/verify",
+  zValidator("json", verifyOtpSchema),
+  async (c) => {
+    const body = c.req.valid("json")
+    const result = await otpService.verifyOtp(body)
+    setRefreshCookie(c, result.refreshToken)
+    return c.json({ user: result.user, accessToken: result.accessToken })
+  },
+)
 
 authRoutes.post("/refresh", async (c) => {
   const token = getCookie(c, REFRESH_COOKIE)
@@ -59,7 +71,12 @@ authRoutes.post("/refresh", async (c) => {
   return c.json({ user: result.user, accessToken: result.accessToken })
 })
 
-authRoutes.post("/logout", (c) => {
+authRoutes.post("/logout", async (c) => {
+  const header = c.req.header("Authorization")
+  const token = header?.startsWith("Bearer ") ? header.slice("Bearer ".length) : null
+  if (token) {
+    await revokeApiToken(token)
+  }
   deleteCookie(c, REFRESH_COOKIE, { path: "/" })
   return c.json({ ok: true })
 })

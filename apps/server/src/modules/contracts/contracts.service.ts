@@ -1,7 +1,10 @@
 import { and, desc, eq, sql } from "drizzle-orm"
 import { db } from "../../db"
 import { adminProfiles, contracts, customOffers, users } from "../../db/schema"
-import type { CreateContractInput, UpdateContractStatusInput } from "./contracts.schemas"
+import type {
+  CreateContractInput,
+  UpdateContractStatusInput,
+} from "./contracts.schemas"
 
 export type ContractRow = {
   id: string
@@ -72,7 +75,9 @@ function toSafe(row: {
   }
 }
 
-async function resolveAdminName(adminId: string): Promise<{ nameEn: string; nameFa: string; photo: string | null }> {
+async function resolveAdminName(
+  adminId: string,
+): Promise<{ nameEn: string; nameFa: string; photo: string | null }> {
   const [admin] = await db
     .select({
       nameEn: users.nameEn,
@@ -91,7 +96,11 @@ async function resolveAdminName(adminId: string): Promise<{ nameEn: string; name
   }
 }
 
-export async function createContract(requesterId: string, requesterRole: "employer" | "admin", data: CreateContractInput): Promise<ContractRow> {
+export async function createContract(
+  requesterId: string,
+  requesterRole: string,
+  data: CreateContractInput,
+): Promise<ContractRow> {
   let employerId: string
   let adminId: string
   let employerName: string
@@ -115,7 +124,11 @@ export async function createContract(requesterId: string, requesterRole: "employ
       throw new Error("Forbidden")
     }
     if (requesterRole === "admin") {
-      const [adminProfile] = await db.select({ userId: adminProfiles.userId }).from(adminProfiles).where(eq(adminProfiles.id, offer.adminId)).limit(1)
+      const [adminProfile] = await db
+        .select({ userId: adminProfiles.userId })
+        .from(adminProfiles)
+        .where(eq(adminProfiles.id, offer.adminId))
+        .limit(1)
       if (!adminProfile || adminProfile.userId !== requesterId) {
         throw new Error("Forbidden")
       }
@@ -131,7 +144,11 @@ export async function createContract(requesterId: string, requesterRole: "employ
     employerId = requesterId
     adminId = data.adminId
 
-    const [employer] = await db.select({ nameEn: users.nameEn, nameFa: users.nameFa }).from(users).where(eq(users.id, employerId)).limit(1)
+    const [employer] = await db
+      .select({ nameEn: users.nameEn, nameFa: users.nameFa })
+      .from(users)
+      .where(eq(users.id, employerId))
+      .limit(1)
     if (!employer) {
       throw new Error("Employer not found")
     }
@@ -166,7 +183,11 @@ export async function createContract(requesterId: string, requesterRole: "employ
   }
 
   const admin = await resolveAdminName(adminId)
-  const [employer] = await db.select({ nameFa: users.nameFa }).from(users).where(eq(users.id, employerId)).limit(1)
+  const [employer] = await db
+    .select({ nameFa: users.nameFa })
+    .from(users)
+    .where(eq(users.id, employerId))
+    .limit(1)
   return toSafe({
     ...row,
     adminNameEn: admin.nameEn,
@@ -176,12 +197,19 @@ export async function createContract(requesterId: string, requesterRole: "employ
   })
 }
 
-export async function listContractsForUser(userId: string, role: "employer" | "admin"): Promise<ContractRow[]> {
+export async function listContractsForUser(
+  userId: string,
+  role: string,
+): Promise<ContractRow[]> {
   let whereClause
   if (role === "employer") {
     whereClause = eq(contracts.employerId, userId)
   } else {
-    const [adminProfile] = await db.select({ id: adminProfiles.id }).from(adminProfiles).where(eq(adminProfiles.userId, userId)).limit(1)
+    const [adminProfile] = await db
+      .select({ id: adminProfiles.id })
+      .from(adminProfiles)
+      .where(eq(adminProfiles.userId, userId))
+      .limit(1)
     if (!adminProfile) {
       return []
     }
@@ -221,11 +249,13 @@ export async function listContractsForUser(userId: string, role: "employer" | "a
     toSafe({
       ...row,
       employerName: row.employerName || row.adminNameEn,
-    })
+    }),
   )
 }
 
-export async function getContractById(id: string, requesterId: string, requesterRole: "employer" | "admin"): Promise<ContractRow | null> {
+export async function getContractById(
+  id: string,
+): Promise<ContractRow | null> {
   const [row] = await db
     .select({
       id: contracts.id,
@@ -256,38 +286,24 @@ export async function getContractById(id: string, requesterId: string, requester
     .limit(1)
 
   if (!row) return null
-
-  if (requesterRole === "employer" && row.employerId !== requesterId) {
-    return null
-  }
-  if (requesterRole === "admin") {
-    const [adminProfile] = await db.select({ userId: adminProfiles.userId }).from(adminProfiles).where(eq(adminProfiles.id, row.adminId)).limit(1)
-    if (!adminProfile || adminProfile.userId !== requesterId) {
-      return null
-    }
-  }
-
   return toSafe({
     ...row,
     employerName: row.employerName || row.adminNameEn,
   })
 }
 
-export async function updateContractStatus(id: string, requesterId: string, requesterRole: "employer" | "admin", data: UpdateContractStatusInput): Promise<ContractRow> {
-  const [existing] = await db.select().from(contracts).where(eq(contracts.id, id)).limit(1)
+export async function updateContractStatus(
+  id: string,
+  data: UpdateContractStatusInput,
+): Promise<ContractRow> {
+  const [existing] = await db
+    .select()
+    .from(contracts)
+    .where(eq(contracts.id, id))
+    .limit(1)
 
   if (!existing) {
     throw new Error("Contract not found")
-  }
-
-  if (requesterRole === "employer" && existing.employerId !== requesterId) {
-    throw new Error("Forbidden")
-  }
-  if (requesterRole === "admin") {
-    const [adminProfile] = await db.select({ userId: adminProfiles.userId }).from(adminProfiles).where(eq(adminProfiles.id, existing.adminId)).limit(1)
-    if (!adminProfile || adminProfile.userId !== requesterId) {
-      throw new Error("Forbidden")
-    }
   }
 
   const [row] = await db
@@ -304,7 +320,11 @@ export async function updateContractStatus(id: string, requesterId: string, requ
   }
 
   const admin = await resolveAdminName(row.adminId)
-  const [employer] = await db.select({ nameFa: users.nameFa }).from(users).where(eq(users.id, row.employerId)).limit(1)
+  const [employer] = await db
+    .select({ nameFa: users.nameFa })
+    .from(users)
+    .where(eq(users.id, row.employerId))
+    .limit(1)
 
   return toSafe({
     ...row,

@@ -1,8 +1,11 @@
 import { createMiddleware } from "hono/factory"
-import { verifyToken } from "../lib/tokens"
 import { ApiError } from "../lib/errors"
+import { validateApiToken } from "../lib/sanctum"
+import { db } from "../db"
+import { users } from "../db/schema"
+import { eq } from "drizzle-orm"
 
-export type Role = "employer" | "admin"
+export type Role = "employer" | "admin" | "super_admin"
 
 export interface AuthUser {
   id: string
@@ -21,13 +24,17 @@ export const requireAuth = createMiddleware(async (c, next) => {
     throw new ApiError(401, "Missing access token", "UNAUTHORIZED")
   }
   const token = header.slice("Bearer ".length)
-  let payload
-  try {
-    payload = await verifyToken(token, "access")
-  } catch {
-    throw new ApiError(401, "Invalid or expired access token", "UNAUTHORIZED")
+  const record = await validateApiToken(token)
+  if (!record) {
+    throw new ApiError(401, "Invalid or revoked access token", "UNAUTHORIZED")
   }
-  c.set("authUser", { id: payload.sub, role: payload.role })
+
+  const [user] = await db.select().from(users).where(eq(users.id, record.userId)).limit(1)
+  if (!user) {
+    throw new ApiError(401, "User not found", "UNAUTHORIZED")
+  }
+
+  c.set("authUser", { id: user.id, role: user.role })
   await next()
 })
 
