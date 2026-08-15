@@ -1,7 +1,11 @@
 import { and, asc, desc, eq, sql } from "drizzle-orm"
 import { db } from "../../db"
 import { adminProfiles, packages, users } from "../../db/schema"
-import type { ListPackagesQuery, CreatePackageInput, UpdatePackageInput } from "./packages.schemas"
+import type {
+  ListPackagesQuery,
+  CreatePackageInput,
+  UpdatePackageInput,
+} from "./packages.schemas"
 
 export type PackageRow = {
   id: string
@@ -66,12 +70,18 @@ function toSafe(row: {
   }
 }
 
-export async function listPackages(query: ListPackagesQuery): Promise<PackageRow[]> {
+export async function listPackages(
+  query: ListPackagesQuery,
+): Promise<PackageRow[]> {
   const conditions = []
 
   if (query.platforms && query.platforms.length > 0) {
-    const platformSql = query.platforms.map((p) => `'${p.replace(/'/g, "''")}'`).join(",")
-    conditions.push(sql`${packages.platforms} && ARRAY[${sql.raw(platformSql)}]`)
+    const platformSql = query.platforms
+      .map((p) => `'${p.replace(/'/g, "''")}'`)
+      .join(",")
+    conditions.push(
+      sql`${packages.platforms} && ARRAY[${sql.raw(platformSql)}]`,
+    )
   }
 
   if (query.type) {
@@ -155,7 +165,10 @@ export async function getPackageById(id: string): Promise<PackageRow | null> {
   return toSafe(row)
 }
 
-export async function createPackage(adminId: string, data: CreatePackageInput): Promise<PackageRow> {
+export async function createPackage(
+  adminId: string,
+  data: CreatePackageInput,
+): Promise<PackageRow> {
   const [row] = await db
     .insert(packages)
     .values({
@@ -187,7 +200,10 @@ export async function createPackage(adminId: string, data: CreatePackageInput): 
   })
 }
 
-export async function updatePackage(id: string, data: UpdatePackageInput): Promise<PackageRow> {
+export async function updatePackage(
+  id: string,
+  data: UpdatePackageInput,
+): Promise<PackageRow> {
   const [row] = await db
     .update(packages)
     .set({

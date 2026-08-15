@@ -1,7 +1,10 @@
 import { and, asc, desc, eq, ilike, sql } from "drizzle-orm"
 import { db } from "../../db"
 import { adminProfiles, users } from "../../db/schema"
-import type { ListAdminProfilesQuery, UpdateAdminProfileInput } from "./admin-profiles.schemas"
+import type {
+  ListAdminProfilesQuery,
+  UpdateAdminProfileInput,
+} from "./admin-profiles.schemas"
 
 export type AdminProfileRow = {
   id: string
@@ -63,12 +66,18 @@ function toSafe(row: {
   }
 }
 
-export async function listAdminProfiles(query: ListAdminProfilesQuery): Promise<AdminProfileRow[]> {
+export async function listAdminProfiles(
+  query: ListAdminProfilesQuery,
+): Promise<AdminProfileRow[]> {
   const conditions = []
 
   if (query.platforms && query.platforms.length > 0) {
-    const platformSql = query.platforms.map((p) => `'${p.replace(/'/g, "''")}'`).join(",")
-    conditions.push(sql`${adminProfiles.platforms} && ARRAY[${sql.raw(platformSql)}]`)
+    const platformSql = query.platforms
+      .map((p) => `'${p.replace(/'/g, "''")}'`)
+      .join(",")
+    conditions.push(
+      sql`${adminProfiles.platforms} && ARRAY[${sql.raw(platformSql)}]`,
+    )
   }
 
   if (query.verified) {
@@ -110,7 +119,9 @@ export async function listAdminProfiles(query: ListAdminProfilesQuery): Promise<
   return rows.map(toSafe)
 }
 
-export async function getAdminProfileById(id: string): Promise<AdminProfileRow | null> {
+export async function getAdminProfileById(
+  id: string,
+): Promise<AdminProfileRow | null> {
   const [row] = await db
     .select({
       id: adminProfiles.id,
@@ -157,7 +168,11 @@ export async function updateAdminProfile(
     throw new Error("Admin profile not found")
   }
 
-  const user = await db.select().from(users).where(eq(users.id, userId)).limit(1)
+  const user = await db
+    .select()
+    .from(users)
+    .where(eq(users.id, userId))
+    .limit(1)
   if (!user[0]) {
     throw new Error("User not found")
   }

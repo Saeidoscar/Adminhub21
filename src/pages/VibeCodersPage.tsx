@@ -82,8 +82,7 @@ const CODERS: Coder[] = [
     delivery: "48h",
     bioEn:
       "High-converting landing pages for campaigns, products, and launch funnels.",
-    bioFa:
-      "لندینگ پیج‌های پرتبدیل برای کمپین‌ها، محصولات و قیف‌های لانچ.",
+    bioFa: "لندینگ پیج‌های پرتبدیل برای کمپین‌ها، محصولات و قیف‌های لانچ.",
   },
   {
     nameEn: "Sajjad Ebrahimi",
@@ -114,12 +113,11 @@ const CODERS: Coder[] = [
     delivery: "3 weeks",
     bioEn:
       "Full-stack product engineer for marketplaces and dashboards, with clean architecture.",
-    bioFa:
-      "مهندس فول‌استک برای مارکت‌پلیس و داشبورد با معماری تمیز و مقیاس‌پذیر.",
+    bioFa: "مهندس فول‌استک برای مارکت‌پلیس و داشبورد با معماری تمیز و مقیاس‌پذیر.",
   },
 ]
 
-const STACK_LABELS: Record<Stack, { en: string; fa: string }> = {
+const STACK_LABELS: Record<Stack, { en: string fa: string }> = {
   webApp: { en: "Web Apps", fa: "وب‌اپلیکیشن" },
   automation: { en: "Automation", fa: "اتوماسیون" },
   bots: { en: "Bots & Integrations", fa: "بات و اتصالات" },
@@ -263,9 +261,7 @@ export default function VibeCodersPage({
             {isFa ? "نتیجه‌ای یافت نشد" : "No results found"}
           </div>
           <div className="text-sm mt-1">
-            {isFa
-              ? "فیلترها را تغییر دهید"
-              : "Try adjusting your filters"}
+            {isFa ? "فیلترها را تغییر دهید" : "Try adjusting your filters"}
           </div>
         </div>
       )}

@@ -1,6 +1,7 @@
 import {
   boolean,
   doublePrecision,
+  index,
   integer,
   jsonb,
   pgEnum,
@@ -430,25 +431,72 @@ export const comments = pgTable(
   (t) => [uniqueIndex("comments_post_author").on(t.postId, t.authorId)],
 )
 
-export const aiConversations = pgTable("ai_conversations", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  userId: uuid("user_id")
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
-  title: text("title").notNull(),
-  model: text("model").notNull(),
-  ...timestamps,
-})
+export const aiConversations = pgTable(
+  "ai_conversations",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    title: text("title").notNull(),
+    modelId: uuid("model_id")
+      .notNull()
+      .references(() => aiModels.id),
+    ...timestamps,
+  },
+  (t) => [
+    index("ai_conversations_user_id_idx").on(t.userId),
+    index("ai_conversations_model_id_idx").on(t.modelId),
+  ],
+)
 
-export const aiMessages = pgTable("ai_messages", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  conversationId: uuid("conversation_id")
-    .notNull()
-    .references(() => aiConversations.id, { onDelete: "cascade" }),
-  role: text("role").notNull(),
-  content: text("content").notNull(),
-  ...timestamps,
-})
+export const aiModels = pgTable(
+  "ai_models",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    provider: text("provider").notNull(),
+    code: text("code").notNull().unique(),
+    name: text("name").notNull(),
+    description: text("description"),
+    inputCost: doublePrecision("input_cost").notNull().default(0),
+    outputCost: doublePrecision("output_cost").notNull().default(0),
+    contextWindow: integer("context_window"),
+    apiBaseUrl: text("api_base_url"),
+    defaultTemperature: doublePrecision("default_temperature"),
+    maxOutputTokens: integer("max_output_tokens"),
+    supportsStreaming: boolean("supports_streaming").notNull().default(false),
+    supportsVision: boolean("supports_vision").notNull().default(false),
+    isActive: boolean("is_active").notNull().default(true),
+    ...timestamps,
+  },
+  (t) => [index("ai_models_provider_idx").on(t.provider)],
+)
+
+export const aiMessages = pgTable(
+  "ai_messages",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    conversationId: uuid("conversation_id")
+      .notNull()
+      .references(() => aiConversations.id, { onDelete: "cascade" }),
+    role: text("role").notNull(),
+    content: text("content").notNull(),
+    provider: text("provider"),
+    modelCode: text("model_code"),
+    promptTokens: integer("prompt_tokens"),
+    completionTokens: integer("completion_tokens"),
+    totalTokens: integer("total_tokens"),
+    inputCost: doublePrecision("input_cost"),
+    outputCost: doublePrecision("output_cost"),
+    totalCost: doublePrecision("total_cost"),
+    responseTimeMs: integer("response_time_ms"),
+    ...timestamps,
+  },
+  (t) => [
+    index("ai_messages_conversation_id_idx").on(t.conversationId),
+    index("ai_messages_created_at_idx").on(t.createdAt),
+  ],
+)
 
 export const affiliateCodes = pgTable("affiliate_codes", {
   id: uuid("id").primaryKey().defaultRandom(),

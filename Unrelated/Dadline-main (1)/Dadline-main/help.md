@@ -1,0 +1,10 @@
+docker-compose.yml — تعریف پایه‌ی همه‌ی سرویس‌ها (web, admin, office, api, horizon, scheduler, postgres, redis, traefik) دقیقاً مطابق سند، با اصلاح build context برای Next.js (باید از ریشه‌ی مونوریپو build بشه نه از داخل apps/web چون به packages مشترک نیاز داره).
+docker-compose.dev.yml — اورراید لوکال: پورت‌های مستقیم روی host (3000/3001/3002/8000)، bind mount کل مونوریپو، و node_modules/vendor در volume جدا تا با چیزی که توی ویندوز نصب کردی تداخل نکنه. nginx این فایل از dev.conf استفاده می‌کنه نه کانفیگ production، که دقیقاً همون مشکلی بود که قبلاً باهاش دست‌وپنجه نرم کردی.
+docker-compose.prod.yml — image از GHCR (مطابق CI/CD سند ۱۱)، محدودیت منابع، لاگ rotation.
+Dockerfile های Next.js (apps/{web,admin,office}/Dockerfile + .dev) — مولتی‌استیج با خروجی standalone. نکته‌ی مهم: باید output: 'standalone' رو به next.config.ts هر سه اپ اضافه کنی، وگرنه .next/standalone وجود نخواهد داشت.
+Dockerfile لاراول (apps/api/Dockerfile + .dev) — PHP 8.4-fpm + Nginx + Supervisor توی یک ایمیج برای production، با OPcache/JIT فعال؛ نسخه‌ی dev با Xdebug.
+infrastructure/postgres/Dockerfile — دقیقاً طبق سند، نصب pg_uuidv7 از سورس، به‌علاوه pg_trgm در init script (طبق تصمیم قبلی‌ت برای جستجوی پایه‌ی فارسی).
+Traefik — traefik.yml + دو فایل dynamic (middlewares.yml با rate-limit عمومی + otp-rate-limit.yml دقیقاً مطابق سند ۱۵).
+
+چند تصمیم که خودم اضافه کردم چون سند بهشون اشاره کرده بود ولی فایل واقعی نداشت: نسخه‌ی pg_uuidv7 رو pin کردم (v1.6.0) چون سند خودش تأکید روی pinning داره (یادمه برای MinIO هم همین کار رو کرده بودی)، و healthcheck برای web/api اضافه کردم چون در docker-compose ازشون استفاده شده بود ولی endpoint مربوطه (/api/health, /up) باید خودت در کد بسازی.
+قدم بعدی که باید خودت انجام بدی: فایل .env رو از .env.example بساز (POSTGRES_USER/POSTGRES_PASSWORD)، و چون apps/web, apps/admin, apps/office, apps/api هنوز کد واقعی ندارن (فقط Dockerfile)، اول باید اسکلت Next.js و Laravel رو داخلشون بسازی قبل از docker compose up.

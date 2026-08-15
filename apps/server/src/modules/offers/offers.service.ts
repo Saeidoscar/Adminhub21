@@ -2,6 +2,7 @@ import { and, desc, eq } from "drizzle-orm"
 import { db } from "../../db"
 import { adminProfiles, customOffers, packages, users } from "../../db/schema"
 import type { CreateOfferInput } from "./offers.schemas"
+import type { Role } from "../../middleware/auth"
 
 export type OfferRow = {
   id: string
@@ -75,7 +76,9 @@ function toSafe(row: {
   }
 }
 
-async function resolveAdminName(adminId: string): Promise<{ nameEn: string; nameFa: string; photo: string | null }> {
+async function resolveAdminName(
+  adminId: string,
+): Promise<{ nameEn: string; nameFa: string; photo: string | null }> {
   const [admin] = await db
     .select({
       nameEn: users.nameEn,
@@ -94,7 +97,11 @@ async function resolveAdminName(adminId: string): Promise<{ nameEn: string; name
   }
 }
 
-export async function createOffer(employerId: string, employerName: string, data: CreateOfferInput): Promise<OfferRow> {
+export async function createOffer(
+  employerId: string,
+  employerName: string,
+  data: CreateOfferInput,
+): Promise<OfferRow> {
   let adminId = data.adminId
   if (!adminId && data.packageId) {
     const [pkg] = await db
@@ -135,7 +142,9 @@ export async function createOffer(employerId: string, employerName: string, data
   })
 }
 
-export async function listOffersForUser(employerId: string): Promise<OfferRow[]> {
+export async function listOffersForUser(
+  employerId: string,
+): Promise<OfferRow[]> {
   const rows = await db
     .select({
       id: customOffers.id,
@@ -203,7 +212,11 @@ export async function listOffersForAdmin(adminId: string): Promise<OfferRow[]> {
   return rows.map(toSafe)
 }
 
-export async function getOfferById(id: string, requesterId: string, requesterRole: "employer" | "admin"): Promise<OfferRow | null> {
+export async function getOfferById(
+  id: string,
+  requesterId: string,
+  requesterRole: Role,
+): Promise<OfferRow | null> {
   const [row] = await db
     .select({
       id: customOffers.id,

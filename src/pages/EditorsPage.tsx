@@ -82,8 +82,7 @@ const EDITORS: Editor[] = [
     rateUSD: 14,
     bioEn:
       "Product photography retouching and lifestyle photo editing for e-commerce brands.",
-    bioFa:
-      "ویرایش عکس محصول و عکاسی لایف‌استایل برای برندهای فروشگاه آنلاین.",
+    bioFa: "ویرایش عکس محصول و عکاسی لایف‌استایل برای برندهای فروشگاه آنلاین.",
   },
   {
     nameEn: "Amir Tavakoli",
@@ -98,8 +97,7 @@ const EDITORS: Editor[] = [
     rateUSD: 22,
     bioEn:
       "Long-form and documentary style editing with native Persian subtitling and captions.",
-    bioFa:
-      "ادیت ویدئوی بلند و مستندگونه با زیرنویس فارسی حرفه‌ای.",
+    bioFa: "ادیت ویدئوی بلند و مستندگونه با زیرنویس فارسی حرفه‌ای.",
   },
   {
     nameEn: "Laleh Ahmadi",
@@ -119,7 +117,7 @@ const EDITORS: Editor[] = [
   },
 ]
 
-const SPECIALTY_LABELS: Record<Specialty, { en: string; fa: string }> = {
+const SPECIALTY_LABELS: Record<Specialty, { en: string fa: string }> = {
   video: { en: "Video Editing", fa: "ادیت ویدئو" },
   photo: { en: "Photo Editing", fa: "ادیت عکس" },
   motion: { en: "Motion Graphics", fa: "موشن گرافیک" },
@@ -145,8 +143,7 @@ export default function EditorsPage({
       !query ||
       name.toLowerCase().includes(query) ||
       (isFa ? editor.bioFa : editor.bioEn).toLowerCase().includes(query)
-    const matchSpecialty =
-      specialty === "all" || editor.specialty === specialty
+    const matchSpecialty = specialty === "all" || editor.specialty === specialty
     return matchSearch && matchSpecialty
   })
 
@@ -176,9 +173,7 @@ export default function EditorsPage({
         </div>
         <select
           value={specialty}
-          onChange={(e) =>
-            setSpecialty(e.target.value as Specialty | "all")
-          }
+          onChange={(e) => setSpecialty(e.target.value as Specialty | "all")}
           className="px-3 py-2.5 rounded-xl border border-[#e2e8f0] bg-white text-sm text-[#0f172a] focus:border-[#1e3a5f] transition-all"
         >
           <option value="all">{tr.editors.allSpecialties}</option>
@@ -265,9 +260,7 @@ export default function EditorsPage({
             {isFa ? "نتیجه‌ای یافت نشد" : "No results found"}
           </div>
           <div className="text-sm mt-1">
-            {isFa
-              ? "فیلترها را تغییر دهید"
-              : "Try adjusting your filters"}
+            {isFa ? "فیلترها را تغییر دهید" : "Try adjusting your filters"}
           </div>
         </div>
       )}

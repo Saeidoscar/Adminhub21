@@ -1,0 +1,12 @@
+<?php
+
+namespace App\Enums;
+
+enum CommentStatus: string
+{
+    case Pending = 'pending';
+    case Approved = 'approved';
+    case Rejected = 'rejected';
+    case Hidden = 'hidden';
+    case Spam = 'spam';
+}

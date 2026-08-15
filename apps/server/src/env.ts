@@ -19,6 +19,9 @@ const envSchema = z.object({
   CORS_ORIGINS: z
     .string()
     .default("http://localhost:8443,http://localhost:5173"),
+  OPENAI_API_KEY: z.string().optional(),
+  ANTHROPIC_API_KEY: z.string().optional(),
+  OPENROUTER_API_KEY: z.string().optional(),
 })
 
 export const env = envSchema.parse(process.env)

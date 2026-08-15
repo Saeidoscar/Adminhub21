@@ -5,7 +5,7 @@ export type TokenType = "access" | "refresh"
 
 export interface AuthTokenPayload {
   sub: string
-  role: "employer" | "admin"
+  role: "employer" | "admin" | "super_admin"
   type: TokenType
 }
 
@@ -40,7 +40,7 @@ export async function verifyToken(
   }
   return {
     sub: payload.sub,
-    role: payload.role === "admin" ? "admin" : "employer",
+    role: (payload.role as "employer" | "admin" | "super_admin") || "employer",
     type: payload.type as TokenType,
   }
 }

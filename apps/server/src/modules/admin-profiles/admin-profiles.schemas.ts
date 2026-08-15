@@ -15,7 +15,19 @@ export const updateAdminProfileSchema = z.object({
   bioFa: z.string().trim().max(2000).optional(),
   skillsEn: z.array(z.string().trim().max(60)).max(20).optional(),
   skillsFa: z.array(z.string().trim().max(60)).max(20).optional(),
-  platforms: z.array(z.enum(["instagram", "telegram", "whatsapp", "torob", "digikala", "linkedin"])).max(20).optional(),
+  platforms: z
+    .array(
+      z.enum([
+        "instagram",
+        "telegram",
+        "whatsapp",
+        "torob",
+        "digikala",
+        "linkedin",
+      ]),
+    )
+    .max(20)
+    .optional(),
   monthlyToman: z.number().int().nonnegative().optional(),
   monthlyUSD: z.number().int().nonnegative().optional(),
 })

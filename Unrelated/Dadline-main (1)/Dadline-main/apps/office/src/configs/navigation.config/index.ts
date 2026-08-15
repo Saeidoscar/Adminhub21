@@ -1,0 +1,115 @@
+import {
+  NAV_ITEM_TYPE_TITLE,
+  NAV_ITEM_TYPE_ITEM,
+  NAV_ITEM_TYPE_COLLAPSE,
+} from "@/constants/navigation.constant"
+
+import type { NavigationTree } from "@/@types/navigation"
+
+const navigationConfig: NavigationTree[] = [
+  {
+    key: "home",
+    path: "/home",
+    title: "خانه",
+    translateKey: "nav.home",
+    icon: "home",
+    type: NAV_ITEM_TYPE_ITEM,
+    authority: [],
+    subMenu: [],
+  },
+  {
+    key: "singleMenuItem",
+    path: "",
+    title: "آیتم منوی تکی",
+    translateKey: "nav.singleMenuItem",
+    icon: "singleMenu",
+    type: NAV_ITEM_TYPE_ITEM,
+    authority: [],
+    subMenu: [],
+  },
+  {
+    key: "collapseMenu",
+    path: "",
+    title: "منوی باز شونده",
+    translateKey: "nav.collapseMenu.collapseMenu",
+    icon: "collapseMenu",
+    type: NAV_ITEM_TYPE_COLLAPSE,
+    authority: [],
+    subMenu: [
+      {
+        key: "collapseMenu.item1",
+        path: "",
+        title: "آیتم ۱",
+        translateKey: "nav.collapseMenu.item1",
+        icon: "",
+        type: NAV_ITEM_TYPE_ITEM,
+        authority: [],
+        subMenu: [],
+      },
+      {
+        key: "collapseMenu.item2",
+        path: "",
+        title: "آیتم ۲",
+        translateKey: "nav.collapseMenu.item2",
+        icon: "",
+        type: NAV_ITEM_TYPE_ITEM,
+        authority: [],
+        subMenu: [],
+      },
+    ],
+  },
+  {
+    key: "groupMenu",
+    path: "",
+    title: "گروه منو",
+    translateKey: "nav.groupMenu.groupMenu",
+    icon: "groupMenu",
+    type: NAV_ITEM_TYPE_TITLE,
+    authority: [],
+    subMenu: [
+      {
+        key: "groupMenu.single",
+        path: "",
+        title: "آیتم تکی گروه",
+        translateKey: "nav.groupMenu.single",
+        icon: "groupSingleMenu",
+        type: NAV_ITEM_TYPE_ITEM,
+        authority: [],
+        subMenu: [],
+      },
+      {
+        key: "groupMenu.collapse",
+        path: "",
+        title: "منوی باز شونده گروه",
+        translateKey: "nav.groupMenu.collapse.collapse",
+        icon: "groupCollapseMenu",
+        type: NAV_ITEM_TYPE_COLLAPSE,
+        authority: [],
+        subMenu: [
+          {
+            key: "groupMenu.collapse.item1",
+            path: "",
+            title: "آیتم ۱",
+            translateKey: "nav.groupMenu.collapse.item1",
+            icon: "",
+            type: NAV_ITEM_TYPE_ITEM,
+            authority: [],
+            subMenu: [],
+          },
+          {
+            key: "groupMenu.collapse.item2",
+            path: "",
+            title: "آیتم ۲",
+            translateKey: "nav.groupMenu.collapse.item2",
+            icon: "",
+            type: NAV_ITEM_TYPE_ITEM,
+            authority: [],
+            subMenu: [],
+          },
+        ],
+      },
+    ],
+  },
+]
+
+export default navigationConfig

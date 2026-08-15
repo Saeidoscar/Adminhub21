@@ -5,29 +5,40 @@ import { ApiError } from "../../lib/errors"
 import { db } from "../../db"
 import { users } from "../../db/schema"
 import { eq } from "drizzle-orm"
-import { createOffer, listOffersForAdmin, listOffersForUser, getOfferById } from "./offers.service"
+import {
+  createOffer,
+  listOffersForAdmin,
+  listOffersForUser,
+  getOfferById,
+} from "./offers.service"
 import { createOfferSchema } from "./offers.schemas"
 
 const offersRoutes = new Hono()
 
-offersRoutes.post("/", requireAuth, requireRole("employer"), zValidator("json", createOfferSchema), async (c) => {
-  const { id: employerId } = c.get("authUser")
-  const body = c.req.valid("json")
+offersRoutes.post(
+  "/",
+  requireAuth,
+  requireRole("employer"),
+  zValidator("json", createOfferSchema),
+  async (c) => {
+    const { id: employerId } = c.get("authUser")
+    const body = c.req.valid("json")
 
-  const [employer] = await db
-    .select({ nameEn: users.nameEn, nameFa: users.nameFa })
-    .from(users)
-    .where(eq(users.id, employerId))
-    .limit(1)
+    const [employer] = await db
+      .select({ nameEn: users.nameEn, nameFa: users.nameFa })
+      .from(users)
+      .where(eq(users.id, employerId))
+      .limit(1)
 
-  if (!employer) {
-    throw new ApiError(404, "User not found", "NOT_FOUND")
-  }
+    if (!employer) {
+      throw new ApiError(404, "User not found", "NOT_FOUND")
+    }
 
-  const employerName = employer.nameFa || employer.nameEn
-  const offer = await createOffer(employerId, employerName, body)
-  return c.json({ offer }, 201)
-})
+    const employerName = employer.nameFa || employer.nameEn
+    const offer = await createOffer(employerId, employerName, body)
+    return c.json({ offer }, 201)
+  },
+)
 
 offersRoutes.get("/", requireAuth, async (c) => {
   const { id, role } = c.get("authUser")

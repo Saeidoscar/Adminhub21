@@ -3,12 +3,7 @@ import { t, type Lang } from "../i18n"
 import { Icon } from "../components/layout/Icon"
 import { Stars } from "../components/platform/Stars"
 
-type Category =
-  | "scheduling"
-  | "design"
-  | "analytics"
-  | "automation"
-  | "ecommerce"
+type Category = "scheduling" | "design" | "analytics" | "automation" | "ecommerce"
 
 interface Tool {
   name: string
@@ -138,7 +133,7 @@ const TOOLS: Tool[] = [
   },
 ]
 
-const CATEGORY_LABELS: Record<Category, { en: string; fa: string }> = {
+const CATEGORY_LABELS: Record<Category, { en: string fa: string }> = {
   scheduling: { en: "Scheduling", fa: "زمان‌بندی" },
   design: { en: "Design", fa: "طراحی" },
   analytics: { en: "Analytics", fa: "آنالیتیکس" },
@@ -276,9 +271,7 @@ export default function ToolsRentalPage({
             {isFa ? "نتیجه‌ای یافت نشد" : "No results found"}
           </div>
           <div className="text-sm mt-1">
-            {isFa
-              ? "فیلترها را تغییر دهید"
-              : "Try adjusting your filters"}
+            {isFa ? "فیلترها را تغییر دهید" : "Try adjusting your filters"}
           </div>
         </div>
       )}

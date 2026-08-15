@@ -107,19 +107,18 @@ export function PackageProvider({ children }: { children: ReactNode }) {
   const updatePackage = useCallback(
     async (pkg: ContractPackage): Promise<ContractPackage> => {
       const updated = await updatePackageApi(pkg.id, pkg)
-      setPackages((list) => list.map((item) => (item.id === pkg.id ? updated : item)))
+      setPackages((list) =>
+        list.map((item) => (item.id === pkg.id ? updated : item)),
+      )
       return updated
     },
     [],
   )
 
-  const deletePackage = useCallback(
-    async (id: string): Promise<void> => {
-      await deletePackageApi(id)
-      setPackages((list) => list.filter((item) => item.id !== id))
-    },
-    [],
-  )
+  const deletePackage = useCallback(async (id: string): Promise<void> => {
+    await deletePackageApi(id)
+    setPackages((list) => list.filter((item) => item.id !== id))
+  }, [])
 
   const submitOffer = useCallback(
     async (
@@ -158,7 +157,9 @@ export function PackageProvider({ children }: { children: ReactNode }) {
   )
   const packagesForAdmin = useCallback(
     (adminId: string) =>
-      packages.filter((item) => item.adminId === adminId && item.active !== false),
+      packages.filter(
+        (item) => item.adminId === adminId && item.active !== false,
+      ),
     [packages],
   )
   const packagesForPlatform = useCallback(

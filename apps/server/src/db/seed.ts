@@ -3,6 +3,24 @@ import { hashPassword } from "../lib/password"
 import * as schema from "./schema"
 
 async function clearTables() {
+  await db.delete(schema.aiMessages)
+  await db.delete(schema.aiConversations)
+  await db.delete(schema.affiliateCommissions)
+  await db.delete(schema.affiliateCodes)
+  await db.delete(schema.comments)
+  await db.delete(schema.blogs)
+  await db.delete(schema.stories)
+  await db.delete(schema.ticketMessages)
+  await db.delete(schema.tickets)
+  await db.delete(schema.portfolioItems)
+  await db.delete(schema.timeLogs)
+  await db.delete(schema.events)
+  await db.delete(schema.tasks)
+  await db.delete(schema.cases)
+  await db.delete(schema.payouts)
+  await db.delete(schema.walletTransactions)
+  await db.delete(schema.wallets)
+  await db.delete(schema.reviews)
   await db.delete(schema.favorites)
   await db.delete(schema.contracts)
   await db.delete(schema.customOffers)
@@ -19,9 +37,19 @@ async function seed() {
   await clearTables()
 
   console.log("[seed] inserting users...")
-  const [adminUser, employerUser] = await db
+  const [superAdminUser, adminUser, employerUser] = await db
     .insert(schema.users)
     .values([
+      {
+        email: "superadmin@adminhub.ir",
+        passwordHash: await hashPassword("password123"),
+        role: "super_admin",
+        nameEn: "Admin Owner",
+        nameFa: "مالک ادمین",
+        phone: "+989101010101",
+        photo: "https://i.pravatar.cc/150?u=superadmin",
+        phoneVerified: true,
+      },
       {
         email: "admin@adminhub.ir",
         passwordHash: await hashPassword("password123"),
@@ -218,6 +246,8 @@ async function seed() {
         substituteClause: "No substitute admin will be provided. Account access must be maintained.",
         startDate: "2025-01-01",
         endDate: "2025-12-31",
+        signedByEmployerAt: "2025-01-01T10:00:00Z",
+        signedByAdminAt: "2025-01-01T12:00:00Z",
       },
       {
         code: "CNT-2025-002",
@@ -236,6 +266,39 @@ async function seed() {
       },
     ])
     .returning()
+
+  console.log("[seed] inserting reviews...")
+  await db.insert(schema.reviews).values([
+    {
+      adminId: adminProfile.id,
+      employerId: employerUser.id,
+      contractId: contract1.id,
+      rating: 5,
+      comment: "Excellent Instagram management. Very professional and responsive.",
+    },
+    {
+      adminId: adminProfile.id,
+      employerId: employerUser.id,
+      contractId: contract2.id,
+      rating: 4,
+      comment: "Good Telegram management, could improve on reporting frequency.",
+    },
+  ])
+
+  console.log("[seed] inserting wallets...")
+  const [employerWallet, adminWallet] = await db
+    .insert(schema.wallets)
+    .values([
+      { userId: employerUser.id, balanceToman: 50000000, balanceUSD: 500, currency: "IRR" },
+      { userId: adminUser.id, balanceToman: 0, balanceUSD: 1200, currency: "USD" },
+    ])
+    .returning()
+
+  console.log("[seed] inserting wallet transactions...")
+  await db.insert(schema.walletTransactions).values([
+    { walletId: employerWallet.id, type: "deposit", amountToman: 100000000, amountUSD: 0, currency: "IRR", status: "completed", note: "Initial deposit" },
+    { walletId: employerWallet.id, type: "payment", amountToman: 15000000, amountUSD: 0, currency: "IRR", status: "completed", referenceId: contract1.code, note: "Contract payment" },
+  ])
 
   console.log("[seed] inserting favorites...")
   await db.insert(schema.favorites).values([
@@ -420,6 +483,170 @@ async function seed() {
       },
     ])
     .returning()
+
+  console.log("[seed] inserting case and tasks...")
+  const [case1] = await db
+    .insert(schema.cases)
+    .values({
+      adminId: adminProfile.id,
+      employerId: employerUser.id,
+      title: "Instagram Q1 Campaign",
+      description: "Full campaign for Q1 Instagram growth including content calendar and engagement strategy.",
+      priority: "high",
+      status: "in_progress",
+      tags: ["instagram", "campaign", "q1"],
+    })
+    .returning()
+
+  await db.insert(schema.tasks).values([
+    { caseId: case1.id, title: "Content calendar design", description: "Create weekly content calendar", status: "done", priority: "high" },
+    { caseId: case1.id, title: "Stories setup", description: "Configure story highlights and templates", status: "in_progress", priority: "medium" },
+  ])
+
+  console.log("[seed] inserting event and timelog...")
+  await db.insert(schema.events).values([
+    { userId: adminUser.id, title: "Content Review", description: "Weekly content review meeting", startAt: "2025-02-01T14:00:00Z", endAt: "2025-02-01T15:00:00Z", allDay: false, color: "#3b82f6" },
+    { userId: employerUser.id, title: "Campaign Kickoff", description: "Q1 campaign kickoff call", startAt: "2025-02-05T10:00:00Z", endAt: "2025-02-05T11:00:00Z", allDay: false, color: "#10b981" },
+  ])
+
+  await db.insert(schema.timeLogs).values([
+    { userId: adminUser.id, caseId: case1.id, taskId: null, description: "Content calendar design", startedAt: "2025-01-20T09:00:00Z", endedAt: "2025-01-20T12:00:00Z", durationMinutes: 180 },
+  ])
+
+  console.log("[seed] inserting portfolio...")
+  await db.insert(schema.portfolioItems).values([
+    { adminId: adminProfile.id, title: "Brand Launch Campaign", description: "Complete Instagram launch for tech startup", mediaUrl: "https://example.com/portfolio/1.jpg", mediaType: "image", tags: ["instagram", "launch"] },
+    { adminId: adminProfile.id, title: "Telegram Growth Strategy", description: "6-month Telegram growth to 10k members", mediaUrl: "https://example.com/portfolio/2.pdf", mediaType: "link", tags: ["telegram", "growth"] },
+  ])
+
+  console.log("[seed] inserting tickets...")
+  const [ticket1] = await db
+    .insert(schema.tickets)
+    .values({
+      userId: employerUser.id,
+      subject: "Payment issue with contract",
+      category: "billing",
+      priority: "high",
+      status: "open",
+    })
+    .returning()
+
+  await db.insert(schema.ticketMessages).values([
+    { ticketId: ticket1.id, senderId: employerUser.id, body: "I was charged twice for the same contract. Please investigate." },
+  ])
+
+  console.log("[seed] inserting stories and blogs...")
+  const [story1] = await db
+    .insert(schema.stories)
+    .values({
+      authorId: adminUser.id,
+      title: "How I Grew 50k Instagram Followers",
+      content: "In this story I share my proven strategies for growing Instagram followers organically...",
+      coverUrl: "https://example.com/stories/1.jpg",
+      status: "published",
+      views: 1240,
+    })
+    .returning()
+
+  const [blog1] = await db
+    .insert(schema.blogs)
+    .values({
+      authorId: adminUser.id,
+      title: "The Future of Social Media Marketing in Iran",
+      content: "Social media marketing in Iran is evolving rapidly. Here are the key trends to watch in 2025...",
+      coverUrl: "https://example.com/blogs/1.jpg",
+      status: "published",
+      views: 856,
+    })
+    .returning()
+
+  await db.insert(schema.comments).values([
+    { postId: story1.id, postType: "story", authorId: employerUser.id, body: "Great insights! Thanks for sharing.", parentId: null },
+    { postId: blog1.id, postType: "blog", authorId: employerUser.id, body: "Very informative article.", parentId: null },
+  ])
+
+  console.log("[seed] inserting AI models...")
+  const [modelGpt4o, modelClaudeSonnet, modelOpenRouterGpt5] = await db
+    .insert(schema.aiModels)
+    .values([
+      {
+        provider: "openai",
+        code: "gpt-4o",
+        name: "GPT-4o",
+        description: "OpenAI's most advanced multimodal model",
+        inputCost: 0.000003,
+        outputCost: 0.000012,
+        contextWindow: 128000,
+        defaultTemperature: 0.7,
+        maxOutputTokens: 4096,
+        supportsStreaming: true,
+        supportsVision: true,
+        isActive: true,
+      },
+      {
+        provider: "anthropic",
+        code: "claude-sonnet-4-20250514",
+        name: "Claude Sonnet",
+        description: "Anthropic's balanced intelligence and speed model",
+        inputCost: 0.000003,
+        outputCost: 0.000015,
+        contextWindow: 200000,
+        defaultTemperature: 0.7,
+        maxOutputTokens: 4096,
+        supportsStreaming: true,
+        supportsVision: true,
+        isActive: true,
+      },
+      {
+        provider: "openrouter",
+        code: "openai/gpt-5",
+        name: "OpenRouter GPT-5",
+        description: "GPT-5 via OpenRouter",
+        inputCost: 0.000005,
+        outputCost: 0.00002,
+        contextWindow: 128000,
+        defaultTemperature: 0.7,
+        maxOutputTokens: 4096,
+        supportsStreaming: true,
+        supportsVision: true,
+        isActive: true,
+      },
+    ])
+    .returning()
+
+  console.log("[seed] inserting AI conversations...")
+  const [conv1] = await db
+    .insert(schema.aiConversations)
+    .values({
+      userId: employerUser.id,
+      title: "Marketing Strategy Help",
+      modelId: modelGpt4o.id,
+    })
+    .returning()
+
+  await db.insert(schema.aiMessages).values([
+    { conversationId: conv1.id, role: "user", content: "How can I improve my Instagram engagement?" },
+    { conversationId: conv1.id, role: "assistant", content: "Here are 7 proven strategies to boost Instagram engagement..." },
+  ])
+
+  console.log("[seed] inserting affiliate data...")
+  const [affiliateCode] = await db
+    .insert(schema.affiliateCodes)
+    .values({
+      userId: employerUser.id,
+      code: "ALI2025",
+      isActive: true,
+    })
+    .returning()
+
+  await db.insert(schema.affiliateCommissions).values([
+    { codeId: affiliateCode.id, referrerId: employerUser.id, referredId: adminUser.id, amountToman: 500000, amountUSD: 0, status: "pending" },
+  ])
+
+  console.log("[seed] inserting payouts...")
+  await db.insert(schema.payouts).values([
+    { userId: adminUser.id, amountToman: 0, amountUSD: 500, currency: "USD", method: "paypal", accountDetails: { email: "sarah@example.com" }, status: "pending" },
+  ])
 
   console.log("[seed] done.")
 }

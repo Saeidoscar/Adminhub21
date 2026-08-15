@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, createContext, useContext } from "react"
+import { useState, useEffect, createContext, useContext } from "react"
 import {
   useLocation,
   useNavigate,
@@ -19,6 +19,7 @@ import PackageComparisonPage from "./pages/PackageComparisonPage"
 import ToolsRentalPage from "./pages/ToolsRentalPage"
 import EditorsPage from "./pages/EditorsPage"
 import VibeCodersPage from "./pages/VibeCodersPage"
+import AiPage from "./pages/AiPage"
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -1705,241 +1706,6 @@ function ContractGenerator() {
   )
 }
 
-// ─── AI Assistant ─────────────────────────────────────────────────────────────
-
-interface Message {
-  id: number
-  role: "user" | "ai"
-  text: string
-  timestamp: string
-}
-
-const AI_RESPONSES_EN: Record<string, string> = {
-  instagram:
-    "When hiring an Instagram admin, look for proven portfolio with engagement rate above 3%, experience with Reels production, knowledge of the algorithm, and references from previous clients. Always check analytics screenshots and request a trial period of 2–4 weeks before signing a long-term contract.",
-  contract:
-    "A strong contract should include: clear deliverables (posts/month, response time), payment milestones, intellectual property clause, non-disclosure agreement, termination notice period (14–30 days), and importantly — the AdminHub substitution clause which guarantees you a replacement admin within 24 hours if needed.",
-  pricing:
-    "For Instagram management in Iran, typical rates range from 3–8M Toman/month depending on content volume and specialization. Premium admins who also handle paid ads and analytics can charge 7–12M+. For Torob/Digikala specialists, expect 4–7M/month.",
-  default:
-    "I can help you with hiring strategies, contract templates, platform comparisons, pricing guidance, and team management tips. What would you like to explore?",
-}
-
-const AI_RESPONSES_FA: Record<string, string> = {
-  instagram:
-    "برای استخدام ادمین اینستاگرام به موارد زیر توجه کنید: نرخ تعامل بالای ۳٪، تجربه تولید ریلز، آشنایی با الگوریتم، و رفرنس از کارفرمایان قبلی. حتماً اسکرین‌شات آنالیتیکس بخواهید و یک دوره آزمایشی ۲ تا ۴ هفته‌ای قبل از امضای قرارداد بلندمدت داشته باشید.",
-  contract:
-    "یک قرارداد محکم باید شامل این موارد باشد: تحویلی‌های مشخص (پست در ماه، زمان پاسخ)، مراحل پرداخت، بند مالکیت معنوی، توافق عدم افشا، مدت اطلاع‌رسانی برای فسخ (۱۴ تا ۳۰ روز)، و مهم‌تر از همه — بند جایگزینی ادمین‌هاب که ظرف ۲۴ ساعت ادمین جایگزین تضمین می‌کند.",
-  pricing:
-    "برای مدیریت اینستاگرام در ایران، نرخ‌های معمول بسته به حجم محتوا و تخصص ۳ تا ۸ میلیون تومان در ماه است. ادمین‌های ویژه که تبلیغات پولی و آنالیتیکس هم انجام می‌دهند تا ۱۲ میلیون+ هم دریافت می‌کنند.",
-  default:
-    "می‌توانم در زمینه استراتژی استخدام، قراردادها، مقایسه پلتفرم‌ها، راهنمای قیمت‌گذاری و مدیریت تیم کمک کنم. چه موضوعی را می‌خواهید بررسی کنیم؟",
-}
-
-function AIAssistant() {
-  const { tr, lang, role } = useApp()
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: 1,
-      role: "ai",
-      text:
-        lang === "fa"
-          ? "سلام! من دستیار هوشمند ادمین‌هاب هستم. می‌توانم به شما در یافتن ادمین مناسب، بررسی قراردادها و استراتژی کسب‌وکار کمک کنم."
-          : "Hi! I'm AdminHub's AI assistant. I can help you find the right admin, review contracts, compare platforms, and develop your hiring strategy.",
-      timestamp: new Date().toLocaleTimeString(
-        lang === "fa" ? "fa-IR" : "en-US",
-        { hour: "2-digit", minute: "2-digit" },
-      ),
-    },
-  ])
-  const [input, setInput] = useState("")
-  const [isTyping, setIsTyping] = useState(false)
-  const messagesEnd = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    messagesEnd.current?.scrollIntoView({ behavior: "smooth" })
-  }, [messages, isTyping])
-
-  const suggestions = role === "employer" ? tr.ai.emp : tr.ai.adm
-
-  const getAIResponse = (text: string): string => {
-    const lower = text.toLowerCase()
-    const responses = lang === "fa" ? AI_RESPONSES_FA : AI_RESPONSES_EN
-    if (
-      lower.includes("instagram") ||
-      lower.includes("اینستاگرام") ||
-      lower.includes("استخدام")
-    )
-      return responses.instagram
-    if (
-      lower.includes("contract") ||
-      lower.includes("قرارداد") ||
-      lower.includes("محکم")
-    )
-      return responses.contract
-    if (
-      lower.includes("pric") ||
-      lower.includes("cost") ||
-      lower.includes("قیمت") ||
-      lower.includes("نرخ")
-    )
-      return responses.pricing
-    return responses.default
-  }
-
-  const sendMessage = (text: string) => {
-    if (!text.trim()) return
-    const ts = new Date().toLocaleTimeString(
-      lang === "fa" ? "fa-IR" : "en-US",
-      { hour: "2-digit", minute: "2-digit" },
-    )
-    const userMsg: Message = {
-      id: Date.now(),
-      role: "user",
-      text,
-      timestamp: ts,
-    }
-    setMessages((m) => [...m, userMsg])
-    setInput("")
-    setIsTyping(true)
-    setTimeout(() => {
-      const aiMsg: Message = {
-        id: Date.now() + 1,
-        role: "ai",
-        text: getAIResponse(text),
-        timestamp: new Date().toLocaleTimeString(
-          lang === "fa" ? "fa-IR" : "en-US",
-          { hour: "2-digit", minute: "2-digit" },
-        ),
-      }
-      setMessages((m) => [...m, aiMsg])
-      setIsTyping(false)
-    }, 1800)
-  }
-
-  return (
-    <div className="flex flex-col h-full max-h-[calc(100vh-0px)] fade-in">
-      {/* Header */}
-      <div className="flex items-center gap-3 px-6 py-4 border-b border-[#e2e8f0] bg-white flex-shrink-0">
-        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#1e3a5f] to-[#2d5a8e] flex items-center justify-center">
-          <Icon name="bot" size={20} className="text-amber-400" />
-        </div>
-        <div>
-          <div className="font-bold text-[#0f172a] text-sm">{tr.ai.title}</div>
-          <div className="flex items-center gap-1.5">
-            <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-xs text-[#64748b]">{tr.ai.sub}</span>
-          </div>
-        </div>
-        <button
-          onClick={() => setMessages([])}
-          className="ms-auto text-xs text-[#94a3b8] hover:text-[#64748b] transition-colors"
-        >
-          {tr.ai.clearChat}
-        </button>
-      </div>
-
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-[#f8fafc]">
-        {messages.map((msg) => (
-          <div
-            key={msg.id}
-            className={`flex gap-3 ${
-              msg.role === "user" ? "flex-row-reverse" : ""
-            } slide-in`}
-          >
-            <div
-              className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-                msg.role === "ai"
-                  ? "bg-gradient-to-br from-[#1e3a5f] to-[#2d5a8e]"
-                  : "bg-amber-400"
-              }`}
-            >
-              {msg.role === "ai" ? (
-                <Icon name="bot" size={16} className="text-white" />
-              ) : (
-                <Icon name="profile" size={16} className="text-[#1e3a5f]" />
-              )}
-            </div>
-            <div
-              className={`max-w-xs lg:max-w-md ${
-                msg.role === "user" ? "items-end" : "items-start"
-              } flex flex-col gap-1`}
-            >
-              <div
-                className={`px-4 py-3 rounded-2xl text-sm leading-relaxed ${
-                  msg.role === "ai"
-                    ? "bg-white border border-[#e2e8f0] text-[#0f172a] rounded-ss-sm"
-                    : "bg-[#1e3a5f] text-white rounded-se-sm"
-                }`}
-              >
-                {msg.text}
-              </div>
-              <span className="text-xs text-[#94a3b8] px-1">
-                {msg.timestamp}
-              </span>
-            </div>
-          </div>
-        ))}
-
-        {isTyping && (
-          <div className="flex gap-3 slide-in">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#1e3a5f] to-[#2d5a8e] flex items-center justify-center flex-shrink-0">
-              <Icon name="bot" size={16} className="text-white" />
-            </div>
-            <div className="px-4 py-3 bg-white border border-[#e2e8f0] rounded-2xl rounded-ss-sm">
-              <div className="flex gap-1 items-center h-4">
-                <div className="typing-dot" />
-                <div className="typing-dot" />
-                <div className="typing-dot" />
-              </div>
-            </div>
-          </div>
-        )}
-        <div ref={messagesEnd} />
-      </div>
-
-      {/* Suggestions */}
-      <div className="px-4 py-3 bg-[#f8fafc] border-t border-[#e2e8f0] flex-shrink-0">
-        <div className="text-xs text-[#94a3b8] mb-2 px-2">
-          {tr.ai.suggestions}
-        </div>
-        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-          {suggestions.map((s, i) => (
-            <button
-              key={i}
-              onClick={() => sendMessage(s)}
-              className="flex-shrink-0 px-3 py-1.5 rounded-full bg-white border border-[#e2e8f0] text-xs text-[#1e3a5f] font-medium hover:bg-[#1e3a5f] hover:text-white hover:border-[#1e3a5f] transition-all btn-press whitespace-nowrap"
-            >
-              {s}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Input */}
-      <div className="flex items-center gap-3 px-4 py-4 bg-white border-t border-[#e2e8f0] flex-shrink-0">
-        <input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) =>
-            e.key === "Enter" && !e.shiftKey && sendMessage(input)
-          }
-          placeholder={tr.ai.placeholder}
-          className="flex-1 px-4 py-3 rounded-xl border border-[#e2e8f0] bg-[#f8fafc] text-sm text-[#0f172a] placeholder-[#94a3b8] focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all"
-        />
-        <button
-          onClick={() => sendMessage(input)}
-          disabled={!input.trim() || isTyping}
-          className="w-11 h-11 rounded-xl bg-[#1e3a5f] text-white flex items-center justify-center hover:bg-[#122435] disabled:opacity-40 disabled:cursor-not-allowed transition-all btn-press flex-shrink-0"
-        >
-          <Icon name="send" size={18} />
-        </button>
-      </div>
-    </div>
-  )
-}
-
 // ─── Placeholder Page ─────────────────────────────────────────────────────────
 
 function PlaceholderPage({
@@ -1993,7 +1759,7 @@ export default function App() {
               ? "skills"
               : pathname === "/contracts"
                 ? "contracts"
-                : pathname === "/ai"
+                : pathname.startsWith("/ai")
                   ? "ai"
                   : pathname === "/packages"
                     ? "packages"
@@ -2233,7 +1999,15 @@ export default function App() {
               path="/ai"
               element={
                 <div className="flex-1 overflow-hidden flex flex-col">
-                  <AIAssistant />
+                  <AiPage />
+                </div>
+              }
+            />
+            <Route
+              path="/ai/:conversationId"
+              element={
+                <div className="flex-1 overflow-hidden flex flex-col">
+                  <AiPage />
                 </div>
               }
             />

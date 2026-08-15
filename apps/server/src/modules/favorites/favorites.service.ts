@@ -64,7 +64,10 @@ export async function listFavorites(userId: string): Promise<FavoriteRow[]> {
   return rows.map(toSafe)
 }
 
-export async function addFavorite(userId: string, adminId: string): Promise<FavoriteRow> {
+export async function addFavorite(
+  userId: string,
+  adminId: string,
+): Promise<FavoriteRow> {
   const [existing] = await db
     .select({
       adminId: adminProfiles.id,
@@ -152,6 +155,11 @@ export async function addFavorite(userId: string, adminId: string): Promise<Favo
   })
 }
 
-export async function removeFavorite(userId: string, adminId: string): Promise<void> {
-  await db.delete(favorites).where(and(eq(favorites.userId, userId), eq(favorites.adminId, adminId)))
+export async function removeFavorite(
+  userId: string,
+  adminId: string,
+): Promise<void> {
+  await db
+    .delete(favorites)
+    .where(and(eq(favorites.userId, userId), eq(favorites.adminId, adminId)))
 }

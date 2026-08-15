@@ -1,0 +1,15 @@
+{
+  "name": "dadline-telegram-relay",
+  "main": "src/index.mjs",
+  "compatibility_date": "2026-08-03",
+  "workers_dev": true,
+  "secrets": {
+    "required": [
+      "TELEGRAM_BOT_TOKEN",
+      "DADLINE_RELAY_SECRET"
+    ]
+  },
+  "vars": {
+    "TELEGRAM_API_BASE_URL": "https://api.telegram.org"
+  }
+}

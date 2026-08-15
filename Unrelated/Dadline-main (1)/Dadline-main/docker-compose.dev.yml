@@ -1,0 +1,134 @@
+services:
+
+  # web:
+  #   build:
+  #     context: .
+  #     dockerfile: ./apps/web/Dockerfile.dev
+  #   ports:
+  #     - "3000:3000"
+  #   volumes:
+  #     - .:/repo
+  #     - web_node_modules:/repo/node_modules
+  #     - web_next:/repo/apps/web/.next
+  #   environment:
+  #     - NODE_ENV=development
+  #     - WATCHPACK_POLLING=true
+  #     - CHOKIDAR_USEPOLLING=true
+  #   env_file: ./apps/web/.env.local
+  #   networks: [proxy, backend]
+
+  web:
+    build:
+      context: .
+      dockerfile: ./apps/web/Dockerfile.dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/repo
+      - web_node_modules:/repo/node_modules
+      - web_next:/repo/apps/web/.next
+    environment:
+      NODE_ENV: development
+      WATCHPACK_POLLING: "true"
+      WATCHPACK_POLLING_INTERVAL: "500"
+      CHOKIDAR_USEPOLLING: "true"
+      CHOKIDAR_INTERVAL: "500"
+    env_file:
+      - ./apps/web/.env.local
+    networks:
+      - proxy
+      - backend
+
+  admin:
+    build:
+      context: .
+      dockerfile: ./apps/admin/Dockerfile.dev
+    ports:
+      - "3001:3001"
+    volumes:
+      - .:/repo
+      - admin_node_modules:/repo/node_modules
+      - admin_next:/repo/apps/admin/.next
+    environment:
+      - WATCHPACK_POLLING=true
+      - CHOKIDAR_USEPOLLING=true
+    env_file: ./apps/admin/.env.local
+    networks: [proxy, backend]
+
+  office:
+    build:
+      context: .
+      dockerfile: ./apps/office/Dockerfile.dev
+    ports:
+      - "3002:3002"
+    volumes:
+      - .:/repo
+      - office_node_modules:/repo/node_modules
+      - office_next:/repo/apps/office/.next
+    environment:
+      - WATCHPACK_POLLING=true
+      - CHOKIDAR_USEPOLLING=true
+    env_file: ./apps/office/.env.local
+    networks: [proxy, backend]
+
+  api:
+    build:
+      context: .
+      dockerfile: ./apps/api/Dockerfile.dev
+    ports:
+      - "8000:8080"
+      - "9003:9003"
+    volumes:
+    - ./apps/api:/var/www/html
+    command: sh -c "composer install && php artisan migrate --force && /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf"
+    env_file: ./apps/api/.env.local
+    networks: [proxy, backend, internal]
+
+  horizon:
+    build:
+      context: .
+      dockerfile: ./apps/api/Dockerfile.dev
+    command: sh -c "composer install && php artisan horizon"
+    env_file: ./apps/api/.env.local
+    volumes:
+      - ./apps/api:/var/www/html
+    networks: [backend, internal]
+
+  scheduler:
+    build:
+      context: .
+      dockerfile: ./apps/api/Dockerfile.dev
+    command: sh -c "composer install && while true; do php artisan schedule:run; sleep 60; done"
+    env_file: ./apps/api/.env.local
+    volumes:
+      - ./apps/api:/var/www/html
+    networks: [backend, internal]
+
+  postgres:
+    ports:
+      - "5432:5432" 
+
+  redis:
+    command: redis-server /etc/redis/redis.conf
+    volumes:
+    - redis_data:/data
+    - ./infrastructure/redis/redis.dev.conf:/etc/redis/redis.conf:ro
+    ports:
+      - "6379:6379"
+
+  pgadmin:
+    ports:
+      - "8080:80"
+  
+  portainer:
+    ports:
+      - "9443:9443"
+
+volumes:
+  web_node_modules:
+  web_next:
+  admin_node_modules:
+  admin_next:
+  office_node_modules:
+  office_next:
+  api_vendor:
