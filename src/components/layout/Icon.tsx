@@ -53,6 +53,8 @@ const paths: Record<string, string> = {
   layers:
     "M12 4l8 4v8l-8 5-8-5V8l8-4zM12 7.5L5.1 11l6.9 3.5 6.9-3.5L12 7.5zM4 13.5l8 3.5v5l-8-3.5v-5zm16 5v-5l-8-3.5v5l8 3.5z",
   eye: "M12 5c-7 0-11 7-11 7s4 7 11 7 11-7 11-7-4-7-11-7zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10zm0-3a2 2 0 1 0 0-4 2 2 0 0 0 0 4z",
+  copy:
+    "M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z",
 }
 
 export function Icon({ name, size = 18, className = "" }: IconProps) {

@@ -13,9 +13,14 @@ export const switchModelSchema = z.object({
   modelId: z.string().trim().max(60),
 })
 
+export const renameConversationSchema = z.object({
+  title: z.string().trim().min(1).max(200),
+})
+
 export type CreateConversationInput = z.infer<typeof createConversationSchema>
 export type SendMessageInput = z.infer<typeof sendMessageSchema>
 export type SwitchModelInput = z.infer<typeof switchModelSchema>
+export type RenameConversationInput = z.infer<typeof renameConversationSchema>
 
 export const aiMessageResponseSchema = z.object({
   id: z.string(),

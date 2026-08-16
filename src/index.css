@@ -137,3 +137,6 @@ input:focus, textarea:focus, select:focus {
 [data-theme='dark'] .card-hover:hover {
   box-shadow: 0 8px 24px rgba(0,0,0,.4);
 }
+
+.max-w-full { max-width: 100%; }
+.overflow-x-auto { overflow-x: auto; }

@@ -11,11 +11,14 @@ import {
   listMessages,
   switchModel,
   getAvailableModels,
+  renameConversation,
+  deleteConversation,
 } from "./ai.service"
 import {
   createConversationSchema,
   sendMessageSchema,
   switchModelSchema,
+  renameConversationSchema,
 } from "./ai.schemas"
 
 const aiRoutes = new Hono()
@@ -74,6 +77,26 @@ aiRoutes.patch(
     return c.json({ conversation })
   },
 )
+
+aiRoutes.patch(
+  "/conversations/:id",
+  requireAuth,
+  zValidator("json", renameConversationSchema),
+  async (c) => {
+    const { id: userId } = c.get("authUser")
+    const conversationId = c.req.param("id")
+    const body = c.req.valid("json")
+    const conversation = await renameConversation(userId, conversationId, body.title)
+    return c.json({ conversation })
+  },
+)
+
+aiRoutes.delete("/conversations/:id", requireAuth, async (c) => {
+  const { id: userId } = c.get("authUser")
+  const conversationId = c.req.param("id")
+  await deleteConversation(userId, conversationId)
+  return c.json({ ok: true })
+})
 
 aiRoutes.get("/conversations/:id/messages", requireAuth, async (c) => {
   const { id: userId } = c.get("authUser")

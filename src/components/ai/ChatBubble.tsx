@@ -1,6 +1,7 @@
 import type { AiMessageRow } from "@adminhub/shared"
 import { Icon } from "../layout/Icon"
 import { MarkdownMessage } from "./MarkdownMessage"
+import { useCopyText } from "./CodeBlock"
 
 function formatCost(value?: number) {
   if (value === undefined || value === null) return ""
@@ -34,6 +35,7 @@ function formatTime(value?: number) {
 
 export function ChatBubble({ message }: { message: AiMessageRow }) {
   const isUser = message.role === "user"
+  const { copied: messageCopied, copy: copyMessage } = useCopyText()
 
   return (
     <div
@@ -62,6 +64,15 @@ export function ChatBubble({ message }: { message: AiMessageRow }) {
 
         {!isUser && (
           <div className="mt-2 flex flex-wrap items-center gap-2 text-xs opacity-70">
+            <button
+              type="button"
+              onClick={() => copyMessage(message.content)}
+              aria-label={messageCopied ? "Copied" : "Copy message"}
+              className="inline-flex items-center gap-1 rounded-full bg-surface px-2 py-0.5 hover:opacity-80"
+            >
+              <Icon name={messageCopied ? "check" : "copy"} className="h-3 w-3" />
+              {messageCopied ? "Copied" : "Copy"}
+            </button>
             {message.provider && (
               <span className="inline-flex items-center gap-1 rounded-full bg-surface px-2 py-0.5">
                 <Icon name="bot" className="h-3 w-3" />

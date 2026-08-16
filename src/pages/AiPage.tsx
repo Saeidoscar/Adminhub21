@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from "react"
+import { useEffect, useRef, useCallback, useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { ConversationSidebar } from "../components/ai/ConversationSidebar"
 import { MessageList } from "../components/ai/MessageList"
@@ -44,6 +44,7 @@ function LoadingBubble() {
 export default function AiPage() {
   const { conversationId } = useParams()
   const navigate = useNavigate()
+  const [isCreatingConversation, setIsCreatingConversation] = useState(false)
   const {
     conversations,
     activeConversation,
@@ -75,16 +76,22 @@ export default function AiPage() {
   }, [conversationId, activeConversation?.id, selectConversation])
 
   const handleNewConversation = useCallback(async () => {
+    if (isCreatingConversation) return
+
     const defaultModel = models.find((m) => m.isActive) || models[0]
     if (!defaultModel) return
+
+    setIsCreatingConversation(true)
 
     try {
       const conversation = await createConversation(defaultModel.id)
       navigate(`/ai/${conversation.id}`, { replace: true })
     } catch (err) {
       console.warn("Failed to create conversation", err)
+    } finally {
+      setIsCreatingConversation(false)
     }
-  }, [models, createConversation, navigate])
+  }, [models, createConversation, navigate, isCreatingConversation])
 
   const handleSend = useCallback(
     async (content: string) => {
@@ -119,14 +126,27 @@ export default function AiPage() {
 
   const handleDeleteConversation = useCallback(
     async (id: string) => {
+      const wasActive = activeConversation?.id === id
+      const remaining = conversations.filter((c) => c.id !== id)
+      const nextConversation = remaining[0]
+
       try {
         await deleteConversation(id)
         await refreshConversations()
       } catch (err) {
         console.warn("Failed to delete conversation", err)
+        return
+      }
+
+      if (wasActive) {
+        if (nextConversation) {
+          navigate(`/ai/${nextConversation.id}`)
+        } else {
+          navigate(`/ai`)
+        }
       }
     },
-    [deleteConversation, refreshConversations],
+    [deleteConversation, refreshConversations, activeConversation, conversations, navigate],
   )
 
   const selectedModel = models.find((m) => m.id === activeConversation?.modelId)

@@ -478,3 +478,68 @@ export async function listMessages(
 
   return rows.map(toSafeMessage)
 }
+
+export async function renameConversation(
+  userId: string,
+  conversationId: string,
+  title: string,
+): Promise<AiConversationRow> {
+  const [conversation] = await db
+    .select()
+    .from(aiConversations)
+    .where(eq(aiConversations.id, conversationId))
+    .limit(1)
+
+  if (!conversation) {
+    throw new Error("Conversation not found or access denied")
+  }
+
+  if (conversation.userId !== userId) {
+    throw new Error("Conversation not found or access denied")
+  }
+
+  const trimmedTitle = title.trim()
+
+  if (!trimmedTitle) {
+    throw new Error("Title cannot be empty")
+  }
+
+  if (trimmedTitle.length > 200) {
+    throw new Error("Title must be 200 characters or fewer")
+  }
+
+  const [updated] = await db
+    .update(aiConversations)
+    .set({ title: trimmedTitle, updatedAt: new Date() })
+    .where(eq(aiConversations.id, conversationId))
+    .returning()
+
+  if (!updated) {
+    throw new Error("Failed to rename conversation")
+  }
+
+  return toSafeConversation(updated)
+}
+
+export async function deleteConversation(
+  userId: string,
+  conversationId: string,
+): Promise<void> {
+  const [conversation] = await db
+    .select()
+    .from(aiConversations)
+    .where(eq(aiConversations.id, conversationId))
+    .limit(1)
+
+  if (!conversation) {
+    throw new Error("Conversation not found or access denied")
+  }
+
+  if (conversation.userId !== userId) {
+    throw new Error("Conversation not found or access denied")
+  }
+
+  await db
+    .delete(aiConversations)
+    .where(eq(aiConversations.id, conversationId))
+}

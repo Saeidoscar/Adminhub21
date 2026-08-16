@@ -355,9 +355,25 @@ export async function renameConversation(
   id: string,
   title: string,
 ): Promise<AiConversationRow> {
-  throw new Error("renameConversation is not implemented yet")
+  const payload = await apiFetch<Record<string, unknown>>(
+    `/ai/conversations/${id}`,
+    {
+      method: "PATCH",
+      body: JSON.stringify({ title }),
+    },
+  )
+
+  const conversation = unwrapItem<AiConversationRow>(payload, "conversation")
+
+  if (!conversation) {
+    throw new Error("Rename conversation response was empty")
+  }
+
+  return conversation
 }
 
 export async function deleteConversation(id: string): Promise<void> {
-  throw new Error("deleteConversation is not implemented yet")
+  await apiFetch<Record<string, unknown>>(`/ai/conversations/${id}`, {
+    method: "DELETE",
+  })
 }
