@@ -14,6 +14,7 @@ import { Stars } from "./components/platform/Stars"
 import { Badge } from "./components/ui/Badge"
 import { useTheme } from "./design-system/ThemeProvider"
 import { useAuth } from "./contexts/AuthContext"
+import { ProtectedRoute } from "./components/auth/ProtectedRoute"
 import AdminPackagesPage from "./pages/AdminPackagesPage"
 import AdminPublicProfilePage from "./pages/AdminPublicProfilePage"
 import PackageComparisonPage from "./pages/PackageComparisonPage"
@@ -43,202 +44,6 @@ interface AppCtx {
 
 const Ctx = createContext<AppCtx>(null as never)
 const useApp = () => useContext(Ctx)
-
-// ─── Mock Data ────────────────────────────────────────────────────────────────
-
-const ADMINS = [
-  {
-    id: 1,
-    nameEn: "Arya Ahmadi",
-    nameFa: "آریا احمدی",
-    photo: "photo-1507003211169-0a1dd7228f2d",
-    platforms: ["instagram", "telegram"],
-    rating: 4.9,
-    reviews: 127,
-    verified: true,
-    insured: true,
-    monthlyToman: 4500000,
-    monthlyUSD: 108,
-    bioEn:
-      "Instagram growth expert with 5+ years managing brand accounts. Specializes in Reels production and engagement strategy.",
-    bioFa:
-      "متخصص رشد اینستاگرام با بیش از ۵ سال تجربه مدیریت برندها. تخصص در تولید ریلز و استراتژی تعامل.",
-    skillsEn: [
-      "Reels Production",
-      "Growth Hacking",
-      "Content Strategy",
-      "Analytics",
-    ],
-    skillsFa: ["تولید ریلز", "رشد حساب", "استراتژی محتوا", "آنالیتیکس"],
-  },
-  {
-    id: 2,
-    nameEn: "Sara Mohammadi",
-    nameFa: "سارا محمدی",
-    photo: "photo-1494790108377-be9c29b29330",
-    platforms: ["whatsapp", "instagram"],
-    rating: 4.8,
-    reviews: 89,
-    verified: true,
-    insured: true,
-    monthlyToman: 3800000,
-    monthlyUSD: 91,
-    bioEn:
-      "WhatsApp business channel manager with expertise in customer journey design and automated funnel setup.",
-    bioFa:
-      "مدیر کانال‌های تجاری واتساپ با تخصص در طراحی سفر مشتری و راه‌اندازی قیف خودکار.",
-    skillsEn: ["WhatsApp Business", "Customer Journey", "Funnel Design", "CRM"],
-    skillsFa: ["واتساپ بیزینس", "سفر مشتری", "طراحی قیف", "CRM"],
-  },
-  {
-    id: 3,
-    nameEn: "Dariush Rezaei",
-    nameFa: "داریوش رضایی",
-    photo: "photo-1500648767791-00dcc994a43e",
-    platforms: ["torob", "digikala"],
-    rating: 4.7,
-    reviews: 203,
-    verified: true,
-    insured: false,
-    monthlyToman: 5200000,
-    monthlyUSD: 124,
-    bioEn:
-      "Senior e-commerce admin specializing in Torob and Digikala product listing optimization, pricing strategy, and sales analytics.",
-    bioFa:
-      "ادمین ارشد تجارت الکترونیک متخصص در بهینه‌سازی لیست محصولات ترب و دیجی‌کالا، استراتژی قیمت‌گذاری.",
-    skillsEn: [
-      "Torob SEO",
-      "Digikala Ads",
-      "Pricing Strategy",
-      "Inventory Mgmt",
-    ],
-    skillsFa: ["سئو ترب", "تبلیغات دیجی‌کالا", "استراتژی قیمت", "مدیریت موجودی"],
-  },
-  {
-    id: 4,
-    nameEn: "Mina Hosseini",
-    nameFa: "مینا حسینی",
-    photo: "photo-1438761681033-6461ffad8d80",
-    platforms: ["instagram", "linkedin"],
-    rating: 4.9,
-    reviews: 64,
-    verified: true,
-    insured: true,
-    monthlyToman: 6000000,
-    monthlyUSD: 143,
-    bioEn:
-      "B2B content specialist for Instagram and LinkedIn. Helps professional service brands build authority and generate leads.",
-    bioFa:
-      "متخصص محتوای B2B برای اینستاگرام و لینکدین. به برندهای خدمات حرفه‌ای کمک می‌کند اعتبار بسازند.",
-    skillsEn: [
-      "B2B Content",
-      "Lead Generation",
-      "LinkedIn Strategy",
-      "Brand Voice",
-    ],
-    skillsFa: ["محتوای B2B", "تولید لید", "استراتژی لینکدین", "صدای برند"],
-  },
-  {
-    id: 5,
-    nameEn: "Reza Karimi",
-    nameFa: "رضا کریمی",
-    photo: "photo-1472099645785-5658abf4ff4e",
-    platforms: ["telegram", "whatsapp"],
-    rating: 4.6,
-    reviews: 156,
-    verified: false,
-    insured: false,
-    monthlyToman: 3200000,
-    monthlyUSD: 76,
-    bioEn:
-      "Telegram channel administrator with experience managing 100k+ member communities. Expert in engagement campaigns.",
-    bioFa:
-      "مدیر کانال تلگرام با تجربه مدیریت جوامع ۱۰۰هزار+ عضوی. متخصص در کمپین‌های تعامل.",
-    skillsEn: [
-      "Telegram Channels",
-      "Community Mgmt",
-      "Engagement Campaigns",
-      "Bot Setup",
-    ],
-    skillsFa: ["کانال تلگرام", "مدیریت جامعه", "کمپین تعامل", "راه‌اندازی بات"],
-  },
-  {
-    id: 6,
-    nameEn: "Neda Farahani",
-    nameFa: "ندا فراهانی",
-    photo: "photo-1534528741775-53994a69daeb",
-    platforms: ["instagram", "torob", "telegram"],
-    rating: 5.0,
-    reviews: 41,
-    verified: true,
-    insured: true,
-    monthlyToman: 7000000,
-    monthlyUSD: 167,
-    bioEn:
-      "Multi-platform specialist with a holistic approach to social commerce. Connects Instagram audiences to Torob product listings.",
-    bioFa:
-      "متخصص چندپلتفرمی با رویکرد کلی‌نگر به تجارت اجتماعی. مخاطبان اینستاگرام را به محصولات ترب متصل می‌کند.",
-    skillsEn: [
-      "Social Commerce",
-      "Multi-platform Mgmt",
-      "Conversion Funnels",
-      "Paid Ads",
-    ],
-    skillsFa: [
-      "تجارت اجتماعی",
-      "مدیریت چندپلتفرمی",
-      "قیف تبدیل",
-      "تبلیغات پولی",
-    ],
-  },
-]
-
-const CONTRACTS = [
-  {
-    id: "C-1042",
-    adminEn: "Arya Ahmadi",
-    adminFa: "آریا احمدی",
-    platform: "instagram",
-    status: "active",
-    amountToman: 4500000,
-    amountUSD: 108,
-    hasInsurance: true,
-    hasSubstitute: false,
-  },
-  {
-    id: "C-1039",
-    adminEn: "Neda Farahani",
-    adminFa: "ندا فراهانی",
-    platform: "torob",
-    status: "pending",
-    amountToman: 3200000,
-    amountUSD: 76,
-    hasInsurance: true,
-    hasSubstitute: false,
-  },
-  {
-    id: "C-1031",
-    adminEn: "Dariush Rezaei",
-    adminFa: "داریوش رضایی",
-    platform: "digikala",
-    status: "completed",
-    amountToman: 5200000,
-    amountUSD: 124,
-    hasInsurance: false,
-    hasSubstitute: false,
-  },
-  {
-    id: "C-1028",
-    adminEn: "Sara Mohammadi",
-    adminFa: "سارا محمدی",
-    platform: "whatsapp",
-    status: "disputed",
-    amountToman: 3800000,
-    amountUSD: 91,
-    hasInsurance: true,
-    hasSubstitute: true,
-  },
-]
 
 const PLATFORM_COLORS: Record<string, string> = {
   instagram: "badge-instagram",
@@ -1299,144 +1104,176 @@ export default function App() {
             <Route
               path="/"
               element={
-                <div className="flex-1 overflow-y-auto">
-                  {role === "employer" ? (
-                    <EmployerDashboard />
-                  ) : (
-                    <AdminDashboard />
-                  )}
-                </div>
+                <ProtectedRoute>
+                  <div className="flex-1 overflow-y-auto">
+                    {role === "employer" ? (
+                      <EmployerDashboard />
+                    ) : (
+                      <AdminDashboard />
+                    )}
+                  </div>
+                </ProtectedRoute>
               }
             />
             <Route
               path="/marketplace"
               element={
-                <div className="flex-1 overflow-y-auto">
-                  <Marketplace />
-                </div>
+                <ProtectedRoute>
+                  <div className="flex-1 overflow-y-auto">
+                    <Marketplace />
+                  </div>
+                </ProtectedRoute>
               }
             />
             <Route
               path="/tools-rental"
               element={
-                <div className="flex-1 overflow-y-auto">
-                  <ToolsRentalPage tr={tr} lang={lang} />
-                </div>
+                <ProtectedRoute>
+                  <div className="flex-1 overflow-y-auto">
+                    <ToolsRentalPage tr={tr} lang={lang} />
+                  </div>
+                </ProtectedRoute>
               }
             />
             <Route
               path="/editors"
               element={
-                <div className="flex-1 overflow-y-auto">
-                  <EditorsPage tr={tr} lang={lang} />
-                </div>
+                <ProtectedRoute>
+                  <div className="flex-1 overflow-y-auto">
+                    <EditorsPage tr={tr} lang={lang} />
+                  </div>
+                </ProtectedRoute>
               }
             />
             <Route
               path="/vibe-coders"
               element={
-                <div className="flex-1 overflow-y-auto">
-                  <VibeCodersPage tr={tr} lang={lang} />
-                </div>
+                <ProtectedRoute>
+                  <div className="flex-1 overflow-y-auto">
+                    <VibeCodersPage tr={tr} lang={lang} />
+                  </div>
+                </ProtectedRoute>
               }
             />
             <Route
               path="/skills"
               element={
-                <div className="flex-1 overflow-y-auto">
-                  <PlaceholderPage
-                    title={tr.nav.skills}
-                    subtitle={
-                      lang === "fa"
-                        ? "بزودی قابل استفاده خواهد بود"
-                        : "Coming soon"
-                    }
-                  />
-                </div>
+                <ProtectedRoute>
+                  <div className="flex-1 overflow-y-auto">
+                    <PlaceholderPage
+                      title={tr.nav.skills}
+                      subtitle={
+                        lang === "fa"
+                          ? "بزودی قابل استفاده خواهد بود"
+                          : "Coming soon"
+                      }
+                    />
+                  </div>
+                </ProtectedRoute>
               }
             />
             <Route
               path="/contracts"
               element={
-                <div className="flex-1 overflow-y-auto">
-                  <ContractGenerator tr={tr} lang={lang} />
-                </div>
+                <ProtectedRoute>
+                  <div className="flex-1 overflow-y-auto">
+                    <ContractGenerator tr={tr} lang={lang} />
+                  </div>
+                </ProtectedRoute>
               }
             />
             <Route
               path="/contracts/history"
               element={
-                <div className="flex-1 overflow-y-auto">
-                  <ContractsPage tr={tr} lang={lang} />
-                </div>
+                <ProtectedRoute>
+                  <div className="flex-1 overflow-y-auto">
+                    <ContractsPage tr={tr} lang={lang} />
+                  </div>
+                </ProtectedRoute>
               }
             />
             <Route
               path="/tickets"
               element={
-                <div className="flex-1 overflow-y-auto">
-                  <TicketsPage tr={tr} lang={lang} />
-                </div>
+                <ProtectedRoute>
+                  <div className="flex-1 overflow-y-auto">
+                    <TicketsPage tr={tr} lang={lang} />
+                  </div>
+                </ProtectedRoute>
               }
             />
             <Route
               path="/tickets/:ticketId"
               element={
-                <div className="flex-1 overflow-y-auto">
-                  <TicketsPage tr={tr} lang={lang} />
-                </div>
+                <ProtectedRoute>
+                  <div className="flex-1 overflow-y-auto">
+                    <TicketsPage tr={tr} lang={lang} />
+                  </div>
+                </ProtectedRoute>
               }
             />
             <Route
               path="/packages"
               element={
-                <div className="flex-1 overflow-y-auto">
-                  <AdminPackagesPage />
-                </div>
+                <ProtectedRoute>
+                  <div className="flex-1 overflow-y-auto">
+                    <AdminPackagesPage />
+                  </div>
+                </ProtectedRoute>
               }
             />
             <Route
               path="/admin/:adminId"
               element={
-                <div className="flex-1 overflow-y-auto">
-                  <AdminPublicProfilePage />
-                </div>
+                <ProtectedRoute>
+                  <div className="flex-1 overflow-y-auto">
+                    <AdminPublicProfilePage />
+                  </div>
+                </ProtectedRoute>
               }
             />
             <Route
               path="/compare"
               element={
-                <div className="flex-1 overflow-y-auto">
-                  <PackageComparisonPage />
-                </div>
+                <ProtectedRoute>
+                  <div className="flex-1 overflow-y-auto">
+                    <PackageComparisonPage />
+                  </div>
+                </ProtectedRoute>
               }
             />
             <Route
               path="/ai"
               element={
-                <div className="flex-1 overflow-hidden flex flex-col">
-                  <AiPage />
-                </div>
+                <ProtectedRoute>
+                  <div className="flex-1 overflow-hidden flex flex-col">
+                    <AiPage />
+                  </div>
+                </ProtectedRoute>
               }
             />
             <Route
               path="/ai/:conversationId"
               element={
-                <div className="flex-1 overflow-hidden flex flex-col">
-                  <AiPage />
-                </div>
+                <ProtectedRoute>
+                  <div className="flex-1 overflow-hidden flex flex-col">
+                    <AiPage />
+                  </div>
+                </ProtectedRoute>
               }
             />
             <Route
               path="/profile"
               element={
-                <div className="flex-1 overflow-y-auto">
-                  {role === "admin" ? (
-                    <AdminDashboard />
-                  ) : (
-                    <EmployerDashboard />
-                  )}
-                </div>
+                <ProtectedRoute>
+                  <div className="flex-1 overflow-y-auto">
+                    {role === "admin" ? (
+                      <AdminDashboard />
+                    ) : (
+                      <EmployerDashboard />
+                    )}
+                  </div>
+                </ProtectedRoute>
               }
             />
           </Routes>

@@ -1,10 +1,10 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { t, type Lang } from "../i18n"
 import { Icon } from "../components/layout/Icon"
 import { Stars } from "../components/platform/Stars"
 import { Badge } from "../components/ui/Badge"
-import { createContract } from "../lib/api"
+import { createContract, listAdminProfiles, type AdminProfile } from "../lib/api"
 
 const PLATFORMS = [
   { value: "instagram", label: "Instagram" },
@@ -13,15 +13,6 @@ const PLATFORMS = [
   { value: "torob", label: "Torob" },
   { value: "digikala", label: "Digikala" },
   { value: "linkedin", label: "LinkedIn" },
-]
-
-const ADMIN_OPTIONS = [
-  { id: "00000000-0000-0000-0000-000000000001", name: "Arya Ahmadi" },
-  { id: "00000000-0000-0000-0000-000000000002", name: "Sara Mohammadi" },
-  { id: "00000000-0000-0000-0000-000000000003", name: "Dariush Rezaei" },
-  { id: "00000000-0000-0000-0000-000000000004", name: "Mina Hosseini" },
-  { id: "00000000-0000-0000-0000-000000000005", name: "Reza Karimi" },
-  { id: "00000000-0000-0000-0000-000000000006", name: "Neda Farahani" },
 ]
 
 const STATUS_COLORS: Record<string, string> = {
@@ -67,6 +58,8 @@ export default function ContractGenerator({
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
+  const [admins, setAdmins] = useState<AdminProfile[]>([])
+  const [loadingAdmins, setLoadingAdmins] = useState(true)
 
   if (initialContract) {
     return (
@@ -200,7 +193,7 @@ export default function ContractGenerator({
   const [form, setForm] = useState({
     employerName: lang === "fa" ? "علی رضایی" : "Ali Rezaei",
     employerCo: lang === "fa" ? "استارتاپ پارسه" : "Parseh Startup",
-    adminId: ADMIN_OPTIONS[0].id,
+    adminId: "",
     platform: "instagram",
     projectTitle:
       lang === "fa"
@@ -225,6 +218,34 @@ export default function ContractGenerator({
     hasInsurance: false,
     hasSubstitute: false,
   })
+
+  useEffect(() => {
+    let cancelled = false
+    async function loadAdmins() {
+      setLoadingAdmins(true)
+      try {
+        const data = await listAdminProfiles()
+        if (!cancelled) {
+          setAdmins(data)
+          if (data.length > 0 && !form.adminId) {
+            setForm((f) => ({ ...f, adminId: data[0].id }))
+          }
+        }
+      } catch {
+        if (!cancelled) {
+          setAdmins([])
+        }
+      } finally {
+        if (!cancelled) {
+          setLoadingAdmins(false)
+        }
+      }
+    }
+    void loadAdmins()
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   const setF = (k: string, v: string | boolean) => setForm((f) => ({ ...f, [k]: v }))
   const steps = [
@@ -361,9 +382,9 @@ export default function ContractGenerator({
                 onChange={(e) => setF("adminId", e.target.value)}
                 className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] transition-all bg-white"
               >
-                {ADMIN_OPTIONS.map((admin) => (
+                {admins.map((admin) => (
                   <option key={admin.id} value={admin.id}>
-                    {admin.name}
+                    {lang === "fa" ? admin.nameFa : admin.nameEn}
                   </option>
                 ))}
               </select>
@@ -609,7 +630,7 @@ export default function ContractGenerator({
                 {tr.contract.between} <strong>{form.employerName}</strong>{" "}
                 {form.employerCo ? `(${form.employerCo})` : ""},{" "}
                 {tr.contract.partyEmployer},<br />
-                {tr.contract.and} <strong>{ADMIN_OPTIONS.find(a => a.id === form.adminId)?.name || form.adminId}</strong>,{" "}
+                {tr.contract.and} <strong>{admins.find(a => a.id === form.adminId)?.nameEn || form.adminId}</strong>,{" "}
                 {tr.contract.partyAdmin}.
               </p>
               <p>
