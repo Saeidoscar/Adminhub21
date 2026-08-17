@@ -140,6 +140,13 @@ export interface WalletTransactionRow {
   createdAt: string
 }
 
+export interface FavoriteRow {
+  id: string
+  userId: string
+  adminId: string
+  createdAt: string
+}
+
 export interface PayoutRow {
   id: string
   userId: string

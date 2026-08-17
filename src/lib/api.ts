@@ -4,8 +4,14 @@ import type {
   AiMessageRow,
   AiModelRow,
   ContractPackage,
+  ContractRow,
   CustomOffer,
+  DashboardStats,
+  FavoriteRow,
   PlatformKey,
+  ReviewRow,
+  WalletRow,
+  WalletTransactionRow,
 } from "@adminhub/shared"
 
 const DEFAULT_API_BASE_URL = "http://localhost:8787"
@@ -376,4 +382,557 @@ export async function deleteConversation(id: string): Promise<void> {
   await apiFetch<Record<string, unknown>>(`/ai/conversations/${id}`, {
     method: "DELETE",
   })
+}
+
+export interface CreateContractInput {
+  offerId?: string
+  adminId?: string
+  platform: string
+  amountToman: number
+  amountUSD: number
+  hasInsurance: boolean
+  hasSubstitute: boolean
+  termClause?: string
+  substituteClause?: string
+  startDate?: string
+  endDate?: string
+}
+
+export type Contract = ContractRow
+
+export async function createContract(
+  input: CreateContractInput,
+): Promise<ContractRow> {
+  const payload = await apiFetch<Record<string, unknown>>("/api/contracts", {
+    method: "POST",
+    body: JSON.stringify(input),
+  })
+  const contract = unwrapItem<ContractRow>(payload, "contract")
+  if (!contract) {
+    throw new Error("Contract creation response was empty")
+  }
+  return contract
+}
+
+export async function getContract(id: string): Promise<ContractRow | null> {
+  const payload = await apiFetch<Record<string, unknown>>(`/api/contracts/${id}`)
+  return unwrapItem<ContractRow>(payload, "contract")
+}
+
+export async function updateContractStatus(
+  id: string,
+  input: { status: ContractRow["status"] },
+): Promise<ContractRow> {
+  const payload = await apiFetch<Record<string, unknown>>(
+    `/api/contracts/${id}/status`,
+    {
+      method: "PATCH",
+      body: JSON.stringify(input),
+    },
+  )
+  const contract = unwrapItem<ContractRow>(payload, "contract")
+  if (!contract) {
+    throw new Error("Contract update response was empty")
+  }
+  return contract
+}
+
+export interface Tool {
+  id: string
+  name: string
+  descEn: string
+  descFa: string
+  category: string
+  icon: string
+  rating: number
+  reviews: number
+  popular: boolean
+  priceToman: number
+  priceUSD: number
+  createdAt: string
+}
+
+export interface Editor {
+  id: string
+  nameEn: string
+  nameFa: string
+  photo: string
+  specialty: string
+  rating: number
+  reviews: number
+  projects: number
+  delivery: string
+  rateToman: number
+  rateUSD: number
+  bioEn: string
+  bioFa: string
+  createdAt: string
+}
+
+export interface VibeCoder {
+  id: string
+  nameEn: string
+  nameFa: string
+  photo: string
+  stack: string
+  rating: number
+  reviews: number
+  projects: number
+  rateToman: number
+  rateUSD: number
+  delivery: string
+  bioEn: string
+  bioFa: string
+  createdAt: string
+}
+
+export interface ListToolsQuery {
+  category?: string
+  popular?: boolean
+  minRating?: number
+  search?: string
+}
+
+export async function listTools(query: ListToolsQuery = {}): Promise<Tool[]> {
+  const params = new URLSearchParams()
+  if (query.category) params.set("category", query.category)
+  if (typeof query.popular === "boolean") params.set("popular", String(query.popular))
+  if (typeof query.minRating === "number") params.set("minRating", String(query.minRating))
+  if (query.search) params.set("search", query.search)
+  const qs = params.toString()
+  const payload = await apiFetch<Record<string, unknown>>(
+    `/api/catalog/tools${qs ? `?${qs}` : ""}`,
+  )
+  return unwrapList<Tool>(payload, "tools")
+}
+
+export interface ListEditorsQuery {
+  specialty?: string
+  minRating?: number
+  search?: string
+}
+
+export async function listEditors(query: ListEditorsQuery = {}): Promise<Editor[]> {
+  const params = new URLSearchParams()
+  if (query.specialty) params.set("specialty", query.specialty)
+  if (typeof query.minRating === "number") params.set("minRating", String(query.minRating))
+  if (query.search) params.set("search", query.search)
+  const qs = params.toString()
+  const payload = await apiFetch<Record<string, unknown>>(
+    `/api/catalog/editors${qs ? `?${qs}` : ""}`,
+  )
+  return unwrapList<Editor>(payload, "editors")
+}
+
+export interface ListVibeCodersQuery {
+  stack?: string
+  minRating?: number
+  search?: string
+}
+
+export async function listVibeCoders(query: ListVibeCodersQuery = {}): Promise<VibeCoder[]> {
+  const params = new URLSearchParams()
+  if (query.stack) params.set("stack", query.stack)
+  if (typeof query.minRating === "number") params.set("minRating", String(query.minRating))
+  if (query.search) params.set("search", query.search)
+  const qs = params.toString()
+  const payload = await apiFetch<Record<string, unknown>>(
+    `/api/catalog/vibe-coders${qs ? `?${qs}` : ""}`,
+  )
+  return unwrapList<VibeCoder>(payload, "vibe-coders")
+}
+
+export interface ListContractsQuery {
+  status?: "active" | "pending" | "completed" | "disputed"
+  platform?: string
+}
+
+export async function listContracts(
+  query: ListContractsQuery = {},
+): Promise<ContractRow[]> {
+  const params = new URLSearchParams()
+
+  if (query.status) {
+    params.set("status", query.status)
+  }
+
+  if (query.platform) {
+    params.set("platform", query.platform)
+  }
+
+  const queryString = params.toString()
+  const payload = await apiFetch<Record<string, unknown>>(
+    `/api/contracts${queryString ? `?${queryString}` : ""}`,
+  )
+
+  return unwrapList<ContractRow>(payload, "contracts")
+}
+
+export async function getDashboardStats(): Promise<DashboardStats> {
+  const payload = await apiFetch<Record<string, unknown>>(
+    "/api/admin/dashboard/stats",
+  )
+
+  const stats = unwrapItem<DashboardStats>(payload, "stats")
+
+  if (!stats) {
+    throw new Error("Dashboard stats response was empty")
+  }
+
+  return stats
+}
+
+export async function getWallet(): Promise<WalletRow> {
+  const payload = await apiFetch<Record<string, unknown>>("/api/wallets/me")
+
+  const wallet = unwrapItem<WalletRow>(payload, "wallet")
+
+  if (!wallet) {
+    throw new Error("Wallet response was empty")
+  }
+
+  return wallet
+}
+
+export interface CreateTransactionInput {
+  type: "deposit" | "withdraw" | "transfer" | "payout" | "payment"
+  amountToman?: number
+  amountUSD?: number
+  currency: string
+  note?: string
+}
+
+export async function createTransaction(
+  input: CreateTransactionInput,
+): Promise<WalletTransactionRow> {
+  const payload = await apiFetch<Record<string, unknown>>(
+    "/api/wallets/me/transactions",
+    {
+      method: "POST",
+      body: JSON.stringify(input),
+    },
+  )
+
+  const transaction = unwrapItem<WalletTransactionRow>(payload, "transaction")
+
+  if (!transaction) {
+    throw new Error("Transaction creation response was empty")
+  }
+
+  return transaction
+}
+
+export interface ListTransactionsQuery {
+  walletId?: string
+  type?: "deposit" | "withdraw" | "transfer" | "payout" | "payment"
+  status?: "pending" | "completed" | "failed" | "cancelled"
+}
+
+export async function listTransactions(
+  query: ListTransactionsQuery = {},
+): Promise<WalletTransactionRow[]> {
+  const params = new URLSearchParams()
+
+  if (query.walletId) {
+    params.set("walletId", query.walletId)
+  }
+
+  if (query.type) {
+    params.set("type", query.type)
+  }
+
+  if (query.status) {
+    params.set("status", query.status)
+  }
+
+  const queryString = params.toString()
+  const payload = await apiFetch<Record<string, unknown>>(
+    `/api/wallets/me/transactions${queryString ? `?${queryString}` : ""}`,
+  )
+
+  return unwrapList<WalletTransactionRow>(payload, "transactions")
+}
+
+export async function listFavorites(): Promise<FavoriteRow[]> {
+  const payload = await apiFetch<Record<string, unknown>>("/api/favorites")
+
+  return unwrapList<FavoriteRow>(payload, "favorites")
+}
+
+export async function addFavorite(adminId: string): Promise<FavoriteRow> {
+  const payload = await apiFetch<Record<string, unknown>>(
+    `/api/favorites/${adminId}`,
+    {
+      method: "POST",
+    },
+  )
+
+  const favorite = unwrapItem<FavoriteRow>(payload, "favorite")
+
+  if (!favorite) {
+    throw new Error("Add favorite response was empty")
+  }
+
+  return favorite
+}
+
+export async function removeFavorite(adminId: string): Promise<void> {
+  await apiFetch<Record<string, unknown>>(`/api/favorites/${adminId}`, {
+    method: "DELETE",
+  })
+}
+
+export async function createReview(
+  input: {
+    adminId: string
+    contractId?: string
+    rating: number
+    comment?: string
+  },
+): Promise<ReviewRow> {
+  const payload = await apiFetch<Record<string, unknown>>("/api/reviews", {
+    method: "POST",
+    body: JSON.stringify(input),
+  })
+
+  const review = unwrapItem<ReviewRow>(payload, "review")
+
+  if (!review) {
+    throw new Error("Create review response was empty")
+  }
+
+  return review
+}
+
+export interface ListReviewsQuery {
+  adminId?: string
+  employerId?: string
+}
+
+export async function listReviews(
+  query: ListReviewsQuery = {},
+): Promise<ReviewRow[]> {
+  const params = new URLSearchParams()
+
+  if (query.adminId) {
+    params.set("adminId", query.adminId)
+  }
+
+  if (query.employerId) {
+    params.set("employerId", query.employerId)
+  }
+
+  const queryString = params.toString()
+  const payload = await apiFetch<Record<string, unknown>>(
+    `/api/reviews${queryString ? `?${queryString}` : ""}`,
+  )
+
+  return unwrapList<ReviewRow>(payload, "reviews")
+}
+
+export interface RegisterInput {
+  email: string
+  password: string
+  role: "employer" | "admin"
+  nameEn: string
+  nameFa: string
+  phone?: string
+}
+
+export interface LoginInput {
+  email: string
+  password: string
+}
+
+export interface OtpSendInput {
+  phone: string
+}
+
+export interface OtpVerifyInput {
+  phone: string
+  code: string
+}
+
+export async function register(
+  input: RegisterInput,
+): Promise<{ user: SafeUser; accessToken: string }> {
+  const payload = await apiFetch<Record<string, unknown>>("/api/auth/register", {
+    method: "POST",
+    body: JSON.stringify(input),
+  })
+
+  const user = unwrapItem<SafeUser>(payload, "user")
+  const accessToken = unwrapItem<string>(payload, "accessToken")
+
+  if (!user || !accessToken) {
+    throw new Error("Registration response was empty")
+  }
+
+  return { user, accessToken }
+}
+
+export async function login(
+  input: LoginInput,
+): Promise<{ user: SafeUser; accessToken: string }> {
+  const payload = await apiFetch<Record<string, unknown>>("/api/auth/login", {
+    method: "POST",
+    body: JSON.stringify(input),
+  })
+
+  const user = unwrapItem<SafeUser>(payload, "user")
+  const accessToken = unwrapItem<string>(payload, "accessToken")
+
+  if (!user || !accessToken) {
+    throw new Error("Login response was empty")
+  }
+
+  return { user, accessToken }
+}
+
+export async function sendOtp(
+  input: OtpSendInput,
+): Promise<{ message: string; phone: string }> {
+  const payload = await apiFetch<Record<string, unknown>>("/api/auth/otp/send", {
+    method: "POST",
+    body: JSON.stringify(input),
+  })
+
+  const message = unwrapItem<string>(payload, "message")
+  const phone = unwrapItem<string>(payload, "phone")
+
+  if (!message || !phone) {
+    throw new Error("Send OTP response was empty")
+  }
+
+  return { message, phone }
+}
+
+export async function verifyOtp(
+  input: OtpVerifyInput,
+): Promise<{ user: SafeUser; accessToken: string }> {
+  const payload = await apiFetch<Record<string, unknown>>("/api/auth/otp/verify", {
+    method: "POST",
+    body: JSON.stringify(input),
+  })
+
+  const user = unwrapItem<SafeUser>(payload, "user")
+  const accessToken = unwrapItem<string>(payload, "accessToken")
+
+  if (!user || !accessToken) {
+    throw new Error("Verify OTP response was empty")
+  }
+
+  return { user, accessToken }
+}
+
+export async function logout(): Promise<void> {
+  await apiFetch<void>("/api/auth/logout", { method: "POST" })
+}
+
+export async function getMe(): Promise<SafeUser> {
+  const payload = await apiFetch<Record<string, unknown>>("/api/auth/me")
+  const user = unwrapItem<SafeUser>(payload, "user")
+
+  if (!user) {
+    throw new Error("Get me response was empty")
+  }
+
+  return user
+}
+
+export interface Ticket {
+  id: string
+  userId: string
+  userName: string
+  userEmail: string
+  subject: string
+  category: string
+  priority: string
+  status: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface TicketMessage {
+  id: string
+  ticketId: string
+  senderId: string
+  senderName: string
+  body: string
+  createdAt: string
+}
+
+export interface CreateTicketInput {
+  subject: string
+  category: "billing" | "technical" | "account" | "other"
+  priority: "low" | "medium" | "high" | "urgent"
+}
+
+export async function createTicket(input: CreateTicketInput): Promise<Ticket> {
+  const payload = await apiFetch<Record<string, unknown>>("/api/tickets", {
+    method: "POST",
+    body: JSON.stringify(input),
+  })
+  const ticket = unwrapItem<Ticket>(payload, "ticket")
+  if (!ticket) {
+    throw new Error("Ticket creation response was empty")
+  }
+  return ticket
+}
+
+export async function listTickets(): Promise<Ticket[]> {
+  const payload = await apiFetch<Record<string, unknown>>("/api/tickets")
+  return unwrapList<Ticket>(payload, "tickets")
+}
+
+export async function getTicket(id: string): Promise<Ticket | null> {
+  const payload = await apiFetch<Record<string, unknown>>(`/api/tickets/${id}`)
+  return unwrapItem<Ticket>(payload, "ticket")
+}
+
+export async function updateTicket(
+  id: string,
+  input: {
+    status?: "open" | "in_progress" | "resolved" | "closed"
+    priority?: "low" | "medium" | "high" | "urgent"
+  },
+): Promise<Ticket> {
+  const payload = await apiFetch<Record<string, unknown>>(`/api/tickets/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(input),
+  })
+  const ticket = unwrapItem<Ticket>(payload, "ticket")
+  if (!ticket) {
+    throw new Error("Ticket update response was empty")
+  }
+  return ticket
+}
+
+export interface CreateTicketMessageInput {
+  body: string
+}
+
+export async function createTicketMessage(
+  ticketId: string,
+  input: CreateTicketMessageInput,
+): Promise<TicketMessage> {
+  const payload = await apiFetch<Record<string, unknown>>(
+    `/api/tickets/${ticketId}/messages`,
+    {
+      method: "POST",
+      body: JSON.stringify(input),
+    },
+  )
+  const message = unwrapItem<TicketMessage>(payload, "message")
+  if (!message) {
+    throw new Error("Ticket message creation response was empty")
+  }
+  return message
+}
+
+export async function listTicketMessages(ticketId: string): Promise<TicketMessage[]> {
+  const payload = await apiFetch<Record<string, unknown>>(
+    `/api/tickets/${ticketId}/messages`,
+  )
+  return unwrapList<TicketMessage>(payload, "messages")
 }

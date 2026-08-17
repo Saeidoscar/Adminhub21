@@ -1,121 +1,10 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { t, type Lang } from "../i18n"
 import { Icon } from "../components/layout/Icon"
 import { Stars } from "../components/platform/Stars"
+import { listVibeCoders, type VibeCoder } from "../lib/api"
 
 type Stack = "webApp" | "automation" | "bots" | "landing" | "frontend"
-
-interface Coder {
-  nameEn: string
-  nameFa: string
-  photo: string
-  stack: Stack
-  rating: number
-  reviews: number
-  projects: number
-  rateToman: number
-  rateUSD: number
-  delivery: string
-  bioEn: string
-  bioFa: string
-}
-
-const CODERS: Coder[] = [
-  {
-    nameEn: "Mohammad Asadi",
-    nameFa: "محمد اسدی",
-    photo: "photo-1507003211169-0a1dd7228f2d",
-    stack: "webApp",
-    rating: 4.9,
-    reviews: 46,
-    projects: 78,
-    rateToman: 5000000,
-    rateUSD: 120,
-    delivery: "2 weeks",
-    bioEn:
-      "Ships full web apps in weeks, not months. React + TypeScript, powered by AI workflows.",
-    bioFa:
-      "در چند هفته نه چند ماه وب‌اپلیکیشن کامل تحویل می‌دهد. React و TypeScript با بهره‌گیری از هوش مصنوعی.",
-  },
-  {
-    nameEn: "Farzaneh Nouri",
-    nameFa: "فرزانه نوری",
-    photo: "photo-1494790108377-be9c29b29330",
-    stack: "automation",
-    rating: 4.8,
-    reviews: 38,
-    projects: 65,
-    rateToman: 3500000,
-    rateUSD: 84,
-    delivery: "1 week",
-    bioEn:
-      "Builds scripts and automations that save teams 20+ hours a week across every platform.",
-    bioFa:
-      "اسکریپت و اتوماسیون می‌سازد که هفته‌ای بیش از ۲۰ ساعت از تیم‌ها صرفه‌جویی می‌کند.",
-  },
-  {
-    nameEn: "Hossein Rahmati",
-    nameFa: "حسین رحمتی",
-    photo: "photo-1500648767791-00dcc994a43e",
-    stack: "bots",
-    rating: 4.7,
-    reviews: 29,
-    projects: 51,
-    rateToman: 2800000,
-    rateUSD: 67,
-    delivery: "5 days",
-    bioEn:
-      "Telegram and WhatsApp bots with payments, CRM, and natural-language flows.",
-    bioFa:
-      "ربات تلگرام و واتساپ با درگاه پرداخت، CRM و مکالمات مبتنی بر زبان طبیعی.",
-  },
-  {
-    nameEn: "Nasrin Karami",
-    nameFa: "نسرین کرمی",
-    photo: "photo-1438761681033-6461ffad8d80",
-    stack: "landing",
-    rating: 4.9,
-    reviews: 52,
-    projects: 143,
-    rateToman: 1500000,
-    rateUSD: 36,
-    delivery: "48h",
-    bioEn:
-      "High-converting landing pages for campaigns, products, and launch funnels.",
-    bioFa: "لندینگ پیج‌های پرتبدیل برای کمپین‌ها، محصولات و قیف‌های لانچ.",
-  },
-  {
-    nameEn: "Sajjad Ebrahimi",
-    nameFa: "سجاد ابراهیمی",
-    photo: "photo-1472099645785-5658abf4ff4e",
-    stack: "frontend",
-    rating: 4.6,
-    reviews: 33,
-    projects: 89,
-    rateToman: 4000000,
-    rateUSD: 96,
-    delivery: "1 week",
-    bioEn:
-      "Pixel-perfect React interfaces with motion and design systems for ambitious brands.",
-    bioFa:
-      "اینترفیس‌های React با دقت پیکسلی، موشن و دیزاین‌سیستم برای برندهای جاه‌طلب.",
-  },
-  {
-    nameEn: "Yasaman Soleimani",
-    nameFa: "یاسمن سلیمانی",
-    photo: "photo-1534528741775-53994a69daeb",
-    stack: "webApp",
-    rating: 5.0,
-    reviews: 41,
-    projects: 60,
-    rateToman: 6500000,
-    rateUSD: 155,
-    delivery: "3 weeks",
-    bioEn:
-      "Full-stack product engineer for marketplaces and dashboards, with clean architecture.",
-    bioFa: "مهندس فول‌استک برای مارکت‌پلیس و داشبورد با معماری تمیز و مقیاس‌پذیر.",
-  },
-]
 
 const STACK_LABELS: Record<Stack, { en: string fa: string }> = {
   webApp: { en: "Web Apps", fa: "وب‌اپلیکیشن" },
@@ -132,12 +21,34 @@ export default function VibeCodersPage({
   tr: typeof t["en"]
   lang: Lang
 }) {
+  const [coders, setCoders] = useState<VibeCoder[]>([])
+  const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState("")
   const [stack, setStack] = useState<Stack | "all">("all")
 
   const isFa = lang === "fa"
 
-  const filtered = CODERS.filter((coder) => {
+  const loadCoders = async () => {
+    setLoading(true)
+    try {
+      const data = await listVibeCoders({
+        stack: stack === "all" ? undefined : stack,
+        search: search || undefined,
+      })
+      setCoders(data)
+    } catch {
+      setCoders([])
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    const timer = setTimeout(loadCoders, 300)
+    return () => clearTimeout(timer)
+  }, [search, stack])
+
+  const filtered = coders.filter((coder) => {
     const name = isFa ? coder.nameFa : coder.nameEn
     const query = search.toLowerCase()
     const matchSearch =
@@ -186,75 +97,81 @@ export default function VibeCodersPage({
         </select>
       </div>
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filtered.map((coder) => (
-          <div
-            key={coder.nameEn}
-            className="bg-white rounded-2xl border border-[#e2e8f0] p-5 card-hover"
-          >
-            <div className="flex items-start gap-3 mb-4">
-              <img
-                src={`https://images.unsplash.com/${coder.photo}?w=64&h=64&fit=crop&auto=format`}
-                alt={coder.nameEn}
-                className="w-14 h-14 rounded-2xl object-cover bg-[#f2f5fa] flex-shrink-0"
-              />
-              <div className="flex-1 min-w-0">
-                <span className="font-bold text-sm text-[#0f172a] block truncate">
-                  {isFa ? coder.nameFa : coder.nameEn}
-                </span>
-                <div className="flex items-center gap-1.5 mt-1">
-                  <Stars rating={coder.rating} />
-                  <span className="text-xs font-bold text-[#0f172a]">
-                    {coder.rating}
+      {loading ? (
+        <div className="text-center py-16 text-[#64748b]">
+          <div className="text-sm">{tr.common.loading}</div>
+        </div>
+      ) : (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filtered.map((coder) => (
+            <div
+              key={coder.id}
+              className="bg-white rounded-2xl border border-[#e2e8f0] p-5 card-hover"
+            >
+              <div className="flex items-start gap-3 mb-4">
+                <img
+                  src={`https://images.unsplash.com/${coder.photo}?w=64&h=64&fit=crop&auto=format`}
+                  alt={isFa ? coder.nameFa : coder.nameEn}
+                  className="w-14 h-14 rounded-2xl object-cover bg-[#f2f5fa] flex-shrink-0"
+                />
+                <div className="flex-1 min-w-0">
+                  <span className="font-bold text-sm text-[#0f172a] block truncate">
+                    {isFa ? coder.nameFa : coder.nameEn}
                   </span>
-                  <span className="text-xs text-[#94a3b8]">
-                    ({coder.reviews})
-                  </span>
-                </div>
-                <span className="inline-flex mt-1.5 px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 text-xs font-semibold">
-                  {stackKey(coder.stack)}
-                </span>
-              </div>
-            </div>
-
-            <p className="text-xs text-[#64748b] leading-relaxed mb-4 line-clamp-2">
-              {isFa ? coder.bioFa : coder.bioEn}
-            </p>
-
-            <div className="flex items-center gap-4 text-xs text-[#64748b] mb-4">
-              <span className="flex items-center gap-1">
-                <Icon name="check" size={12} className="text-emerald-600" />
-                {coder.projects} {tr.vibeCoders.projects}
-              </span>
-              <span className="flex items-center gap-1">
-                <Icon name="calendar" size={12} />
-                {coder.delivery}
-              </span>
-            </div>
-
-            <div className="border-t border-[#f2f5fa] pt-4 flex items-center justify-between">
-              <div>
-                <div className="text-xs text-[#64748b]">
-                  {tr.vibeCoders.starting}
-                </div>
-                <div className="text-base font-bold text-[#1e3a5f]">
-                  {isFa
-                    ? `${(coder.rateToman / 1000000).toFixed(1)}M ${tr.common.toman}`
-                    : `$${coder.rateUSD}`}
-                  <span className="text-xs font-normal text-[#94a3b8]">
-                    /{isFa ? "پروژه" : "project"}
+                  <div className="flex items-center gap-1.5 mt-1">
+                    <Stars rating={coder.rating} />
+                    <span className="text-xs font-bold text-[#0f172a]">
+                      {coder.rating}
+                    </span>
+                    <span className="text-xs text-[#94a3b8]">
+                      ({coder.reviews})
+                    </span>
+                  </div>
+                  <span className="inline-flex mt-1.5 px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 text-xs font-semibold">
+                    {stackKey(coder.stack)}
                   </span>
                 </div>
               </div>
-              <button className="px-4 py-2 rounded-xl bg-[#1e3a5f] text-white text-xs font-bold hover:bg-[#122435] transition-colors btn-press">
-                {tr.vibeCoders.hire}
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
 
-      {filtered.length === 0 && (
+              <p className="text-xs text-[#64748b] leading-relaxed mb-4 line-clamp-2">
+                {isFa ? coder.bioFa : coder.bioEn}
+              </p>
+
+              <div className="flex items-center gap-4 text-xs text-[#64748b] mb-4">
+                <span className="flex items-center gap-1">
+                  <Icon name="check" size={12} className="text-emerald-600" />
+                  {coder.projects} {tr.vibeCoders.projects}
+                </span>
+                <span className="flex items-center gap-1">
+                  <Icon name="calendar" size={12} />
+                  {coder.delivery}
+                </span>
+              </div>
+
+              <div className="border-t border-[#f2f5fa] pt-4 flex items-center justify-between">
+                <div>
+                  <div className="text-xs text-[#64748b]">
+                    {tr.vibeCoders.starting}
+                  </div>
+                  <div className="text-base font-bold text-[#1e3a5f]">
+                    {isFa
+                      ? `${(coder.rateToman / 1000000).toFixed(1)}M ${tr.common.toman}`
+                      : `$${coder.rateUSD}`}
+                    <span className="text-xs font-normal text-[#94a3b8]">
+                      /{isFa ? "پروژه" : "project"}
+                    </span>
+                  </div>
+                </div>
+                <button className="px-4 py-2 rounded-xl bg-[#1e3a5f] text-white text-xs font-bold hover:bg-[#122435] transition-colors btn-press">
+                  {tr.vibeCoders.hire}
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {!loading && filtered.length === 0 && (
         <div className="text-center py-16 text-[#64748b]">
           <div className="text-4xl mb-3">⚡</div>
           <div className="font-semibold">

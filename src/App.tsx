@@ -13,18 +13,23 @@ import { Topbar, MobileTopbar } from "./components/layout/Topbar"
 import { Stars } from "./components/platform/Stars"
 import { Badge } from "./components/ui/Badge"
 import { useTheme } from "./design-system/ThemeProvider"
+import { useAuth } from "./contexts/AuthContext"
 import AdminPackagesPage from "./pages/AdminPackagesPage"
 import AdminPublicProfilePage from "./pages/AdminPublicProfilePage"
 import PackageComparisonPage from "./pages/PackageComparisonPage"
+import ContractGenerator from "./pages/ContractGenerator"
+import ContractsPage from "./pages/ContractsPage"
+import TicketsPage from "./pages/TicketsPage"
 import ToolsRentalPage from "./pages/ToolsRentalPage"
 import EditorsPage from "./pages/EditorsPage"
 import VibeCodersPage from "./pages/VibeCodersPage"
 import AiPage from "./pages/AiPage"
+import AuthPage from "./pages/AuthPage"
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 type Role = "employer" | "admin"
-type Page = "dashboard" | "marketplace" | "toolsRental" | "editors" | "vibeCoders" | "skills" | "contracts" | "ai" | "profile" | "packages" | "compare"
+type Page = "dashboard" | "marketplace" | "toolsRental" | "editors" | "vibeCoders" | "skills" | "contracts" | "contractsHistory" | "tickets" | "ai" | "profile" | "packages" | "compare"
 
 interface AppCtx {
   lang: Lang
@@ -254,231 +259,6 @@ const PLATFORM_LABELS: Record<string, string> = {
 }
 
 // ─── Platform Badge ───────────────────────────────────────────────────────────
-
-function AuthPage({ onLogin }: { onLogin: (role: Role) => void }) {
-  const { tr, dir, lang, setLang } = useApp()
-  const [tab, setTab] = useState<"login" | "register">("login")
-  const [role, setRole] = useState<Role>("employer")
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [name, setName] = useState("")
-
-  return (
-    <div className="min-h-screen flex" dir={dir}>
-      {/* Left panel — hero */}
-      <div className="hidden lg:flex lg:w-1/2 auth-gradient flex-col justify-between p-12 text-white relative overflow-hidden">
-        <div
-          className="absolute inset-0 opacity-10"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle at 20% 50%, #fff 1px, transparent 1px)",
-            backgroundSize: "32px 32px",
-          }}
-        />
-        <div className="relative z-10">
-          <div className="flex items-center gap-3 mb-16">
-            <div className="w-9 h-9 rounded-lg bg-amber-400 flex items-center justify-center">
-              <Icon name="bot" size={20} className="text-navy-900" />
-            </div>
-            <span className="text-xl font-bold">{tr.brand}</span>
-          </div>
-          <h1 className="text-4xl font-bold leading-tight mb-4">
-            {lang === "fa"
-              ? "بازار کار متخصصان دیجیتال"
-              : "The Digital Admin Marketplace"}
-          </h1>
-          <p className="text-blue-200 text-lg leading-relaxed">{tr.tagline}</p>
-        </div>
-
-        <div className="relative z-10 space-y-4">
-          {[
-            {
-              icon: "shield",
-              textEn: "Contract protection & substitute insurance",
-              textFa: "حفاظت قرارداد و بیمه جایگزینی",
-            },
-            {
-              icon: "check",
-              textEn: "100% verified professionals",
-              textFa: "۱۰۰٪ متخصصان تأییدشده",
-            },
-            {
-              icon: "bot",
-              textEn: "AI-powered matching & contract generation",
-              textFa: "تطابق هوشمند و تولید قرارداد با هوش مصنوعی",
-            },
-          ].map((item) => (
-            <div key={item.icon} className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
-                <Icon name={item.icon} size={16} className="text-white" />
-              </div>
-              <span className="text-blue-100 text-sm">
-                {lang === "fa" ? item.textFa : item.textEn}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Right panel — form */}
-      <div className="flex-1 flex flex-col justify-center px-6 sm:px-12 lg:px-16 py-12 bg-[#f2f5fa]">
-        {/* Language switcher */}
-        <div className="absolute top-6 end-6">
-          <button
-            onClick={() => setLang(lang === "fa" ? "en" : "fa")}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white border border-[#e2e8f0] text-sm font-medium text-[#1e3a5f] hover:bg-[#f2f5fa] transition-colors shadow-sm"
-          >
-            <span className="text-base">{lang === "fa" ? "🇬🇧" : "🇮🇷"}</span>
-            <span>{lang === "fa" ? "English" : "فارسی"}</span>
-          </button>
-        </div>
-
-        <div className="max-w-md w-full mx-auto">
-          {/* Logo on mobile */}
-          <div className="lg:hidden flex items-center gap-2 mb-8">
-            <div className="w-8 h-8 rounded-lg bg-[#1e3a5f] flex items-center justify-center">
-              <Icon name="bot" size={16} className="text-amber-400" />
-            </div>
-            <span className="text-lg font-bold text-[#1e3a5f]">{tr.brand}</span>
-          </div>
-
-          {/* Tabs */}
-          <div className="flex rounded-xl bg-white border border-[#e2e8f0] p-1 mb-8 shadow-sm">
-            {(["login", "register"] as const).map((t2) => (
-              <button
-                key={t2}
-                onClick={() => setTab(t2)}
-                className={`flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all btn-press ${
-                  tab === t2
-                    ? "bg-[#1e3a5f] text-white shadow-sm"
-                    : "text-[#64748b] hover:text-[#1e3a5f]"
-                }`}
-              >
-                {t2 === "login" ? tr.auth.login : tr.auth.register}
-              </button>
-            ))}
-          </div>
-
-          <div className="fade-in">
-            <h2 className="text-2xl font-bold text-[#0f172a] mb-1">
-              {tab === "login" ? tr.auth.loginTitle : tr.auth.registerTitle}
-            </h2>
-            <p className="text-[#64748b] text-sm mb-8">
-              {tab === "login" ? tr.auth.loginSub : tr.auth.registerSub}
-            </p>
-
-            {/* Role selector */}
-            <div className="mb-6">
-              <label className="block text-sm font-semibold text-[#0f172a] mb-3">
-                {tr.auth.role}
-              </label>
-              <div className="grid grid-cols-2 gap-3">
-                {(["employer", "admin"] as Role[]).map((r) => (
-                  <button
-                    key={r}
-                    onClick={() => setRole(r)}
-                    className={`p-4 rounded-xl border-2 text-start transition-all btn-press ${
-                      role === r
-                        ? "border-[#1e3a5f] bg-[#1e3a5f]/5"
-                        : "border-[#e2e8f0] bg-white hover:border-[#1e3a5f]/40"
-                    }`}
-                  >
-                    <div
-                      className={`text-sm font-bold mb-1 ${
-                        role === r ? "text-[#1e3a5f]" : "text-[#0f172a]"
-                      }`}
-                    >
-                      {r === "employer" ? tr.auth.employer : tr.auth.admin}
-                    </div>
-                    <div className="text-xs text-[#64748b] leading-snug">
-                      {r === "employer"
-                        ? tr.auth.employerDesc
-                        : tr.auth.adminDesc}
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Fields */}
-            <div className="space-y-4 mb-6">
-              {tab === "register" && (
-                <div>
-                  <label className="block text-sm font-semibold text-[#0f172a] mb-1.5">
-                    {tr.auth.name}
-                  </label>
-                  <input
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder={tr.auth.namePh}
-                    className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] bg-white text-sm text-[#0f172a] placeholder-[#94a3b8] focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all"
-                  />
-                </div>
-              )}
-              <div>
-                <label className="block text-sm font-semibold text-[#0f172a] mb-1.5">
-                  {tr.auth.email}
-                </label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder={tr.auth.emailPh}
-                  className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] bg-white text-sm text-[#0f172a] placeholder-[#94a3b8] focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all"
-                  dir="ltr"
-                />
-              </div>
-              <div>
-                <div className="flex items-center justify-between mb-1.5">
-                  <label className="text-sm font-semibold text-[#0f172a]">
-                    {tr.auth.password}
-                  </label>
-                  {tab === "login" && (
-                    <button className="text-xs text-[#1e3a5f] hover:underline">
-                      {tr.auth.forgotPw}
-                    </button>
-                  )}
-                </div>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder={tr.auth.passwordPh}
-                  className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] bg-white text-sm text-[#0f172a] placeholder-[#94a3b8] focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all"
-                  dir="ltr"
-                />
-              </div>
-            </div>
-
-            <button
-              onClick={() => onLogin(role)}
-              className="w-full py-3.5 rounded-xl bg-[#1e3a5f] text-white font-bold text-sm hover:bg-[#122435] transition-colors shadow-md btn-press mb-4"
-            >
-              {tab === "login" ? tr.auth.login : tr.auth.register}
-            </button>
-
-            <button
-              onClick={() => onLogin(role)}
-              className="w-full py-3 rounded-xl border border-[#e2e8f0] bg-white text-[#64748b] text-sm hover:bg-[#f2f5fa] transition-colors btn-press"
-            >
-              {tr.auth.demo} →
-            </button>
-
-            <p className="text-center text-sm text-[#64748b] mt-6">
-              {tab === "login" ? tr.auth.noAccount : tr.auth.haveAccount}{" "}
-              <button
-                onClick={() => setTab(tab === "login" ? "register" : "login")}
-                className="text-[#1e3a5f] font-semibold hover:underline"
-              >
-                {tab === "login" ? tr.auth.register : tr.auth.login}
-              </button>
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
 
 // ─── Employer Dashboard ───────────────────────────────────────────────────────
 
@@ -1299,413 +1079,6 @@ function Marketplace() {
 
 // ─── Contract Generator ───────────────────────────────────────────────────────
 
-function ContractGenerator() {
-  const { tr, lang } = useApp()
-  const [step, setStep] = useState(1)
-  const totalSteps = 5
-  const [form, setForm] = useState({
-    employerName: lang === "fa" ? "علی رضایی" : "Ali Rezaei",
-    employerCo: lang === "fa" ? "استارتاپ پارسه" : "Parseh Startup",
-    adminName: lang === "fa" ? "آریا احمدی" : "Arya Ahmadi",
-    projectTitle:
-      lang === "fa"
-        ? "مدیریت صفحه اینستاگرام برند"
-        : "Brand Instagram Page Management",
-    startDate: "2026-09-01",
-    endDate: "2026-12-01",
-    description:
-      lang === "fa"
-        ? "مدیریت کامل صفحه اینستاگرام برند شامل تولید محتوا، پست‌گذاری روزانه، پاسخ به کامنت‌ها و گزارش‌دهی هفتگی."
-        : "Full management of brand Instagram including content creation, daily posting, comment replies and weekly reporting.",
-    deliverables:
-      lang === "fa"
-        ? "۳۰ پست در ماه\n۱۰۰ استوری در ماه\nگزارش هفتگی آنالیتیکس\nمدیریت روزانه DM‌ها"
-        : "30 posts/month\n100 stories/month\nWeekly analytics report\nDaily DM management",
-    payType: "monthly",
-    amount: lang === "fa" ? "4500000" : "108",
-    currency: lang === "fa" ? "toman" : "usd",
-    paySchedule: "payMonthly",
-    termClause: tr.contract.termDefault,
-    subClause: tr.contract.subDefault,
-  })
-
-  const setF = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }))
-  const steps = [
-    tr.contract.step1,
-    tr.contract.step2,
-    tr.contract.step3,
-    tr.contract.step4,
-    tr.contract.step5,
-  ]
-
-  return (
-    <div className="p-6 lg:p-8 max-w-3xl mx-auto fade-in">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-[#0f172a]">
-          {tr.contract.title}
-        </h1>
-        <p className="text-[#64748b] mt-1">{tr.contract.sub}</p>
-      </div>
-
-      {/* Step indicators */}
-      <div className="flex items-center mb-8">
-        {steps.map((label, i) => (
-          <div key={i} className="flex items-center flex-1 last:flex-none">
-            <div className="flex flex-col items-center">
-              <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
-                  i + 1 < step
-                    ? "bg-emerald-500 text-white"
-                    : i + 1 === step
-                      ? "bg-[#1e3a5f] text-white"
-                      : "bg-[#e2e8f0] text-[#94a3b8]"
-                }`}
-              >
-                {i + 1 < step ? <Icon name="check" size={14} /> : i + 1}
-              </div>
-              <div
-                className={`text-xs mt-1 font-medium hidden sm:block ${
-                  i + 1 === step ? "text-[#1e3a5f]" : "text-[#94a3b8]"
-                }`}
-              >
-                {label}
-              </div>
-            </div>
-            {i < steps.length - 1 && (
-              <div
-                className={`step-connector mx-1 mt-0 sm:-mt-4 ${
-                  i + 1 < step ? "active" : ""
-                }`}
-              />
-            )}
-          </div>
-        ))}
-      </div>
-
-      {/* Step content */}
-      <div className="bg-white rounded-2xl border border-[#e2e8f0] p-6 mb-6">
-        {step === 1 && (
-          <div className="space-y-5 fade-in">
-            <h2 className="font-bold text-[#0f172a] text-lg">
-              {tr.contract.step1}
-            </h2>
-            <div className="grid sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-semibold text-[#0f172a] mb-1.5">
-                  {tr.contract.employerName}
-                </label>
-                <input
-                  value={form.employerName}
-                  onChange={(e) => setF("employerName", e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-[#0f172a] mb-1.5">
-                  {tr.contract.employerCo}
-                </label>
-                <input
-                  value={form.employerCo}
-                  onChange={(e) => setF("employerCo", e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all"
-                />
-              </div>
-            </div>
-            <div>
-              <label className="block text-sm font-semibold text-[#0f172a] mb-1.5">
-                {tr.contract.adminName}
-              </label>
-              <input
-                value={form.adminName}
-                onChange={(e) => setF("adminName", e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all"
-              />
-            </div>
-          </div>
-        )}
-
-        {step === 2 && (
-          <div className="space-y-5 fade-in">
-            <h2 className="font-bold text-[#0f172a] text-lg">
-              {tr.contract.step2}
-            </h2>
-            <div>
-              <label className="block text-sm font-semibold text-[#0f172a] mb-1.5">
-                {tr.contract.projectTitle}
-              </label>
-              <input
-                value={form.projectTitle}
-                onChange={(e) => setF("projectTitle", e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all"
-              />
-            </div>
-            <div className="grid sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-semibold text-[#0f172a] mb-1.5">
-                  {tr.contract.startDate}
-                </label>
-                <input
-                  type="date"
-                  value={form.startDate}
-                  onChange={(e) => setF("startDate", e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] transition-all"
-                  dir="ltr"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-[#0f172a] mb-1.5">
-                  {tr.contract.endDate}
-                </label>
-                <input
-                  type="date"
-                  value={form.endDate}
-                  onChange={(e) => setF("endDate", e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] transition-all"
-                  dir="ltr"
-                />
-              </div>
-            </div>
-            <div>
-              <label className="block text-sm font-semibold text-[#0f172a] mb-1.5">
-                {tr.contract.description}
-              </label>
-              <textarea
-                value={form.description}
-                onChange={(e) => setF("description", e.target.value)}
-                placeholder={tr.contract.descPh}
-                rows={4}
-                className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all resize-none"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-semibold text-[#0f172a] mb-1.5">
-                {tr.contract.deliverables}
-              </label>
-              <textarea
-                value={form.deliverables}
-                onChange={(e) => setF("deliverables", e.target.value)}
-                placeholder={tr.contract.delivPh}
-                rows={4}
-                className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all resize-none font-mono text-xs"
-              />
-            </div>
-          </div>
-        )}
-
-        {step === 3 && (
-          <div className="space-y-5 fade-in">
-            <h2 className="font-bold text-[#0f172a] text-lg">
-              {tr.contract.step3}
-            </h2>
-            <div>
-              <label className="block text-sm font-semibold text-[#0f172a] mb-2">
-                {tr.contract.payType}
-              </label>
-              <div className="grid grid-cols-3 gap-2">
-                {(["monthly", "hourly", "project"] as const).map((pt) => (
-                  <button
-                    key={pt}
-                    onClick={() => setF("payType", pt)}
-                    className={`py-2.5 rounded-xl text-xs font-bold border-2 transition-all btn-press ${
-                      form.payType === pt
-                        ? "border-[#1e3a5f] bg-[#1e3a5f]/5 text-[#1e3a5f]"
-                        : "border-[#e2e8f0] text-[#64748b]"
-                    }`}
-                  >
-                    {tr.contract[pt]}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div className="grid sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-semibold text-[#0f172a] mb-1.5">
-                  {tr.contract.amount}
-                </label>
-                <input
-                  value={form.amount}
-                  onChange={(e) => setF("amount", e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] transition-all"
-                  dir="ltr"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-[#0f172a] mb-1.5">
-                  {tr.contract.currency}
-                </label>
-                <select
-                  value={form.currency}
-                  onChange={(e) => setF("currency", e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] transition-all bg-white"
-                >
-                  <option value="toman">{tr.contract.toman}</option>
-                  <option value="usd">{tr.contract.usd}</option>
-                </select>
-              </div>
-            </div>
-            <div>
-              <label className="block text-sm font-semibold text-[#0f172a] mb-2">
-                {tr.contract.paySchedule}
-              </label>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                {(["weekly", "biweekly", "payMonthly", "upfront"] as const).map(
-                  (ps) => (
-                    <button
-                      key={ps}
-                      onClick={() => setF("paySchedule", ps)}
-                      className={`py-2 rounded-xl text-xs font-semibold border-2 transition-all btn-press ${
-                        form.paySchedule === ps
-                          ? "border-[#1e3a5f] bg-[#1e3a5f]/5 text-[#1e3a5f]"
-                          : "border-[#e2e8f0] text-[#64748b]"
-                      }`}
-                    >
-                      {tr.contract[ps]}
-                    </button>
-                  ),
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {step === 4 && (
-          <div className="space-y-5 fade-in">
-            <h2 className="font-bold text-[#0f172a] text-lg">
-              {tr.contract.step4}
-            </h2>
-            <div>
-              <label className="block text-sm font-semibold text-[#0f172a] mb-1.5">
-                {tr.contract.termClause}
-              </label>
-              <textarea
-                value={form.termClause}
-                onChange={(e) => setF("termClause", e.target.value)}
-                rows={5}
-                className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] transition-all resize-none text-[#64748b] leading-relaxed"
-              />
-            </div>
-            <div>
-              <div className="flex items-center gap-2 mb-1.5">
-                <label className="text-sm font-semibold text-[#0f172a]">
-                  {tr.contract.subClause}
-                </label>
-                <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold flex items-center gap-1">
-                  <Icon name="shield" size={11} />
-                  {lang === "fa" ? "بیمه ادمین‌هاب" : "AdminHub Insurance"}
-                </span>
-              </div>
-              <textarea
-                value={form.subClause}
-                onChange={(e) => setF("subClause", e.target.value)}
-                rows={5}
-                className="w-full px-4 py-3 rounded-xl border border-emerald-200 bg-emerald-50 text-sm focus:border-emerald-400 transition-all resize-none text-[#64748b] leading-relaxed"
-              />
-            </div>
-          </div>
-        )}
-
-        {step === 5 && (
-          <div className="fade-in">
-            <div className="flex items-center justify-between mb-5">
-              <h2 className="font-bold text-[#0f172a] text-lg">
-                {tr.contract.contractPreview}
-              </h2>
-              <span className="px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold">
-                {lang === "fa" ? "آماده برای امضا" : "Ready for Signing"}
-              </span>
-            </div>
-            <div className="bg-[#f8fafc] rounded-xl border border-[#e2e8f0] p-6 text-sm leading-relaxed text-[#0f172a] font-mono space-y-4 max-h-80 overflow-y-auto">
-              <div className="text-center font-bold text-base text-[#1e3a5f] pb-4 border-b border-[#e2e8f0]">
-                {tr.contract.partiesTitle}
-              </div>
-              <p>
-                {tr.contract.between} <strong>{form.employerName}</strong>{" "}
-                {form.employerCo ? `(${form.employerCo})` : ""},{" "}
-                {tr.contract.partyEmployer},<br />
-                {tr.contract.and} <strong>{form.adminName}</strong>,{" "}
-                {tr.contract.partyAdmin}.
-              </p>
-              <p>
-                <strong>{lang === "fa" ? "پروژه:" : "Project:"}</strong>{" "}
-                {form.projectTitle}
-              </p>
-              <p>
-                <strong>{lang === "fa" ? "مدت:" : "Duration:"}</strong>{" "}
-                {form.startDate} → {form.endDate}
-              </p>
-              <p>
-                <strong>{lang === "fa" ? "توضیحات:" : "Description:"}</strong>
-                <br />
-                {form.description}
-              </p>
-              <p>
-                <strong>{lang === "fa" ? "تحویلی‌ها:" : "Deliverables:"}</strong>
-                <br />
-                {form.deliverables.split("\n").map((d, i) => (
-                  <span key={i}>
-                    • {d}
-                    <br />
-                  </span>
-                ))}
-              </p>
-              <p>
-                <strong>{lang === "fa" ? "پرداخت:" : "Payment:"}</strong>{" "}
-                {form.amount}{" "}
-                {form.currency === "toman"
-                  ? tr.contract.toman
-                  : tr.contract.usd}
-              </p>
-              <p>
-                <strong>{lang === "fa" ? "بند فسخ:" : "Termination:"}</strong>
-                <br />
-                {form.termClause}
-              </p>
-              <p>
-                <strong>
-                  {lang === "fa"
-                    ? "بیمه و جایگزینی:"
-                    : "Substitution & Insurance:"}
-                </strong>
-                <br />
-                {form.subClause}
-              </p>
-            </div>
-            <div className="mt-4 grid sm:grid-cols-2 gap-3">
-              <button className="py-3 rounded-xl border-2 border-[#1e3a5f] text-[#1e3a5f] text-sm font-bold hover:bg-[#1e3a5f]/5 transition-colors btn-press">
-                {tr.contract.downloadPdf}
-              </button>
-              <button className="py-3 rounded-xl bg-emerald-500 text-white text-sm font-bold hover:bg-emerald-600 transition-colors shadow-md btn-press">
-                {tr.contract.sendForSigning}
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Navigation */}
-      <div className="flex justify-between">
-        <button
-          onClick={() => setStep(Math.max(1, step - 1))}
-          disabled={step === 1}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-[#e2e8f0] text-sm font-semibold text-[#64748b] hover:bg-[#f2f5fa] disabled:opacity-40 disabled:cursor-not-allowed transition-all btn-press"
-        >
-          <Icon name="chevronLeft" size={16} className="rtl:rotate-180" />
-          {tr.contract.prev}
-        </button>
-        {step < totalSteps ? (
-          <button
-            onClick={() => setStep(Math.min(totalSteps, step + 1))}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#1e3a5f] text-white text-sm font-bold hover:bg-[#122435] transition-colors shadow-md btn-press"
-          >
-            {tr.contract.next}
-            <Icon name="chevronRight" size={16} className="rtl:rotate-180" />
-          </button>
-        ) : null}
-      </div>
-    </div>
-  )
-}
-
 // ─── Placeholder Page ─────────────────────────────────────────────────────────
 
 function PlaceholderPage({
@@ -1736,15 +1109,15 @@ function PlaceholderPage({
 
 export default function App() {
   const { theme, toggleTheme, fontSize, setFontSize } = useTheme()
+  const { user, isLoading, logout } = useAuth()
   const { pathname } = useLocation()
   const navigate = useNavigate()
   const [lang, setLang] = useState<Lang>("fa")
-  const [isAuth, setIsAuth] = useState(false)
-  const [role, setRole] = useState<Role>("employer")
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const dir = lang === "fa" ? "rtl" : "ltr"
   const tr = t[lang]
+  const role = (user?.role as Role) || "employer"
 
   const page = (
     pathname === "/marketplace"
@@ -1759,15 +1132,19 @@ export default function App() {
               ? "skills"
               : pathname === "/contracts"
                 ? "contracts"
-                : pathname.startsWith("/ai")
-                  ? "ai"
-                  : pathname === "/packages"
-                    ? "packages"
-                    : pathname === "/compare"
-                      ? "compare"
-                      : pathname === "/profile"
-                        ? "profile"
-                        : "dashboard"
+                : pathname === "/contracts/history"
+                  ? "contractsHistory"
+                  : pathname.startsWith("/tickets")
+                    ? "tickets"
+                    : pathname.startsWith("/ai")
+                      ? "ai"
+                      : pathname === "/packages"
+                        ? "packages"
+                        : pathname === "/compare"
+                          ? "compare"
+                          : pathname === "/profile"
+                            ? "profile"
+                            : "dashboard"
   ) as Page
 
   const navItems: {
@@ -1807,13 +1184,17 @@ export default function App() {
                 ? tr.nav.skills
                 : page === "contracts"
                   ? tr.nav.contracts
-                  : page === "packages"
-                    ? tr.nav.packages
-                    : page === "compare"
-                      ? tr.nav.compare
-                      : page === "ai"
-                        ? tr.nav.ai
-                        : tr.nav.profile
+                  : page === "contractsHistory"
+                    ? lang === "fa" ? "قراردادهای من" : "My Contracts"
+                    : page === "tickets"
+                      ? tr.tickets.title
+                      : page === "packages"
+                        ? tr.nav.packages
+                        : page === "compare"
+                          ? tr.nav.compare
+                          : page === "ai"
+                            ? tr.nav.ai
+                            : tr.nav.profile
 
   const ctx: AppCtx = {
     lang,
@@ -1826,22 +1207,33 @@ export default function App() {
   }
 
   const handleLogin = (r: Role) => {
-    setRole(r)
-    setIsAuth(true)
     navigate("/dashboard")
   }
 
-  const handleLogout = () => {
-    setIsAuth(false)
+  const handleLogout = async () => {
+    await logout()
     navigate("/")
     setMobileMenuOpen(false)
   }
 
-  if (!isAuth) {
+  if (!user && !isLoading) {
     return (
       <Ctx.Provider value={ctx}>
-        <AuthPage onLogin={handleLogin} />
+        <AuthPage
+          lang={lang}
+          tr={tr}
+          dir={dir}
+          setLang={setLang}
+        />
       </Ctx.Provider>
+    )
+  }
+
+  if (isLoading || !user) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+      </div>
     )
   }
 
@@ -1967,7 +1359,31 @@ export default function App() {
               path="/contracts"
               element={
                 <div className="flex-1 overflow-y-auto">
-                  <ContractGenerator />
+                  <ContractGenerator tr={tr} lang={lang} />
+                </div>
+              }
+            />
+            <Route
+              path="/contracts/history"
+              element={
+                <div className="flex-1 overflow-y-auto">
+                  <ContractsPage tr={tr} lang={lang} />
+                </div>
+              }
+            />
+            <Route
+              path="/tickets"
+              element={
+                <div className="flex-1 overflow-y-auto">
+                  <TicketsPage tr={tr} lang={lang} />
+                </div>
+              }
+            />
+            <Route
+              path="/tickets/:ticketId"
+              element={
+                <div className="flex-1 overflow-y-auto">
+                  <TicketsPage tr={tr} lang={lang} />
                 </div>
               }
             />

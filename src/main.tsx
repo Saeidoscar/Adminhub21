@@ -5,17 +5,20 @@ import App from "./App"
 import { ThemeProvider } from "./design-system/ThemeProvider"
 import { PackageProvider } from "./contexts/PackageContext"
 import { AiProvider } from "./contexts/AiContext"
+import { AuthProvider } from "./contexts/AuthContext"
 import "./index.css"
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <BrowserRouter>
       <ThemeProvider>
-        <PackageProvider>
-          <AiProvider>
-            <App />
-          </AiProvider>
-        </PackageProvider>
+        <AuthProvider>
+          <PackageProvider>
+            <AiProvider>
+              <App />
+            </AiProvider>
+          </PackageProvider>
+        </AuthProvider>
       </ThemeProvider>
     </BrowserRouter>
   </React.StrictMode>,
