@@ -37,9 +37,19 @@ async function seed() {
   await clearTables()
 
   console.log("[seed] inserting users...")
-  const [superAdminUser, adminUser, employerUser] = await db
+  const [mainUser, superAdminUser, adminUser, employerUser] = await db
     .insert(schema.users)
     .values([
+      {
+        email: "s.saeid.sr@gmail.com",
+        passwordHash: await hashPassword("13799731"),
+        role: "super_admin",
+        nameEn: "Saeid",
+        nameFa: "سعید",
+        phone: "+989000000000",
+        photo: "https://i.pravatar.cc/150?u=saeid",
+        phoneVerified: true,
+      },
       {
         email: "superadmin@adminhub.ir",
         passwordHash: await hashPassword("password123"),
@@ -505,6 +515,7 @@ async function seed() {
 
   console.log("[seed] inserting event and timelog...")
   await db.insert(schema.events).values([
+    { userId: mainUser.id, title: "Super Admin Review", description: "Review pending content moderation items", startAt: "2025-02-01T14:00:00Z", endAt: "2025-02-01T15:00:00Z", allDay: false, color: "#3b82f6" },
     { userId: adminUser.id, title: "Content Review", description: "Weekly content review meeting", startAt: "2025-02-01T14:00:00Z", endAt: "2025-02-01T15:00:00Z", allDay: false, color: "#3b82f6" },
     { userId: employerUser.id, title: "Campaign Kickoff", description: "Q1 campaign kickoff call", startAt: "2025-02-05T10:00:00Z", endAt: "2025-02-05T11:00:00Z", allDay: false, color: "#10b981" },
   ])
@@ -523,7 +534,7 @@ async function seed() {
   const [ticket1] = await db
     .insert(schema.tickets)
     .values({
-      userId: employerUser.id,
+      userId: mainUser.id,
       subject: "Payment issue with contract",
       category: "billing",
       priority: "high",
@@ -539,7 +550,7 @@ async function seed() {
   const [story1] = await db
     .insert(schema.stories)
     .values({
-      authorId: adminUser.id,
+      authorId: mainUser.id,
       title: "How I Grew 50k Instagram Followers",
       content: "In this story I share my proven strategies for growing Instagram followers organically...",
       coverUrl: "https://example.com/stories/1.jpg",
@@ -551,7 +562,7 @@ async function seed() {
   const [blog1] = await db
     .insert(schema.blogs)
     .values({
-      authorId: adminUser.id,
+      authorId: mainUser.id,
       title: "The Future of Social Media Marketing in Iran",
       content: "Social media marketing in Iran is evolving rapidly. Here are the key trends to watch in 2025...",
       coverUrl: "https://example.com/blogs/1.jpg",
