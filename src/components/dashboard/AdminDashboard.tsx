@@ -1,15 +1,15 @@
 import { useState, useEffect } from "react"
-import { t, type Lang } from "../i18n"
-import { Icon } from "../components/layout/Icon"
-import { Button } from "../components/ui/Button"
-import { Input, Textarea, Select } from "../components/ui/Input"
+import { t, type Lang } from "../../i18n"
+import { Icon } from "../../components/layout/Icon"
+import { Button } from "../../components/ui/Button"
+import { Input, Textarea, Select } from "../../components/ui/Input"
 import {
   listAdminProfiles,
   listPackages,
   updatePackage,
   type AdminProfile,
   type ContractPackage,
-} from "../lib/api"
+} from "../../lib/api"
 
 const PLATFORM_LABELS: Record<string, string> = {
   instagram: "Instagram",

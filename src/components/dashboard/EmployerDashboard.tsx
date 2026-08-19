@@ -1,15 +1,16 @@
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
-import { t, type Lang } from "../i18n"
-import { Icon } from "../components/layout/Icon"
-import { Badge } from "../components/ui/Badge"
+import { t, type Lang } from "../../i18n"
+import { Icon } from "../../components/layout/Icon"
+import { Badge } from "../../components/ui/Badge"
 import {
   listContracts,
   getWallet,
   listFavorites,
   type ContractRow,
   type WalletRow,
-} from "../lib/api"
+} from "../../lib/api"
+import { useAuth } from "../../contexts/AuthContext"
 
 const PLATFORM_LABELS: Record<string, string> = {
   instagram: "Instagram",
@@ -31,6 +32,7 @@ export default function EmployerDashboard({
   tr,
 }: EmployerDashboardProps) {
   const navigate = useNavigate()
+  const { user } = useAuth()
   const [loading, setLoading] = useState(true)
   const [contracts, setContracts] = useState<ContractRow[]>([])
   const [wallet, setWallet] = useState<WalletRow | null>(null)
@@ -41,6 +43,8 @@ export default function EmployerDashboard({
     lang === "fa"
       ? `${(toman / 1000000).toFixed(1)}M ${tr.common.toman}`
       : `$${usd}`
+
+  const userName = lang === "fa" ? (user?.nameFa || "علی") : (user?.nameEn || "Ali")
 
   useEffect(() => {
     let cancelled = false
@@ -122,7 +126,7 @@ export default function EmployerDashboard({
     <div className="p-6 lg:p-8 max-w-6xl mx-auto fade-in">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-[#0f172a]">
-          {tr.dash.hello}, {lang === "fa" ? "علی" : "Ali"} 👋
+          {tr.dash.hello}, {userName} 👋
         </h1>
         <p className="text-[#64748b] mt-1">{tr.dash.overviewTitle}</p>
       </div>
