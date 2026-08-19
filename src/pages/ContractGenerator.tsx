@@ -696,7 +696,47 @@ export default function ContractGenerator({
               </div>
             )}
             <div className="mt-4 grid sm:grid-cols-2 gap-3">
-              <button className="py-3 rounded-xl border-2 border-[#1e3a5f] text-[#1e3a5f] text-sm font-bold hover:bg-[#1e3a5f]/5 transition-colors btn-press">
+              <button
+                onClick={() => {
+                  const admin = admins.find((a) => a.id === form.adminId)
+                  const lines = [
+                    "CONTRACT",
+                    "=".repeat(40),
+                    "",
+                    `Employer: ${form.employerName}${form.employerCo ? ` (${form.employerCo})` : ""}`,
+                    `Admin: ${admin?.nameEn || form.adminId}`,
+                    `Platform: ${form.platform}`,
+                    `Project: ${form.projectTitle}`,
+                    `Duration: ${form.startDate} → ${form.endDate}`,
+                    `Payment: ${form.amount} ${form.currency === "toman" ? "Toman" : "USD"}`,
+                    `Pay Schedule: ${form.paySchedule}`,
+                    "",
+                    "DESCRIPTION",
+                    form.description,
+                    "",
+                    "DELIVERABLES",
+                    form.deliverables,
+                    "",
+                    "TERMINATION CLAUSE",
+                    form.termClause,
+                    "",
+                    "SUBSTITUTION & INSURANCE",
+                    form.subClause,
+                    `Insurance: ${form.hasInsurance ? "Yes" : "No"}`,
+                    `Substitute: ${form.hasSubstitute ? "Yes" : "No"}`,
+                  ]
+                  const blob = new Blob([lines.join("\n")], { type: "text/plain" })
+                  const url = URL.createObjectURL(blob)
+                  const a = document.createElement("a")
+                  a.href = url
+                  a.download = `contract-${form.projectTitle.replace(/\s+/g, "-").toLowerCase()}.txt`
+                  document.body.appendChild(a)
+                  a.click()
+                  document.body.removeChild(a)
+                  URL.revokeObjectURL(url)
+                }}
+                className="py-3 rounded-xl border-2 border-[#1e3a5f] text-[#1e3a5f] text-sm font-bold hover:bg-[#1e3a5f]/5 transition-colors btn-press"
+              >
                 {tr.contract.downloadPdf}
               </button>
               <button

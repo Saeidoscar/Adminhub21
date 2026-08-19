@@ -3,10 +3,12 @@ import { t, type Lang } from "../../i18n"
 import { Icon } from "../../components/layout/Icon"
 import { Button } from "../../components/ui/Button"
 import { Input, Textarea, Select } from "../../components/ui/Input"
+import { Skeleton, CardSkeleton } from "../../components/ui/Skeleton"
 import {
   listAdminProfiles,
   listPackages,
   updatePackage,
+  updateAdminProfile,
   type AdminProfile,
   type ContractPackage,
 } from "../../lib/api"
@@ -129,18 +131,14 @@ export default function AdminDashboard({
     setSaving(true)
     setSaveMsg(null)
     try {
-      // Note: PUT /api/admin-profiles/me requires auth and updates current user's profile
-      // For now, we update locally since the "me" endpoint needs specific auth setup
-      setProfile((prev) =>
-        prev
-          ? {
-              ...prev,
-              bioEn: lang === "en" ? bio : prev.bioEn,
-              bioFa: lang === "fa" ? bio : prev.bioFa,
-              platforms: selectedPlatforms,
-            }
-          : prev,
-      )
+      const updated = await updateAdminProfile({
+        bioEn: lang === "en" ? bio : profile.bioEn,
+        bioFa: lang === "fa" ? bio : profile.bioFa,
+        platforms: selectedPlatforms,
+        monthlyToman: parseInt(prices.basic) || profile.monthlyToman,
+        monthlyUSD: profile.monthlyUSD,
+      })
+      setProfile(updated)
       setSaveMsg(lang === "fa" ? "پروفایل ذخیره شد" : "Profile saved")
       setTimeout(() => setSaveMsg(null), 3000)
     } catch {
@@ -169,7 +167,19 @@ export default function AdminDashboard({
   if (loading) {
     return (
       <div className="p-6 lg:p-8 max-w-5xl mx-auto fade-in">
-        <div className="text-center py-12 text-[#64748b]">{tr.common.loading}</div>
+        <Skeleton className="h-8 w-48 mb-2" />
+        <Skeleton className="h-4 w-96 mb-8" />
+        <div className="grid lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 space-y-4">
+            <CardSkeleton />
+            <CardSkeleton />
+            <CardSkeleton />
+          </div>
+          <div className="space-y-4">
+            <Skeleton className="h-48 rounded-2xl" />
+            <Skeleton className="h-32 rounded-2xl" />
+          </div>
+        </div>
       </div>
     )
   }

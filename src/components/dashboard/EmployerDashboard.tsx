@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom"
 import { t, type Lang } from "../../i18n"
 import { Icon } from "../../components/layout/Icon"
 import { Badge } from "../../components/ui/Badge"
+import { StatCardSkeleton, TableRowSkeleton, Skeleton } from "../../components/ui/Skeleton"
 import {
   listContracts,
   getWallet,
@@ -152,7 +153,23 @@ export default function EmployerDashboard({
       </div>
 
       {loading ? (
-        <div className="text-center py-12 text-[#64748b]">{tr.common.loading}</div>
+        <div className="grid lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 space-y-4">
+            <div className="bg-white rounded-2xl border border-[#e2e8f0] p-6">
+              <Skeleton className="h-5 w-40 mb-4" />
+              <div className="space-y-3">
+                <TableRowSkeleton />
+                <TableRowSkeleton />
+                <TableRowSkeleton />
+              </div>
+            </div>
+          </div>
+          <div className="space-y-4">
+            <Skeleton className="h-40 rounded-2xl" />
+            <Skeleton className="h-48 rounded-2xl" />
+            <Skeleton className="h-40 rounded-2xl" />
+          </div>
+        </div>
       ) : (
         <div className="grid lg:grid-cols-3 gap-6">
           {/* Recent Contracts */}

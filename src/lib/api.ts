@@ -128,6 +128,31 @@ export async function getAdminProfile(
   return unwrapItem<AdminProfile>(payload, "profile")
 }
 
+export interface UpdateAdminProfileInput {
+  photo?: string
+  bioEn?: string
+  bioFa?: string
+  skillsEn?: string[]
+  skillsFa?: string[]
+  platforms?: PlatformKey[]
+  monthlyToman?: number
+  monthlyUSD?: number
+}
+
+export async function updateAdminProfile(
+  data: UpdateAdminProfileInput,
+): Promise<AdminProfile> {
+  const payload = await apiFetch<Record<string, unknown>>(
+    `/api/admin-profiles/me`,
+    {
+      method: "PUT",
+      body: JSON.stringify(data),
+    },
+  )
+
+  return unwrapItem<AdminProfile>(payload, "profile")
+}
+
 export interface ListPackagesQuery {
   platforms?: PlatformKey[]
 

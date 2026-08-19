@@ -76,6 +76,8 @@ function PlaceholderPage({
 
 // ─── Main App ─────────────────────────────────────────────────────────────────
 
+import { ErrorBoundary } from "./components/ui/ErrorBoundary"
+
 export default function App() {
   const { theme, toggleTheme, fontSize, setFontSize } = useTheme()
   const { user, isLoading, logout } = useAuth()
@@ -207,240 +209,242 @@ export default function App() {
   }
 
   return (
-    <Ctx.Provider value={ctx}>
-      <div className="flex h-screen bg-[#f2f5fa] overflow-hidden" dir={dir}>
-        {/* Desktop Sidebar */}
-        <div className="hidden lg:flex flex-col flex-shrink-0 w-64 h-full">
-          <Sidebar role={role} onLogout={handleLogout} navItems={navItems} />
-        </div>
-
-        {/* Mobile Sidebar overlay */}
-        {mobileMenuOpen && (
-          <div className="lg:hidden fixed inset-0 z-50 flex" dir={dir}>
-            <div
-              className="absolute inset-0 bg-black/50"
-              onClick={() => setMobileMenuOpen(false)}
-            />
-            <div className="relative z-10 w-72 h-full">
-              <Sidebar
-                role={role}
-                onLogout={handleLogout}
-                mobile
-                onClose={() => setMobileMenuOpen(false)}
-                navItems={navItems}
-              />
-            </div>
+    <ErrorBoundary>
+      <Ctx.Provider value={ctx}>
+        <div className="flex h-screen bg-[#f2f5fa] overflow-hidden" dir={dir}>
+          {/* Desktop Sidebar */}
+          <div className="hidden lg:flex flex-col flex-shrink-0 w-64 h-full">
+            <Sidebar role={role} onLogout={handleLogout} navItems={navItems} />
           </div>
-        )}
 
-        {/* Main content */}
-        <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-          {/* Mobile topbar */}
-          <MobileTopbar
-            pageTitle={pageTitle}
-            lang={lang}
-            onToggleLang={() => setLang(lang === "fa" ? "en" : "fa")}
-            onToggleMobileMenu={() => setMobileMenuOpen(true)}
-            theme={theme}
-            onToggleTheme={toggleTheme}
-            fontSize={fontSize}
-            onChangeFontSize={setFontSize}
-          />
+          {/* Mobile Sidebar overlay */}
+          {mobileMenuOpen && (
+            <div className="lg:hidden fixed inset-0 z-50 flex" dir={dir}>
+              <div
+                className="absolute inset-0 bg-black/50"
+                onClick={() => setMobileMenuOpen(false)}
+              />
+              <div className="relative z-10 w-72 h-full">
+                <Sidebar
+                  role={role}
+                  onLogout={handleLogout}
+                  mobile
+                  onClose={() => setMobileMenuOpen(false)}
+                  navItems={navItems}
+                />
+              </div>
+            </div>
+          )}
 
-          {/* Desktop topbar */}
-          <Topbar
-            pageTitle={pageTitle}
-            lang={lang}
-            onToggleLang={() => setLang(lang === "fa" ? "en" : "fa")}
-            onToggleMobileMenu={() => setMobileMenuOpen(true)}
-            userName={lang === "fa" ? user?.nameFa || "علی" : user?.nameEn || "Ali"}
-            userInitial={lang === "fa" ? (user?.nameFa?.charAt(0) || "ع") : (user?.nameEn?.charAt(0) || "A")}
-            theme={theme}
-            onToggleTheme={toggleTheme}
-            fontSize={fontSize}
-            onChangeFontSize={setFontSize}
-          />
+          {/* Main content */}
+          <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+            {/* Mobile topbar */}
+            <MobileTopbar
+              pageTitle={pageTitle}
+              lang={lang}
+              onToggleLang={() => setLang(lang === "fa" ? "en" : "fa")}
+              onToggleMobileMenu={() => setMobileMenuOpen(true)}
+              theme={theme}
+              onToggleTheme={toggleTheme}
+              fontSize={fontSize}
+              onChangeFontSize={setFontSize}
+            />
 
-          {/* Page routes */}
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <ProtectedRoute>
-                  <div className="flex-1 overflow-y-auto">
-                    {role === "employer" ? (
-                      <EmployerDashboard lang={lang} tr={tr} role={role} />
-                    ) : (
-                      <AdminDashboard lang={lang} tr={tr} />
-                    )}
-                  </div>
-                </ProtectedRoute>
-              }
+            {/* Desktop topbar */}
+            <Topbar
+              pageTitle={pageTitle}
+              lang={lang}
+              onToggleLang={() => setLang(lang === "fa" ? "en" : "fa")}
+              onToggleMobileMenu={() => setMobileMenuOpen(true)}
+              userName={lang === "fa" ? user?.nameFa || "علی" : user?.nameEn || "Ali"}
+              userInitial={lang === "fa" ? (user?.nameFa?.charAt(0) || "ع") : (user?.nameEn?.charAt(0) || "A")}
+              theme={theme}
+              onToggleTheme={toggleTheme}
+              fontSize={fontSize}
+              onChangeFontSize={setFontSize}
             />
-            <Route
-              path="/marketplace"
-              element={
-                <ProtectedRoute>
-                  <div className="flex-1 overflow-y-auto">
-                    <Marketplace lang={lang} tr={tr} />
-                  </div>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/tools-rental"
-              element={
-                <ProtectedRoute>
-                  <div className="flex-1 overflow-y-auto">
-                    <ToolsRentalPage tr={tr} lang={lang} />
-                  </div>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/editors"
-              element={
-                <ProtectedRoute>
-                  <div className="flex-1 overflow-y-auto">
-                    <EditorsPage tr={tr} lang={lang} />
-                  </div>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/vibe-coders"
-              element={
-                <ProtectedRoute>
-                  <div className="flex-1 overflow-y-auto">
-                    <VibeCodersPage tr={tr} lang={lang} />
-                  </div>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/skills"
-              element={
-                <ProtectedRoute>
-                  <div className="flex-1 overflow-y-auto">
-                    <PlaceholderPage
-                      title={tr.nav.skills}
-                      subtitle={
-                        lang === "fa"
-                          ? "بزودی قابل استفاده خواهد بود"
-                          : "Coming soon"
-                      }
-                    />
-                  </div>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/contracts"
-              element={
-                <ProtectedRoute>
-                  <div className="flex-1 overflow-y-auto">
-                    <ContractGenerator tr={tr} lang={lang} />
-                  </div>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/contracts/history"
-              element={
-                <ProtectedRoute>
-                  <div className="flex-1 overflow-y-auto">
-                    <ContractsPage tr={tr} lang={lang} />
-                  </div>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/tickets"
-              element={
-                <ProtectedRoute>
-                  <div className="flex-1 overflow-y-auto">
-                    <TicketsPage tr={tr} lang={lang} />
-                  </div>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/tickets/:ticketId"
-              element={
-                <ProtectedRoute>
-                  <div className="flex-1 overflow-y-auto">
-                    <TicketsPage tr={tr} lang={lang} />
-                  </div>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/packages"
-              element={
-                <ProtectedRoute>
-                  <div className="flex-1 overflow-y-auto">
-                    <AdminPackagesPage />
-                  </div>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/:adminId"
-              element={
-                <ProtectedRoute>
-                  <div className="flex-1 overflow-y-auto">
-                    <AdminPublicProfilePage />
-                  </div>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/compare"
-              element={
-                <ProtectedRoute>
-                  <div className="flex-1 overflow-y-auto">
-                    <PackageComparisonPage />
-                  </div>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/ai"
-              element={
-                <ProtectedRoute>
-                  <div className="flex-1 overflow-hidden flex flex-col">
-                    <AiPage />
-                  </div>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/ai/:conversationId"
-              element={
-                <ProtectedRoute>
-                  <div className="flex-1 overflow-hidden flex flex-col">
-                    <AiPage />
-                  </div>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/profile"
-              element={
-                <ProtectedRoute>
-                  <div className="flex-1 overflow-y-auto">
-                    {role === "admin" ? (
-                      <AdminDashboard lang={lang} tr={tr} />
-                    ) : (
-                      <EmployerDashboard lang={lang} tr={tr} role={role} />
-                    )}
-                  </div>
-                </ProtectedRoute>
-              }
-            />
-          </Routes>
+
+            {/* Page routes */}
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <ProtectedRoute>
+                    <div className="flex-1 overflow-y-auto">
+                      {role === "employer" ? (
+                        <EmployerDashboard lang={lang} tr={tr} role={role} />
+                      ) : (
+                        <AdminDashboard lang={lang} tr={tr} />
+                      )}
+                    </div>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/marketplace"
+                element={
+                  <ProtectedRoute>
+                    <div className="flex-1 overflow-y-auto">
+                      <Marketplace lang={lang} tr={tr} />
+                    </div>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/tools-rental"
+                element={
+                  <ProtectedRoute>
+                    <div className="flex-1 overflow-y-auto">
+                      <ToolsRentalPage tr={tr} lang={lang} />
+                    </div>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/editors"
+                element={
+                  <ProtectedRoute>
+                    <div className="flex-1 overflow-y-auto">
+                      <EditorsPage tr={tr} lang={lang} />
+                    </div>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/vibe-coders"
+                element={
+                  <ProtectedRoute>
+                    <div className="flex-1 overflow-y-auto">
+                      <VibeCodersPage tr={tr} lang={lang} />
+                    </div>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/skills"
+                element={
+                  <ProtectedRoute>
+                    <div className="flex-1 overflow-y-auto">
+                      <PlaceholderPage
+                        title={tr.nav.skills}
+                        subtitle={
+                          lang === "fa"
+                            ? "بزودی قابل استفاده خواهد بود"
+                            : "Coming soon"
+                        }
+                      />
+                    </div>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/contracts"
+                element={
+                  <ProtectedRoute>
+                    <div className="flex-1 overflow-y-auto">
+                      <ContractGenerator tr={tr} lang={lang} />
+                    </div>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/contracts/history"
+                element={
+                  <ProtectedRoute>
+                    <div className="flex-1 overflow-y-auto">
+                      <ContractsPage tr={tr} lang={lang} />
+                    </div>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/tickets"
+                element={
+                  <ProtectedRoute>
+                    <div className="flex-1 overflow-y-auto">
+                      <TicketsPage tr={tr} lang={lang} />
+                    </div>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/tickets/:ticketId"
+                element={
+                  <ProtectedRoute>
+                    <div className="flex-1 overflow-y-auto">
+                      <TicketsPage tr={tr} lang={lang} />
+                    </div>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/packages"
+                element={
+                  <ProtectedRoute>
+                    <div className="flex-1 overflow-y-auto">
+                      <AdminPackagesPage />
+                    </div>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/:adminId"
+                element={
+                  <ProtectedRoute>
+                    <div className="flex-1 overflow-y-auto">
+                      <AdminPublicProfilePage />
+                    </div>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/compare"
+                element={
+                  <ProtectedRoute>
+                    <div className="flex-1 overflow-y-auto">
+                      <PackageComparisonPage />
+                    </div>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/ai"
+                element={
+                  <ProtectedRoute>
+                    <div className="flex-1 overflow-hidden flex flex-col">
+                      <AiPage />
+                    </div>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/ai/:conversationId"
+                element={
+                  <ProtectedRoute>
+                    <div className="flex-1 overflow-hidden flex flex-col">
+                      <AiPage />
+                    </div>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/profile"
+                element={
+                  <ProtectedRoute>
+                    <div className="flex-1 overflow-y-auto">
+                      {role === "admin" ? (
+                        <AdminDashboard lang={lang} tr={tr} />
+                      ) : (
+                        <EmployerDashboard lang={lang} tr={tr} role={role} />
+                      )}
+                    </div>
+                  </ProtectedRoute>
+                }
+              />
+            </Routes>
+          </div>
         </div>
-      </div>
-    </Ctx.Provider>
+      </Ctx.Provider>
+    </ErrorBoundary>
   )
 }
