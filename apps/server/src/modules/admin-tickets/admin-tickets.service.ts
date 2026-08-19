@@ -93,12 +93,13 @@ export async function getTicketById(id: string): Promise<TicketRow | null> {
 
 export async function updateTicketStatus(
   id: string,
-  data: { status: string },
+  data: { status?: string; priority?: string },
 ): Promise<TicketRow> {
   const [row] = await db
     .update(tickets)
     .set({
-      status: data.status,
+      ...(data.status ? { status: data.status } : {}),
+      ...(data.priority ? { priority: data.priority } : {}),
       updatedAt: new Date(),
     })
     .where(eq(tickets.id, id))

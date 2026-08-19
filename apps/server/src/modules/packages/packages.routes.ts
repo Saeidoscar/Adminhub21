@@ -49,9 +49,16 @@ packagesRoutes.post(
     if (!(await policy.create(user))) {
       throw new ApiError(403, "Forbidden", "FORBIDDEN")
     }
-    const { id } = c.get("authUser")
+    const [profile] = await db
+      .select()
+      .from(adminProfiles)
+      .where(eq(adminProfiles.userId, user.id))
+      .limit(1)
+    if (!profile) {
+      throw new ApiError(403, "Forbidden", "FORBIDDEN")
+    }
     const body = c.req.valid("json")
-    const pkg = await createPackage(id, body)
+    const pkg = await createPackage(profile.id, body)
     return c.json({ package: pkg }, 201)
   },
 )

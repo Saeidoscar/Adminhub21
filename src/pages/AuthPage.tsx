@@ -3,6 +3,14 @@ import { useNavigate } from "react-router-dom"
 import { t, type Lang } from "../i18n"
 import { Icon } from "../components/layout/Icon"
 import { useAuth } from "../contexts/AuthContext"
+import {
+  loginSchema,
+  registerSchema,
+  otpSchema,
+  type LoginInput,
+  type RegisterInput,
+  type OtpInput,
+} from "../lib/validation"
 
 export type Role = "employer" | "admin" | "super_admin"
 
@@ -33,6 +41,7 @@ export default function AuthPage({
   const [otpSent, setOtpSent] = useState(false)
   const [localError, setLocalError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [errors, setErrors] = useState<Record<string, string>>({})
 
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -50,13 +59,25 @@ export default function AuthPage({
     setOtpCode("")
     setOtpSent(false)
     setLocalError(null)
+    setErrors({})
   }
 
   const handleEmailLogin = async () => {
     setLocalError(null)
+    setErrors({})
+    const result = loginSchema.safeParse({ email, password })
+    if (!result.success) {
+      const fieldErrors: Record<string, string> = {}
+      result.error.errors.forEach((err) => {
+        const key = err.path[0] as string
+        if (key) fieldErrors[key] = err.message
+      })
+      setErrors(fieldErrors)
+      return
+    }
     setIsSubmitting(true)
     try {
-      await login(email, password)
+      await login(result.data.email, result.data.password)
       navigate("/dashboard")
     } catch (err) {
       setLocalError(err instanceof Error ? err.message : "Login failed")
@@ -67,15 +88,33 @@ export default function AuthPage({
 
   const handleEmailRegister = async () => {
     setLocalError(null)
+    setErrors({})
+    const result = registerSchema.safeParse({
+      email,
+      password,
+      nameEn: name,
+      nameFa: name,
+      phone,
+      role,
+    })
+    if (!result.success) {
+      const fieldErrors: Record<string, string> = {}
+      result.error.errors.forEach((err) => {
+        const key = err.path[0] as string
+        if (key) fieldErrors[key] = err.message
+      })
+      setErrors(fieldErrors)
+      return
+    }
     setIsSubmitting(true)
     try {
       await register({
-        email,
-        password,
-        role,
-        nameEn: name,
-        nameFa: name,
-        phone: phone || undefined,
+        email: result.data.email,
+        password: result.data.password,
+        role: result.data.role,
+        nameEn: result.data.nameEn,
+        nameFa: result.data.nameFa,
+        phone: result.data.phone,
       })
       navigate("/dashboard")
     } catch (err) {
@@ -87,9 +126,20 @@ export default function AuthPage({
 
   const handleSendCode = async () => {
     setLocalError(null)
+    setErrors({})
+    const result = otpSchema.safeParse({ phone, code: "" })
+    if (!result.success) {
+      const fieldErrors: Record<string, string> = {}
+      result.error.errors.forEach((err) => {
+        const key = err.path[0] as string
+        if (key) fieldErrors[key] = err.message
+      })
+      setErrors(fieldErrors)
+      return
+    }
     setIsSubmitting(true)
     try {
-      await sendOtp(phone)
+      await sendOtp(result.data.phone)
       setOtpSent(true)
     } catch (err) {
       setLocalError(err instanceof Error ? err.message : "Failed to send OTP")
@@ -100,9 +150,20 @@ export default function AuthPage({
 
   const handleVerifyOtp = async () => {
     setLocalError(null)
+    setErrors({})
+    const result = otpSchema.safeParse({ phone, code: otpCode })
+    if (!result.success) {
+      const fieldErrors: Record<string, string> = {}
+      result.error.errors.forEach((err) => {
+        const key = err.path[0] as string
+        if (key) fieldErrors[key] = err.message
+      })
+      setErrors(fieldErrors)
+      return
+    }
     setIsSubmitting(true)
     try {
-      const user = await loginWithOtp(phone, otpCode)
+      const user = await loginWithOtp(result.data.phone, result.data.code)
       navigate("/dashboard")
     } catch (err) {
       setLocalError(err instanceof Error ? err.message : "OTP verification failed")
@@ -290,6 +351,9 @@ export default function AuthPage({
                         placeholder={tr.auth.namePh}
                         className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] bg-white text-sm text-[#0f172a] placeholder-[#94a3b8] focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all"
                       />
+                      {errors.nameEn && (
+                        <p className="text-xs text-rose-600 mt-1">{errors.nameEn}</p>
+                      )}
                     </div>
                   )}
                   <div>
@@ -304,6 +368,9 @@ export default function AuthPage({
                       className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] bg-white text-sm text-[#0f172a] placeholder-[#94a3b8] focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all"
                       dir="ltr"
                     />
+                    {errors.email && (
+                      <p className="text-xs text-rose-600 mt-1">{errors.email}</p>
+                    )}
                   </div>
                   <div>
                     <div className="flex items-center justify-between mb-1.5">
@@ -324,6 +391,9 @@ export default function AuthPage({
                       className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] bg-white text-sm text-[#0f172a] placeholder-[#94a3b8] focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all"
                       dir="ltr"
                     />
+                    {errors.password && (
+                      <p className="text-xs text-rose-600 mt-1">{errors.password}</p>
+                    )}
                   </div>
                 </div>
 
@@ -392,6 +462,9 @@ export default function AuthPage({
                     dir="ltr"
                     disabled={otpSent}
                   />
+                  {errors.phone && (
+                    <p className="text-xs text-rose-600 mt-1">{errors.phone}</p>
+                  )}
                 </div>
 
                 {otpSent && (
@@ -411,6 +484,9 @@ export default function AuthPage({
                       className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] bg-white text-sm text-[#0f172a] placeholder-[#94a3b8] focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all"
                       dir="ltr"
                     />
+                    {errors.code && (
+                      <p className="text-xs text-rose-600 mt-1">{errors.code}</p>
+                    )}
                   </div>
                 )}
 

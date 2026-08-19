@@ -4,6 +4,7 @@ import { t, type Lang } from "../i18n"
 import { Icon } from "../components/layout/Icon"
 import { Badge } from "../components/ui/Badge"
 import { Stars } from "../components/platform/Stars"
+import { ListSkeleton } from "../components/ui/Skeleton"
 import {
   listAdminProfiles,
   addFavorite,
@@ -173,7 +174,7 @@ export default function Marketplace({ lang, tr }: MarketplaceProps) {
 
       {/* Grid */}
       {loading ? (
-        <div className="text-center py-12 text-[#64748b]">{tr.common.loading}</div>
+        <ListSkeleton count={6} />
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {filtered.map((admin) => (

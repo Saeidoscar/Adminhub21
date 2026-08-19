@@ -8,6 +8,7 @@ import {
   updateContractStatus,
   type Contract,
 } from "../lib/api"
+import { ListSkeleton } from "../components/ui/Skeleton"
 
 const STATUS_COLORS: Record<string, string> = {
   active: "bg-emerald-100 text-emerald-700",
@@ -273,7 +274,7 @@ export default function ContractsPage({
 
       {loading ? (
         <div className="text-center py-16 text-[#64748b]">
-          <div className="text-sm">{tr.common.loading}</div>
+          <ListSkeleton count={4} />
         </div>
       ) : contracts.length === 0 ? (
         <div className="text-center py-16 text-[#64748b]">

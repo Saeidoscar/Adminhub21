@@ -13,6 +13,8 @@ import {
   type Ticket,
   type TicketMessage,
 } from "../lib/api"
+import { ListSkeleton } from "../components/ui/Skeleton"
+import { ticketSchema, type TicketInput } from "../lib/validation"
 
 const CATEGORY_LABELS: Record<string, { en: string fa: string }> = {
   billing: { en: "Billing", fa: "مالی" },
@@ -72,6 +74,7 @@ export default function TicketsPage({
   const [newSubject, setNewSubject] = useState("")
   const [newCategory, setNewCategory] = useState<string>("billing")
   const [newPriority, setNewPriority] = useState<string>("medium")
+  const [errors, setErrors] = useState<Record<string, string>>({})
 
   const loadTickets = async () => {
     setLoading(true)
@@ -119,12 +122,23 @@ export default function TicketsPage({
 
   const handleCreateTicket = async (e: React.FormEvent) => {
     e.preventDefault()
-    try {
-      const ticket = await createTicket({
-        subject: newSubject,
-        category: newCategory as Ticket["category"],
-        priority: newPriority as Ticket["priority"],
+    setErrors({})
+    const result = ticketSchema.safeParse({
+      subject: newSubject,
+      category: newCategory as TicketInput["category"],
+      priority: newPriority as TicketInput["priority"],
+    })
+    if (!result.success) {
+      const fieldErrors: Record<string, string> = {}
+      result.error.errors.forEach((err) => {
+        const key = err.path[0] as string
+        if (key) fieldErrors[key] = err.message
       })
+      setErrors(fieldErrors)
+      return
+    }
+    try {
+      const ticket = await createTicket(result.data)
       setTickets((prev) => [ticket, ...prev])
       setNewSubject("")
       setNewCategory("billing")
@@ -371,6 +385,9 @@ export default function TicketsPage({
                 required
                 className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all"
               />
+              {errors.subject && (
+                <p className="text-xs text-rose-600 mt-1">{errors.subject}</p>
+              )}
             </div>
             <div className="grid sm:grid-cols-2 gap-4">
               <div>
@@ -417,9 +434,7 @@ export default function TicketsPage({
       )}
 
       {loading ? (
-        <div className="text-center py-16 text-[#64748b]">
-          <div className="text-sm">{tr.common.loading}</div>
-        </div>
+        <ListSkeleton count={4} />
       ) : tickets.length === 0 ? (
         <div className="text-center py-16 text-[#64748b]">
           <div className="text-4xl mb-3">🎫</div>

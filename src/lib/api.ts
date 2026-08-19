@@ -58,7 +58,11 @@ async function apiFetch<T>(path: string, init: RequestInit = {}): Promise<T> {
   if (!response.ok) {
     const message = await response.text()
 
-    throw new Error(message || `Request failed with status ${response.status}`)
+    const error = new Error(
+      message || `Request failed with status ${response.status}`,
+    )
+    ;(error as Error & { status: number }).status = response.status
+    throw error
   }
 
   if (response.status === 204) {
@@ -960,4 +964,495 @@ export async function listTicketMessages(ticketId: string): Promise<TicketMessag
     `/api/tickets/${ticketId}/messages`,
   )
   return unwrapList<TicketMessage>(payload, "messages")
+}
+
+export interface AdminUserRow {
+  id: string
+  email: string
+  role: string
+  nameEn: string
+  nameFa: string
+  phone: string | null
+  phoneVerified: boolean
+  createdAt: string
+}
+
+export async function listAdminUsers(query: {
+  role?: string
+  search?: string
+}): Promise<AdminUserRow[]> {
+  const params = new URLSearchParams()
+  if (query.role) params.set("role", query.role)
+  if (query.search) params.set("search", query.search)
+  const qs = params.toString()
+  const payload = await apiFetch<Record<string, unknown>>(
+    `/api/admin/users${qs ? `?${qs}` : ""}`,
+  )
+  return unwrapList<AdminUserRow>(payload, "users")
+}
+
+export async function getAdminUser(id: string): Promise<AdminUserRow | null> {
+  const payload = await apiFetch<Record<string, unknown>>(`/api/admin/users/${id}`)
+  return unwrapItem<AdminUserRow>(payload, "user")
+}
+
+export async function updateAdminUser(
+  id: string,
+  data: Partial<{
+    role: string
+    nameEn: string
+    nameFa: string
+    phone: string | null
+    phoneVerified: boolean
+  }>,
+): Promise<AdminUserRow> {
+  const payload = await apiFetch<Record<string, unknown>>(`/api/admin/users/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(data),
+  })
+  const user = unwrapItem<AdminUserRow>(payload, "user")
+  if (!user) {
+    throw new Error("Update user response was empty")
+  }
+  return user
+}
+
+export async function deleteAdminUser(id: string): Promise<void> {
+  await apiFetch<Record<string, unknown>>(`/api/admin/users/${id}`, {
+    method: "DELETE",
+  })
+}
+
+export interface StoryRow {
+  id: string
+  authorId: string
+  authorName: string
+  title: string
+  content: string
+  coverUrl: string | null
+  status: string
+  views: number
+  publishedAt: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+export interface BlogRow {
+  id: string
+  authorId: string
+  authorName: string
+  title: string
+  content: string
+  coverUrl: string | null
+  status: string
+  views: number
+  publishedAt: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+export interface CommentRow {
+  id: string
+  postId: string
+  postType: string
+  authorId: string
+  authorName: string
+  parentId: string | null
+  body: string
+  createdAt: string
+}
+
+export async function listAdminStories(query: {
+  status?: string
+  search?: string
+}): Promise<StoryRow[]> {
+  const params = new URLSearchParams()
+  if (query.status) params.set("status", query.status)
+  if (query.search) params.set("search", query.search)
+  const qs = params.toString()
+  const payload = await apiFetch<Record<string, unknown>>(
+    `/api/admin/content/stories${qs ? `?${qs}` : ""}`,
+  )
+  return unwrapList<StoryRow>(payload, "stories")
+}
+
+export async function listAdminBlogs(query: {
+  status?: string
+  search?: string
+}): Promise<BlogRow[]> {
+  const params = new URLSearchParams()
+  if (query.status) params.set("status", query.status)
+  if (query.search) params.set("search", query.search)
+  const qs = params.toString()
+  const payload = await apiFetch<Record<string, unknown>>(
+    `/api/admin/content/blogs${qs ? `?${qs}` : ""}`,
+  )
+  return unwrapList<BlogRow>(payload, "blogs")
+}
+
+export async function moderateStoryAdmin(
+  id: string,
+  action: "approve" | "reject" | "archive",
+): Promise<StoryRow> {
+  const payload = await apiFetch<Record<string, unknown>>(
+    `/api/admin/content/stories/${id}`,
+    {
+      method: "PATCH",
+      body: JSON.stringify({ action }),
+    },
+  )
+  const story = unwrapItem<StoryRow>(payload, "story")
+  if (!story) {
+    throw new Error("Moderate story response was empty")
+  }
+  return story
+}
+
+export async function moderateBlogAdmin(
+  id: string,
+  action: "approve" | "reject" | "archive",
+): Promise<BlogRow> {
+  const payload = await apiFetch<Record<string, unknown>>(
+    `/api/admin/content/blogs/${id}`,
+    {
+      method: "PATCH",
+      body: JSON.stringify({ action }),
+    },
+  )
+  const blog = unwrapItem<BlogRow>(payload, "blog")
+  if (!blog) {
+    throw new Error("Moderate blog response was empty")
+  }
+  return blog
+}
+
+export async function listAdminComments(query: {
+  postType?: string
+}): Promise<CommentRow[]> {
+  const params = new URLSearchParams()
+  if (query.postType) params.set("postType", query.postType)
+  const qs = params.toString()
+  const payload = await apiFetch<Record<string, unknown>>(
+    `/api/admin/content/comments${qs ? `?${qs}` : ""}`,
+  )
+  return unwrapList<CommentRow>(payload, "comments")
+}
+
+export async function deleteAdminComment(id: string): Promise<void> {
+  await apiFetch<Record<string, unknown>>(`/api/admin/content/comments/${id}`, {
+    method: "DELETE",
+  })
+}
+
+export async function listAdminTickets(query: {
+  status?: string
+  category?: string
+  priority?: string
+}): Promise<TicketRow[]> {
+  const params = new URLSearchParams()
+  if (query.status) params.set("status", query.status)
+  if (query.category) params.set("category", query.category)
+  if (query.priority) params.set("priority", query.priority)
+  const qs = params.toString()
+  const payload = await apiFetch<Record<string, unknown>>(
+    `/api/admin/tickets${qs ? `?${qs}` : ""}`,
+  )
+  return unwrapList<TicketRow>(payload, "tickets")
+}
+
+export async function getAdminTicket(id: string): Promise<TicketRow | null> {
+  const payload = await apiFetch<Record<string, unknown>>(`/api/admin/tickets/${id}`)
+  return unwrapItem<TicketRow>(payload, "ticket")
+}
+
+export async function updateAdminTicket(
+  id: string,
+  data: {
+    status?: "open" | "in_progress" | "resolved" | "closed"
+    priority?: "low" | "medium" | "high" | "urgent"
+  },
+): Promise<TicketRow> {
+  const payload = await apiFetch<Record<string, unknown>>(`/api/admin/tickets/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(data),
+  })
+  const ticket = unwrapItem<TicketRow>(payload, "ticket")
+  if (!ticket) {
+    throw new Error("Update ticket response was empty")
+  }
+  return ticket
+}
+
+export async function listAdminCases(query: {
+  status?: string
+  priority?: string
+  search?: string
+}): Promise<CaseRow[]> {
+  const params = new URLSearchParams()
+  if (query.status) params.set("status", query.status)
+  if (query.priority) params.set("priority", query.priority)
+  if (query.search) params.set("search", query.search)
+  const qs = params.toString()
+  const payload = await apiFetch<Record<string, unknown>>(
+    `/api/cases${qs ? `?${qs}` : ""}`,
+  )
+  return unwrapList<CaseRow>(payload, "cases")
+}
+
+export async function getAdminCase(id: string): Promise<CaseRow | null> {
+  const payload = await apiFetch<Record<string, unknown>>(`/api/cases/${id}`)
+  return unwrapItem<CaseRow>(payload, "case")
+}
+
+export async function createAdminCase(data: {
+  employerId: string
+  title: string
+  description: string
+  priority?: string
+  tags?: string[]
+}): Promise<CaseRow> {
+  const payload = await apiFetch<Record<string, unknown>>("/api/cases", {
+    method: "POST",
+    body: JSON.stringify(data),
+  })
+  const case_ = unwrapItem<CaseRow>(payload, "case")
+  if (!case_) {
+    throw new Error("Create case response was empty")
+  }
+  return case_
+}
+
+export async function updateAdminCase(
+  id: string,
+  data: Partial<{
+    title: string
+    description: string
+    priority: string
+    status: string
+    tags: string[]
+  }>,
+): Promise<CaseRow> {
+  const payload = await apiFetch<Record<string, unknown>>(`/api/cases/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(data),
+  })
+  const case_ = unwrapItem<CaseRow>(payload, "case")
+  if (!case_) {
+    throw new Error("Update case response was empty")
+  }
+  return case_
+}
+
+export async function listAdminTasks(caseId: string): Promise<TaskRow[]> {
+  const payload = await apiFetch<Record<string, unknown>>(
+    `/api/tasks/case/${caseId}`,
+  )
+  return unwrapList<TaskRow>(payload, "tasks")
+}
+
+export async function getAdminTask(id: string): Promise<TaskRow | null> {
+  const payload = await apiFetch<Record<string, unknown>>(`/api/tasks/${id}`)
+  return unwrapItem<TaskRow>(payload, "task")
+}
+
+export async function createAdminTask(data: {
+  caseId: string
+  title: string
+  description: string
+  assignedTo?: string
+  status?: string
+  priority?: string
+  dueDate?: string
+}): Promise<TaskRow> {
+  const payload = await apiFetch<Record<string, unknown>>("/api/tasks", {
+    method: "POST",
+    body: JSON.stringify(data),
+  })
+  const task = unwrapItem<TaskRow>(payload, "task")
+  if (!task) {
+    throw new Error("Create task response was empty")
+  }
+  return task
+}
+
+export async function updateAdminTask(
+  id: string,
+  data: Partial<{
+    title: string
+    description: string
+    assignedTo: string
+    status: string
+    priority: string
+    dueDate: string
+  }>,
+): Promise<TaskRow> {
+  const payload = await apiFetch<Record<string, unknown>>(`/api/tasks/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(data),
+  })
+  const task = unwrapItem<TaskRow>(payload, "task")
+  if (!task) {
+    throw new Error("Update task response was empty")
+  }
+  return task
+}
+
+export async function listAdminEvents(query: {
+  from?: string
+  to?: string
+}): Promise<EventRow[]> {
+  const params = new URLSearchParams()
+  if (query.from) params.set("from", query.from)
+  if (query.to) params.set("to", query.to)
+  const qs = params.toString()
+  const payload = await apiFetch<Record<string, unknown>>(
+    `/api/events${qs ? `?${qs}` : ""}`,
+  )
+  return unwrapList<EventRow>(payload, "events")
+}
+
+export async function getAdminEvent(id: string): Promise<EventRow | null> {
+  const payload = await apiFetch<Record<string, unknown>>(`/api/events/${id}`)
+  return unwrapItem<EventRow>(payload, "event")
+}
+
+export async function createAdminEvent(data: {
+  title: string
+  description?: string
+  startAt: string
+  endAt: string
+  allDay?: boolean
+  color?: string
+}): Promise<EventRow> {
+  const payload = await apiFetch<Record<string, unknown>>("/api/events", {
+    method: "POST",
+    body: JSON.stringify(data),
+  })
+  const event = unwrapItem<EventRow>(payload, "event")
+  if (!event) {
+    throw new Error("Create event response was empty")
+  }
+  return event
+}
+
+export async function updateAdminEvent(
+  id: string,
+  data: Partial<{
+    title: string
+    description: string
+    startAt: string
+    endAt: string
+    allDay: boolean
+    color: string
+  }>,
+): Promise<EventRow> {
+  const payload = await apiFetch<Record<string, unknown>>(`/api/events/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(data),
+  })
+  const event = unwrapItem<EventRow>(payload, "event")
+  if (!event) {
+    throw new Error("Update event response was empty")
+  }
+  return event
+}
+
+export async function deleteAdminEvent(id: string): Promise<void> {
+  await apiFetch<Record<string, unknown>>(`/api/events/${id}`, {
+    method: "DELETE",
+  })
+}
+
+export async function listAdminTimeLogs(query: {
+  caseId?: string
+  taskId?: string
+}): Promise<TimeLogRow[]> {
+  const params = new URLSearchParams()
+  if (query.caseId) params.set("caseId", query.caseId)
+  if (query.taskId) params.set("taskId", query.taskId)
+  const qs = params.toString()
+  const payload = await apiFetch<Record<string, unknown>>(
+    `/api/time-logs${qs ? `?${qs}` : ""}`,
+  )
+  return unwrapList<TimeLogRow>(payload, "timeLogs")
+}
+
+export async function getAdminTimeLog(id: string): Promise<TimeLogRow | null> {
+  const payload = await apiFetch<Record<string, unknown>>(`/api/time-logs/${id}`)
+  return unwrapItem<TimeLogRow>(payload, "timeLog")
+}
+
+export async function createAdminTimeLog(data: {
+  caseId?: string
+  taskId?: string
+  description: string
+  startedAt: string
+  endedAt: string
+}): Promise<TimeLogRow> {
+  const payload = await apiFetch<Record<string, unknown>>("/api/time-logs", {
+    method: "POST",
+    body: JSON.stringify(data),
+  })
+  const timeLog = unwrapItem<TimeLogRow>(payload, "timeLog")
+  if (!timeLog) {
+    throw new Error("Create time log response was empty")
+  }
+  return timeLog
+}
+
+export async function listAdminPortfolio(adminId: string): Promise<PortfolioRow[]> {
+  const payload = await apiFetch<Record<string, unknown>>(
+    `/api/portfolio/admin/${adminId}`,
+  )
+  return unwrapList<PortfolioRow>(payload, "portfolio")
+}
+
+export async function getAdminPortfolio(id: string): Promise<PortfolioRow | null> {
+  const payload = await apiFetch<Record<string, unknown>>(`/api/portfolio/${id}`)
+  return unwrapItem<PortfolioRow>(payload, "portfolio")
+}
+
+export async function createAdminPortfolio(data: {
+  title: string
+  description: string
+  mediaUrl: string
+  mediaType: string
+  tags?: string[]
+}): Promise<PortfolioRow> {
+  const payload = await apiFetch<Record<string, unknown>>("/api/portfolio", {
+    method: "POST",
+    body: JSON.stringify(data),
+  })
+  const portfolio = unwrapItem<PortfolioRow>(payload, "portfolio")
+  if (!portfolio) {
+    throw new Error("Create portfolio response was empty")
+  }
+  return portfolio
+}
+
+export async function updateAdminPortfolio(
+  id: string,
+  data: Partial<{
+    title: string
+    description: string
+    mediaUrl: string
+    mediaType: string
+    tags: string[]
+  }>,
+): Promise<PortfolioRow> {
+  const payload = await apiFetch<Record<string, unknown>>(`/api/portfolio/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(data),
+  })
+  const portfolio = unwrapItem<PortfolioRow>(payload, "portfolio")
+  if (!portfolio) {
+    throw new Error("Update portfolio response was empty")
+  }
+  return portfolio
+}
+
+export async function deleteAdminPortfolio(id: string): Promise<void> {
+  await apiFetch<Record<string, unknown>>(`/api/portfolio/${id}`, {
+    method: "DELETE",
+  })
 }

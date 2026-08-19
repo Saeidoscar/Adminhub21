@@ -17,6 +17,11 @@ import { useAuth } from "./contexts/AuthContext"
 import { ProtectedRoute } from "./components/auth/ProtectedRoute"
 import AdminPackagesPage from "./pages/AdminPackagesPage"
 import AdminPublicProfilePage from "./pages/AdminPublicProfilePage"
+import AdminUsersPage from "./pages/AdminUsersPage"
+import AdminContentModerationPage from "./pages/AdminContentModerationPage"
+import AdminTicketsPage from "./pages/AdminTicketsPage"
+import AdminWorkspacePage from "./pages/AdminWorkspacePage"
+import AdminPortfolioPage from "./pages/AdminPortfolioPage"
 import PackageComparisonPage from "./pages/PackageComparisonPage"
 import ContractGenerator from "./pages/ContractGenerator"
 import ContractsPage from "./pages/ContractsPage"
@@ -32,8 +37,8 @@ import Marketplace from "./pages/Marketplace"
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
-type Role = "employer" | "admin"
-type Page = "dashboard" | "marketplace" | "toolsRental" | "editors" | "vibeCoders" | "skills" | "contracts" | "contractsHistory" | "tickets" | "ai" | "profile" | "packages" | "compare"
+type Role = "employer" | "admin" | "super_admin"
+type Page = "dashboard" | "marketplace" | "toolsRental" | "editors" | "vibeCoders" | "skills" | "contracts" | "contractsHistory" | "tickets" | "ai" | "profile" | "packages" | "compare" | "adminUsers" | "adminContent" | "adminTickets" | "adminWorkspace" | "adminPortfolio"
 
 interface AppCtx {
   lang: Lang
@@ -113,9 +118,19 @@ export default function App() {
                         ? "packages"
                         : pathname === "/compare"
                           ? "compare"
-                          : pathname === "/profile"
-                            ? "profile"
-                            : "dashboard"
+                          : pathname === "/admin-users"
+                            ? "adminUsers"
+                            : pathname === "/admin-content"
+                              ? "adminContent"
+                              : pathname === "/admin-tickets"
+                                ? "adminTickets"
+                                : pathname === "/admin-workspace"
+                                  ? "adminWorkspace"
+                                  : pathname === "/admin-portfolio"
+                                    ? "adminPortfolio"
+                                    : pathname === "/profile"
+                                      ? "profile"
+                                      : "dashboard"
   ) as Page
 
   const navItems: {
@@ -131,7 +146,14 @@ export default function App() {
     { id: "skills", icon: "chart", label: tr.nav.skills },
     { id: "contracts", icon: "contracts", label: tr.nav.contracts },
     ...(role === "admin"
-      ? [{ id: "packages" as Page, icon: "package", label: tr.nav.packages }]
+      ? [
+          { id: "packages" as Page, icon: "package", label: tr.nav.packages },
+          { id: "adminUsers" as Page, icon: "users", label: lang === "fa" ? "مدیریت کاربران" : "Users" },
+          { id: "adminContent" as Page, icon: "edit", label: lang === "fa" ? "محتوای کاربران" : "Content" },
+          { id: "adminTickets" as Page, icon: "tickets", label: lang === "fa" ? "تیکت‌ها" : "Tickets" },
+          { id: "adminWorkspace" as Page, icon: "dashboard", label: lang === "fa" ? "فضای کاری" : "Workspace" },
+          { id: "adminPortfolio" as Page, icon: "image", label: lang === "fa" ? "نمونه کارها" : "Portfolio" },
+        ]
       : []),
     ...(role === "employer"
       ? [{ id: "compare" as Page, icon: "compare", label: tr.nav.compare }]
@@ -163,9 +185,19 @@ export default function App() {
                         ? tr.nav.packages
                         : page === "compare"
                           ? tr.nav.compare
-                          : page === "ai"
-                            ? tr.nav.ai
-                            : tr.nav.profile
+                          : page === "adminUsers"
+                            ? lang === "fa" ? "مدیریت کاربران" : "User Management"
+                            : page === "adminContent"
+                              ? lang === "fa" ? "نظارت بر محتوا" : "Content Moderation"
+                              : page === "adminTickets"
+                                ? lang === "fa" ? "تیکت‌های پشتیبانی" : "Support Tickets"
+                                : page === "adminWorkspace"
+                                  ? lang === "fa" ? "فضای کاری" : "Workspace"
+                                  : page === "adminPortfolio"
+                                    ? lang === "fa" ? "نمونه کارها" : "Portfolio"
+                                    : page === "ai"
+                                      ? tr.nav.ai
+                                      : tr.nav.profile
 
   const ctx: AppCtx = {
     lang,
@@ -383,6 +415,56 @@ export default function App() {
                   <ProtectedRoute>
                     <div className="flex-1 overflow-y-auto">
                       <AdminPackagesPage />
+                    </div>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin-users"
+                element={
+                  <ProtectedRoute allowedRoles={["admin", "super_admin"]}>
+                    <div className="flex-1 overflow-y-auto">
+                      <AdminUsersPage tr={tr} lang={lang} />
+                    </div>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin-content"
+                element={
+                  <ProtectedRoute allowedRoles={["admin", "super_admin"]}>
+                    <div className="flex-1 overflow-y-auto">
+                      <AdminContentModerationPage tr={tr} lang={lang} />
+                    </div>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin-tickets"
+                element={
+                  <ProtectedRoute allowedRoles={["admin", "super_admin"]}>
+                    <div className="flex-1 overflow-y-auto">
+                      <AdminTicketsPage tr={tr} lang={lang} />
+                    </div>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin-workspace"
+                element={
+                  <ProtectedRoute allowedRoles={["admin", "super_admin"]}>
+                    <div className="flex-1 overflow-y-auto">
+                      <AdminWorkspacePage tr={tr} lang={lang} />
+                    </div>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin-portfolio"
+                element={
+                  <ProtectedRoute allowedRoles={["admin", "super_admin"]}>
+                    <div className="flex-1 overflow-y-auto">
+                      <AdminPortfolioPage tr={tr} lang={lang} />
                     </div>
                   </ProtectedRoute>
                 }

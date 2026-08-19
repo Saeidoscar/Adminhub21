@@ -39,3 +39,59 @@ export function StatCardSkeleton() {
     </div>
   )
 }
+
+export function UserCardSkeleton() {
+  return (
+    <div className="bg-white rounded-2xl border border-[#e2e8f0] p-5 flex items-center gap-4">
+      <Skeleton className="h-12 w-12 rounded-full" />
+      <div className="flex-1 space-y-2">
+        <Skeleton className="h-4 w-48" />
+        <Skeleton className="h-3 w-32" />
+      </div>
+      <Skeleton className="h-6 w-16 rounded-full" />
+    </div>
+  )
+}
+
+export function ContentCardSkeleton() {
+  return (
+    <div className="bg-white rounded-2xl border border-[#e2e8f0] p-5 space-y-3">
+      <Skeleton className="h-4 w-3/4" />
+      <Skeleton className="h-3 w-1/2" />
+      <Skeleton className="h-3 w-1/3" />
+    </div>
+  )
+}
+
+export function TicketCardSkeleton() {
+  return (
+    <div className="bg-white rounded-2xl border border-[#e2e8f0] p-5 space-y-3">
+      <Skeleton className="h-4 w-2/3" />
+      <Skeleton className="h-3 w-1/2" />
+      <div className="flex gap-2">
+        <Skeleton className="h-5 w-16 rounded-full" />
+        <Skeleton className="h-5 w-16 rounded-full" />
+      </div>
+    </div>
+  )
+}
+
+export function PortfolioCardSkeleton() {
+  return (
+    <div className="bg-white rounded-2xl border border-[#e2e8f0] p-5 space-y-3">
+      <Skeleton className="h-4 w-3/4" />
+      <Skeleton className="h-3 w-1/2" />
+      <Skeleton className="h-32 w-full rounded-xl" />
+    </div>
+  )
+}
+
+export function ListSkeleton({ count = 3 }: { count?: number }) {
+  return (
+    <div className="space-y-4">
+      {Array.from({ length: count }).map((_, i) => (
+        <CardSkeleton key={i} />
+      ))}
+    </div>
+  )
+}

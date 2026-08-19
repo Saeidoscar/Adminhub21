@@ -7,7 +7,10 @@ import {
   getTicketById,
   updateTicketStatus,
 } from "./admin-tickets.service"
-import { listAdminTicketsQuerySchema } from "./admin-tickets.schemas"
+import {
+  listAdminTicketsQuerySchema,
+  updateAdminTicketSchema,
+} from "./admin-tickets.schemas"
 
 const adminTicketsRoutes = new Hono()
 
@@ -41,12 +44,13 @@ adminTicketsRoutes.patch(
   "/:id",
   requireAuth,
   requireRole("super_admin" as any),
-  zValidator("json", listAdminTicketsQuerySchema),
+  zValidator("json", updateAdminTicketSchema),
   async (c) => {
     const id = c.req.param("id")
     const body = c.req.valid("json")
     const ticket = await updateTicketStatus(id, {
       status: body.status || "open",
+      priority: body.priority,
     })
     return c.json({ ticket })
   },

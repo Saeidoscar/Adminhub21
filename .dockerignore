@@ -1,0 +1,16 @@
+node_modules
+dist
+build
+.git
+.gitignore
+.vscode
+.idea
+*.log
+.env
+
+Unrelated
+kilo-agent-manager-metadata.json
+
+.npmrc
+.yarn
+.pnpm

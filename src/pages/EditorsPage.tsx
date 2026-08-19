@@ -3,6 +3,7 @@ import { t, type Lang } from "../i18n"
 import { Icon } from "../components/layout/Icon"
 import { Stars } from "../components/platform/Stars"
 import { listEditors, type Editor } from "../lib/api"
+import { ListSkeleton } from "../components/ui/Skeleton"
 
 type Specialty = "video" | "photo" | "motion" | "thumbnail"
 
@@ -97,9 +98,7 @@ export default function EditorsPage({
       </div>
 
       {loading ? (
-        <div className="text-center py-16 text-[#64748b]">
-          <div className="text-sm">{tr.common.loading}</div>
-        </div>
+        <ListSkeleton count={4} />
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {filtered.map((editor) => (

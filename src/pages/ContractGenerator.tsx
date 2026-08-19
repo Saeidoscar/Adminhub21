@@ -5,6 +5,7 @@ import { Icon } from "../components/layout/Icon"
 import { Stars } from "../components/platform/Stars"
 import { Badge } from "../components/ui/Badge"
 import { createContract, listAdminProfiles, type AdminProfile } from "../lib/api"
+import { z } from "zod"
 
 const PLATFORMS = [
   { value: "instagram", label: "Instagram" },
@@ -60,6 +61,7 @@ export default function ContractGenerator({
   const [success, setSuccess] = useState(false)
   const [admins, setAdmins] = useState<AdminProfile[]>([])
   const [loadingAdmins, setLoadingAdmins] = useState(true)
+  const [errors, setErrors] = useState<Record<string, string>>({})
 
   if (initialContract) {
     return (
@@ -259,6 +261,22 @@ export default function ContractGenerator({
   const handleSubmit = async () => {
     setSubmitting(true)
     setError(null)
+    setErrors({})
+    const fieldErrors: Record<string, string> = {}
+    if (!form.employerName.trim()) fieldErrors.employerName = "Required"
+    if (!form.projectTitle.trim()) fieldErrors.projectTitle = "Required"
+    if (!form.description.trim()) fieldErrors.description = "Required"
+    const amountNum = Number(form.amount)
+    if (isNaN(amountNum) || amountNum < 0) fieldErrors.amount = "Invalid amount"
+    if (!form.adminId) fieldErrors.adminId = "Select an admin"
+    if (!form.platform) fieldErrors.platform = "Select a platform"
+
+    if (Object.keys(fieldErrors).length > 0) {
+      setErrors(fieldErrors)
+      setSubmitting(false)
+      return
+    }
+
     try {
       const amountVal = Number(form.amount)
       const amountToman = form.currency === "toman" ? amountVal : 0
@@ -361,6 +379,9 @@ export default function ContractGenerator({
                   onChange={(e) => setF("employerName", e.target.value)}
                   className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all"
                 />
+                {errors.employerName && (
+                  <p className="text-xs text-rose-600 mt-1">{errors.employerName}</p>
+                )}
               </div>
               <div>
                 <label className="block text-sm font-semibold text-[#0f172a] mb-1.5">
@@ -422,6 +443,9 @@ export default function ContractGenerator({
                 onChange={(e) => setF("projectTitle", e.target.value)}
                 className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all"
               />
+              {errors.projectTitle && (
+                <p className="text-xs text-rose-600 mt-1">{errors.projectTitle}</p>
+              )}
             </div>
             <div className="grid sm:grid-cols-2 gap-4">
               <div>
@@ -460,6 +484,9 @@ export default function ContractGenerator({
                 rows={4}
                 className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all resize-none"
               />
+              {errors.description && (
+                <p className="text-xs text-rose-600 mt-1">{errors.description}</p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-semibold text-[#0f172a] mb-1.5">
@@ -509,9 +536,12 @@ export default function ContractGenerator({
                 <input
                   value={form.amount}
                   onChange={(e) => setF("amount", e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] transition-all"
+                  className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all"
                   dir="ltr"
                 />
+                {errors.amount && (
+                  <p className="text-xs text-rose-600 mt-1">{errors.amount}</p>
+                )}
               </div>
               <div>
                 <label className="block text-sm font-semibold text-[#0f172a] mb-1.5">

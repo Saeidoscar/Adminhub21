@@ -43,6 +43,7 @@ export default function AdminPackagesPage() {
   const [lang, setLang] = useState<Lang>("fa")
   const [activeTab, setActiveTab] = useState<"list" | "create">("list")
   const [editingId, setEditingId] = useState<string | null>(null)
+  const [errors, setErrors] = useState<Record<string, string>>({})
   const [form, setForm] = useState({
     name: "",
     description: "",
@@ -109,7 +110,19 @@ export default function AdminPackagesPage() {
   }
 
   const handleSubmit = async () => {
-    if (!form.name.trim() || form.platforms.length === 0) return
+    setErrors({})
+    const fieldErrors: Record<string, string> = {}
+    if (!form.name.trim()) fieldErrors.name = "Required"
+    if (form.platforms.length === 0) fieldErrors.platforms = "Select at least one platform"
+    if (!form.priceToman.trim() || isNaN(Number(form.priceToman)))
+      fieldErrors.priceToman = "Valid price required"
+    if (!form.priceUSD.trim() || isNaN(Number(form.priceUSD)))
+      fieldErrors.priceUSD = "Valid price required"
+    if (!form.deliveryTime.trim()) fieldErrors.deliveryTime = "Required"
+    if (Object.keys(fieldErrors).length > 0) {
+      setErrors(fieldErrors)
+      return
+    }
     const now = new Date().toISOString()
     const payload = {
       adminId: "current",
@@ -329,6 +342,7 @@ export default function AdminPackagesPage() {
                 value={form.name}
                 onChange={(v) => setForm((f) => ({ ...f, name: v }))}
                 placeholder={tr.adminProfile.packageNamePh}
+                error={errors.name}
               />
             </div>
             <div>
@@ -494,6 +508,7 @@ export default function AdminPackagesPage() {
                   onChange={(v) => setForm((f) => ({ ...f, priceToman: v }))}
                   placeholder="4500000"
                   dir="ltr"
+                  error={errors.priceToman}
                 />
               </div>
               <div>
@@ -505,6 +520,7 @@ export default function AdminPackagesPage() {
                   onChange={(v) => setForm((f) => ({ ...f, priceUSD: v }))}
                   placeholder="108"
                   dir="ltr"
+                  error={errors.priceUSD}
                 />
               </div>
             </div>
@@ -516,6 +532,7 @@ export default function AdminPackagesPage() {
                 value={form.deliveryTime}
                 onChange={(v) => setForm((f) => ({ ...f, deliveryTime: v }))}
                 placeholder={tr.adminProfile.deliveryTimePh}
+                error={errors.deliveryTime}
               />
             </div>
             <div className="flex items-center gap-2">
