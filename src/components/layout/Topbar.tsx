@@ -99,7 +99,7 @@ export function MobileTopbar({
         <div className="w-7 h-7 rounded-lg bg-navy flex items-center justify-center">
           <Icon name="bot" size={14} className="text-amber" />
         </div>
-        <span className="font-bold text-navy text-sm">AdminHub</span>
+        <span className="font-bold text-navy text-sm">AdminHub21</span>
       </div>
       <div className="flex items-center gap-2">
         {fontSize && onChangeFontSize && (

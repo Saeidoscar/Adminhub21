@@ -605,7 +605,7 @@ export default function ContractGenerator({
                 </label>
                 <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold flex items-center gap-1">
                   <Icon name="shield" size={11} />
-                  {lang === "fa" ? "بیمه ادمین‌هاب" : "AdminHub Insurance"}
+                  {lang === "fa" ? "بیمه ادمین‌هاب" : "AdminHub21 Insurance"}
                 </span>
               </div>
               <textarea

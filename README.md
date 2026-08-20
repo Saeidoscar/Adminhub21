@@ -74,4 +74,4 @@ src/
 
 ## License
 
-Private prototype — AdminHub21
+AdminHub21

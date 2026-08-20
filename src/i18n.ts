@@ -2,7 +2,7 @@ export type Lang = "fa" | "en"
 
 export const t = {
   en: {
-    brand: "AdminHub",
+    brand: "AdminHub21",
     tagline: "The marketplace for social media & e-commerce professionals",
     nav: {
       dashboard: "Dashboard",
@@ -20,9 +20,9 @@ export const t = {
     },
     auth: {
       loginTitle: "Welcome back",
-      loginSub: "Sign in to your AdminHub account",
+      loginSub: "Sign in to your AdminHub21 account",
       registerTitle: "Get started today",
-      registerSub: "Join thousands of professionals on AdminHub",
+      registerSub: "Join thousands of professionals on AdminHub21",
       login: "Sign In",
       register: "Create Account",
       name: "Full Name",
@@ -181,7 +181,7 @@ export const t = {
         "Either party may terminate this agreement with 14 days written notice. In case of material breach, immediate termination is permitted.",
       subClause: "Substitution & Insurance Clause",
       subDefault:
-        "AdminHub Insurance covers this contract. If the Admin fails to fulfill duties, AdminHub will provide a qualified substitute within 24 hours at no additional cost to the Employer.",
+        "AdminHub21 Insurance covers this contract. If the Admin fails to fulfill duties, AdminHub21 will provide a qualified substitute within 24 hours at no additional cost to the Employer.",
       next: "Continue",
       prev: "Back",
       generate: "Generate Contract",
@@ -280,11 +280,11 @@ export const t = {
       saveProfile: "Save Profile",
       verification: "Get Verified",
       verificationDesc:
-        "Submit your ID and portfolio for AdminHub verification to earn the Verified badge and appear higher in search.",
+        "Submit your ID and portfolio for AdminHub21 verification to earn the Verified badge and appear higher in search.",
       applyVerification: "Apply for Verification",
       insuranceEligibility: "Insurance Eligibility",
       insuranceDesc:
-        "Verified admins with 3+ completed contracts are eligible for AdminHub Insurance coverage.",
+        "Verified admins with 3+ completed contracts are eligible for AdminHub21 Insurance coverage.",
       status: "Status",
       eligible: "Eligible",
       notEligible: "Not yet eligible",

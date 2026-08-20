@@ -51,7 +51,7 @@ export function Sidebar({
           <div className="w-8 h-8 rounded-lg bg-amber flex items-center justify-center flex-shrink-0">
             <Icon name="bot" size={17} className="text-navy" />
           </div>
-          <span className="text-white font-bold text-lg">AdminHub</span>
+          <span className="text-white font-bold text-lg">AdminHub21</span>
         </div>
         {mobile && onClose && (
           <button onClick={onClose} className="text-white/60 hover:text-white">
