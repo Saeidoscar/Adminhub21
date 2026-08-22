@@ -1,2 +1,0 @@
-// Package: @dadline/shared
-export const version = "1.0.0"
