@@ -1,12 +1,14 @@
-import { useState } from "react"
+import { useMemo } from "react"
 import { useNavigate } from "react-router-dom"
 import { t, type Lang } from "../i18n"
 import { Icon } from "../components/layout/Icon"
 import { Button } from "../components/ui/Button"
 import { usePackages } from "../contexts/PackageContext"
+import { useApp } from "../App"
 import { platformLabel } from "../components/packages/platformSpecs"
 import { PLATFORM_SPECS } from "../components/packages/platformSpecs"
 import type { ContractPackage } from "@adminhub/shared"
+import { formatPrice } from "../domain/package"
 
 const PLATFORM_COLORS: Record<string, string> = {
   instagram: "badge-instagram",
@@ -20,13 +22,16 @@ const PLATFORM_COLORS: Record<string, string> = {
 export default function PackageComparisonPage() {
   const navigate = useNavigate()
   const { comparison, packages, admin: findAdmin } = usePackages()
-  const [lang, setLang] = useState<Lang>("fa")
+  const { lang, tr } = useApp()
   const isFa = lang === "fa"
-  const tr = t[lang]
 
-  const selectedPkgs = Array.from(comparison.selected)
-    .map((id) => packages.find((p) => p.id === id))
-    .filter(Boolean) as ContractPackage[]
+  const selectedPkgs = useMemo(
+    () =>
+      Array.from(comparison.selected)
+        .map((id) => packages.find((p) => p.id === id))
+        .filter(Boolean) as ContractPackage[],
+    [comparison.selected, packages],
+  )
 
   if (selectedPkgs.length === 0) {
     return (
@@ -120,9 +125,7 @@ export default function PackageComparisonPage() {
                 </div>
               )}
               <div className="text-lg font-bold text-[#1e3a5f] mb-1">
-                {isFa
-                  ? `${(pkg.priceToman / 1000000).toFixed(1)}M ${tr.common.toman}`
-                  : `$${pkg.priceUSD}`}
+                {formatPrice(pkg, lang)}
                 <span className="text-xs font-normal text-[#94a3b8] ml-1">
                   {tr.common.perMonth}
                 </span>

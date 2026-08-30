@@ -27,10 +27,14 @@ class Contract extends Model
         'amount',
         'currency',
         'status',
+        'step_data',
+        'insurance_amount',
+        'substitute_provider',
         'milestones',
         'signatures',
         'pdf_path',
         'signed_at',
+        'clauses_accepted_at',
         'starts_at',
         'ends_at',
     ];
@@ -39,9 +43,12 @@ class Contract extends Model
     {
         return [
             'amount' => 'decimal:2',
+            'step_data' => 'array',
+            'insurance_amount' => 'decimal:2',
             'milestones' => 'array',
             'signatures' => 'array',
             'signed_at' => 'datetime',
+            'clauses_accepted_at' => 'datetime',
             'starts_at' => 'datetime',
             'ends_at' => 'datetime',
             'created_at' => 'datetime',
@@ -69,6 +76,11 @@ class Contract extends Model
     public function package(): BelongsTo
     {
         return $this->belongsTo(Package::class);
+    }
+
+    public function clauses(): HasMany
+    {
+        return $this->hasMany(ContractClause::class);
     }
 
     public function reviews(): HasMany
@@ -102,6 +114,11 @@ class Contract extends Model
     | Helpers
     |--------------------------------------------------------------------------
     */
+
+    public function isPending(): bool
+    {
+        return $this->status === ContractStatus::Pending->value;
+    }
 
     public function isDraft(): bool
     {

@@ -261,6 +261,21 @@ class User extends Authenticatable
         return $this->role->label();
     }
 
+    public function getNameEnAttribute(): ?string
+    {
+        return $this->name;
+    }
+
+    public function getNameFaAttribute(): ?string
+    {
+        return null;
+    }
+
+    public function getPhoneVerifiedAttribute(): bool
+    {
+        return $this->is_verified;
+    }
+
     /*
     |--------------------------------------------------------------------------
     | Helpers

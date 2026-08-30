@@ -112,4 +112,25 @@ class Ticket extends Model
     {
         return TicketPriority::labelFor($this->priority);
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Accessors
+    |--------------------------------------------------------------------------
+    */
+
+    public function getUserNameAttribute(): ?string
+    {
+        return $this->user?->name;
+    }
+
+    public function getUserEmailAttribute(): ?string
+    {
+        return $this->user?->email;
+    }
+
+    public function getCategoryAttribute(): ?string
+    {
+        return null;
+    }
 }

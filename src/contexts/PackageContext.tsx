@@ -23,6 +23,12 @@ import {
   listPackages,
   updatePackage as updatePackageApi,
 } from "../lib/api"
+import {
+  findAdmin,
+  findPackage,
+  packagesByAdmin,
+  packagesByPlatform,
+} from "../domain/package"
 
 export interface PackageContextValue {
   admins: AdminProfile[]
@@ -147,26 +153,19 @@ export function PackageProvider({ children }: { children: ReactNode }) {
   )
   const has = useCallback((id: string) => selected.has(id), [selected])
   const admin = useCallback(
-    (id: string | number) =>
-      admins.find((profile) => String(profile.id) === String(id)),
+    (id: string | number) => findAdmin(admins, id),
     [admins],
   )
   const pkg = useCallback(
-    (id: string) => packages.find((item) => item.id === id),
+    (id: string) => findPackage(packages, id),
     [packages],
   )
   const packagesForAdmin = useCallback(
-    (adminId: string) =>
-      packages.filter(
-        (item) => item.adminId === adminId && item.active !== false,
-      ),
+    (adminId: string) => packagesByAdmin(packages, adminId),
     [packages],
   )
   const packagesForPlatform = useCallback(
-    (platform: PlatformKey) =>
-      packages.filter(
-        (item) => item.platforms.includes(platform) && item.active !== false,
-      ),
+    (platform: PlatformKey) => packagesByPlatform(packages, platform),
     [packages],
   )
 
@@ -189,12 +188,4 @@ export function PackageProvider({ children }: { children: ReactNode }) {
   return (
     <PackageContext.Provider value={value}>{children}</PackageContext.Provider>
   )
-}
-
-export type {
-  AdminProfile,
-  ContractPackage,
-  CustomOffer,
-  PlatformKey,
-  BillingCycle,
 }

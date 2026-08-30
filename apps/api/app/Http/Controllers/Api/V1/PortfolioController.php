@@ -66,10 +66,11 @@ class PortfolioController extends Controller
     public function uploadMedia(Request $request, Portfolio $portfolio): JsonResponse
     {
         $request->validate([
-            'media' => ['required', 'array'],
+            'media' => ['required', 'array', 'min:1'],
+            'media.*' => ['file', 'max:10240'],
         ]);
 
-        $media = $this->portfolioService->updateMedia($portfolio, $request->validated('media'));
+        $media = $this->portfolioService->updateMedia($portfolio, $request->file('media'));
 
         return response()->json($media);
     }

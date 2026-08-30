@@ -43,6 +43,17 @@ class TicketController extends Controller
         return response()->json($ticket);
     }
 
+    public function update(Request $request, Ticket $ticket): JsonResponse
+    {
+        $ticket->update($request->validate([
+            'status' => ['nullable', 'string', 'in:open,in_progress,resolved,closed'],
+            'priority' => ['nullable', 'string', 'in:low,medium,high,urgent'],
+            'assigned_to' => ['nullable', 'integer', 'exists:users,id'],
+        ]));
+
+        return response()->json($ticket->load(['user', 'assignedTo', 'messages.user']));
+    }
+
     public function assign(Request $request, Ticket $ticket): JsonResponse
     {
         $request->validate([
@@ -60,6 +71,16 @@ class TicketController extends Controller
         $ticket = $this->ticketService->close($ticket);
 
         return response()->json($ticket);
+    }
+
+    public function reply(Request $request, Ticket $ticket): JsonResponse
+    {
+        $message = $this->ticketService->addMessage($ticket, $request->user(), $request->validate([
+            'body' => ['required', 'string'],
+            'is_internal' => ['nullable', 'boolean'],
+        ]));
+
+        return response()->json($message, 201);
     }
 
     public function addMessage(Request $request, Ticket $ticket): JsonResponse

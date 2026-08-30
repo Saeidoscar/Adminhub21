@@ -7,9 +7,10 @@
         "php": "^8.3",
         "laravel/framework": "^13.0",
         "laravel/sanctum": "^4.0",
-        "fruitcake/laravel-cors": "^1.0",
         "guzzlehttp/guzzle": "^7.8",
-        "league/flysystem": "^3.0"
+        "league/flysystem": "^3.0",
+        "barryvdh/laravel-dompdf": "^3.0",
+        "openai-php/client": "^0.8"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
@@ -59,7 +60,11 @@
     "config": {
         "optimize-autoloader": true,
         "preferred-install": "dist",
-        "sort-packages": true
+        "sort-packages": true,
+        "platform": {
+            "php": "8.3.0"
+        },
+        "allow-plugins": true
     },
     "minimum-stability": "stable",
     "prefer-stable": true

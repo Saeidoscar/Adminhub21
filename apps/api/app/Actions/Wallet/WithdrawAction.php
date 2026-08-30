@@ -33,7 +33,7 @@ class WithdrawAction
                 'amount' => $amount,
                 'direction' => WalletTransactionDirection::Withdrawal,
                 'type' => $type,
-                'status' => WalletTransactionStatus::Completed,
+                'status' => WalletTransactionStatus::Pending,
             ]);
         });
     }

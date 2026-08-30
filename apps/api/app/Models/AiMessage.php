@@ -14,6 +14,8 @@ class AiMessage extends Model
         'response',
         'in_tokens',
         'out_tokens',
+        'provider',
+        'model_code',
     ];
 
     protected function casts(): array

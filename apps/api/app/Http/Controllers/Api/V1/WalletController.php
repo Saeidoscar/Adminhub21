@@ -6,6 +6,7 @@ use App\Actions\Wallet\DepositAction;
 use App\Actions\Wallet\WithdrawAction;
 use App\Actions\Wallet\BlockAmountAction;
 use App\Actions\Wallet\UnblockAmountAction;
+use App\Actions\Wallet\TransferAction;
 use App\Enums\WalletTransactionType;
 use App\Http\Requests\Api\V1\DepositRequest;
 use App\Http\Requests\Api\V1\WithdrawRequest;
@@ -20,6 +21,7 @@ class WalletController extends Controller
         private readonly WithdrawAction $withdraw,
         private readonly BlockAmountAction $blockAmount,
         private readonly UnblockAmountAction $unblockAmount,
+        private readonly TransferAction $transfer,
     ) {}
 
     public function balance(Request $request): JsonResponse
@@ -86,5 +88,28 @@ class WalletController extends Controller
         $wallet = $this->unblockAmount->execute($request->user(), $request->validated('amount'));
 
         return response()->json($wallet);
+    }
+
+    public function transfer(Request $request): JsonResponse
+    {
+        $request->validate([
+            'receiver_id' => ['required', 'integer', 'exists:users,id'],
+            'amount' => ['required', 'integer', 'min:1'],
+        ]);
+
+        $receiver = User::query()->findOrFail($request->receiver_id);
+
+        if ($receiver->id === $request->user()->id) {
+            return response()->json(['message' => 'Cannot transfer to yourself.'], 422);
+        }
+
+        $transaction = $this->transfer->execute(
+            $request->user(),
+            $receiver,
+            $request->validated('amount'),
+            WalletTransactionType::Transfer
+        );
+
+        return response()->json($transaction, 201);
     }
 }

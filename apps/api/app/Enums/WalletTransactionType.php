@@ -15,6 +15,7 @@ enum WalletTransactionType: string
     case Refund = 'refund';
     case Withdrawal = 'withdrawal';
     case Deposit = 'deposit';
+    case Transfer = 'transfer';
 
     public function label(): string
     {
@@ -30,6 +31,7 @@ enum WalletTransactionType: string
             self::Refund => 'Refund',
             self::Withdrawal => 'Withdrawal',
             self::Deposit => 'Deposit',
+            self::Transfer => 'Transfer',
         };
     }
 

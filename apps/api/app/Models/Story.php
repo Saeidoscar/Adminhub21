@@ -65,9 +65,14 @@ class Story extends Model
 
     /*
     |--------------------------------------------------------------------------
-    | Helpers
+    | Accessors
     |--------------------------------------------------------------------------
     */
+
+    public function getAuthorNameAttribute(): ?string
+    {
+        return $this->user?->name;
+    }
 
     public function incrementViews(): static
     {

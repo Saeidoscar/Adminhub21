@@ -1,22 +1,13 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { t, type Lang } from "../i18n"
 import { Icon } from "../components/layout/Icon"
 import { Badge } from "../components/ui/Badge"
-import {
-  listTickets,
-  getTicket,
-  createTicket,
-  listTicketMessages,
-  createTicketMessage,
-  updateTicket,
-  type Ticket,
-  type TicketMessage,
-} from "../lib/api"
 import { ListSkeleton } from "../components/ui/Skeleton"
-import { ticketSchema, type TicketInput } from "../lib/validation"
+import { useTickets } from "../hooks/useTickets"
+import type { TicketInput } from "../lib/validation"
 
-const CATEGORY_LABELS: Record<string, { en: string fa: string }> = {
+const CATEGORY_LABELS: Record<string, { en: string; fa: string }> = {
   billing: { en: "Billing", fa: "مالی" },
   technical: { en: "Technical", fa: "فنی" },
   account: { en: "Account", fa: "حساب کاربری" },
@@ -30,7 +21,7 @@ const PRIORITY_COLORS: Record<string, string> = {
   urgent: "bg-red-100 text-red-700",
 }
 
-const PRIORITY_LABELS: Record<string, { en: string fa: string }> = {
+const PRIORITY_LABELS: Record<string, { en: string; fa: string }> = {
   low: { en: "Low", fa: "پایین" },
   medium: { en: "Medium", fa: "متوسط" },
   high: { en: "High", fa: "بالا" },
@@ -44,7 +35,7 @@ const STATUS_COLORS: Record<string, string> = {
   closed: "bg-gray-100 text-gray-700",
 }
 
-const STATUS_LABELS: Record<string, { en: string fa: string }> = {
+const STATUS_LABELS: Record<string, { en: string; fa: string }> = {
   open: { en: "Open", fa: "باز" },
   in_progress: { en: "In Progress", fa: "در حال بررسی" },
   resolved: { en: "Resolved", fa: "حل شده" },
@@ -62,123 +53,29 @@ export default function TicketsPage({
   const navigate = useNavigate()
   const isFa = lang === "fa"
 
-  const [tickets, setTickets] = useState<Ticket[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [currentTicket, setCurrentTicket] = useState<Ticket | null>(null)
-  const [messages, setMessages] = useState<TicketMessage[]>([])
-  const [newMessage, setNewMessage] = useState("")
-  const [sending, setSending] = useState(false)
-  const [showCreateForm, setShowCreateForm] = useState(false)
+  const {
+    tickets,
+    loading,
+    error,
+    currentTicket,
+    messages,
+    sending,
+    loadTicketDetail,
+    createNewTicket,
+    sendMessage,
+    changeStatus,
+    clearSelection,
+  } = useTickets()
 
+  const [showCreateForm, setShowCreateForm] = useState(false)
   const [newSubject, setNewSubject] = useState("")
   const [newCategory, setNewCategory] = useState<string>("billing")
   const [newPriority, setNewPriority] = useState<string>("medium")
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [newMessage, setNewMessage] = useState("")
 
-  const loadTickets = async () => {
-    setLoading(true)
-    setError(null)
-    try {
-      const data = await listTickets()
-      setTickets(data)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load tickets")
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const loadTicketDetail = async (id: string) => {
-    setLoading(true)
-    setError(null)
-    try {
-      const [ticketData, messagesData] = await Promise.all([
-        getTicket(id),
-        listTicketMessages(id),
-      ])
-      if (ticketData) {
-        setCurrentTicket(ticketData)
-        setMessages(messagesData)
-      } else {
-        setError(isFa ? "تیکت یافت نشد" : "Ticket not found")
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load ticket")
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    if (ticketId) {
-      loadTicketDetail(ticketId)
-    } else {
-      loadTickets()
-      setCurrentTicket(null)
-      setMessages([])
-    }
-  }, [ticketId])
-
-  const handleCreateTicket = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setErrors({})
-    const result = ticketSchema.safeParse({
-      subject: newSubject,
-      category: newCategory as TicketInput["category"],
-      priority: newPriority as TicketInput["priority"],
-    })
-    if (!result.success) {
-      const fieldErrors: Record<string, string> = {}
-      result.error.errors.forEach((err) => {
-        const key = err.path[0] as string
-        if (key) fieldErrors[key] = err.message
-      })
-      setErrors(fieldErrors)
-      return
-    }
-    try {
-      const ticket = await createTicket(result.data)
-      setTickets((prev) => [ticket, ...prev])
-      setNewSubject("")
-      setNewCategory("billing")
-      setNewPriority("medium")
-      setShowCreateForm(false)
-      navigate(`/tickets/${ticket.id}`)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to create ticket")
-    }
-  }
-
-  const handleSendMessage = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!ticketId || !newMessage.trim()) return
-    setSending(true)
-    try {
-      const message = await createTicketMessage(ticketId, {
-        body: newMessage.trim(),
-      })
-      setMessages((prev) => [...prev, message])
-      setNewMessage("")
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to send message")
-    } finally {
-      setSending(false)
-    }
-  }
-
-  const handleStatusChange = async (ticketId: string, status: string) => {
-    try {
-      const updated = await updateTicket(ticketId, { status: status as Ticket["status"] })
-      setTickets((prev) =>
-        prev.map((t) => (t.id === ticketId ? updated : t)),
-      )
-      if (currentTicket?.id === ticketId) {
-        setCurrentTicket(updated)
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to update ticket")
-    }
+  if (ticketId && !currentTicket) {
+    void loadTicketDetail(ticketId)
   }
 
   if (ticketId && currentTicket) {
@@ -186,7 +83,10 @@ export default function TicketsPage({
       <div className="p-6 lg:p-8 max-w-3xl mx-auto fade-in">
         <div className="mb-6">
           <button
-            onClick={() => navigate("/tickets")}
+            onClick={() => {
+              clearSelection()
+              navigate("/tickets")
+            }}
             className="flex items-center gap-2 text-sm text-[#1e3a5f] font-semibold hover:underline mb-4"
           >
             <Icon name="chevronLeft" size={16} className="rtl:rotate-180" />
@@ -209,9 +109,7 @@ export default function TicketsPage({
               </span>
               <select
                 value={currentTicket.status}
-                onChange={(e) =>
-                  handleStatusChange(currentTicket.id, e.target.value)
-                }
+                onChange={(e) => changeStatus(currentTicket.id, e.target.value)}
                 className={`px-2.5 py-1 rounded-lg text-xs font-semibold border-0 cursor-pointer ${STATUS_COLORS[currentTicket.status] || "bg-gray-100 text-gray-700"}`}
               >
                 {Object.entries(STATUS_LABELS).map(([key, val]) => (
@@ -296,9 +194,7 @@ export default function TicketsPage({
                   <div>{msg.body}</div>
                   <div
                     className={`text-xs mt-1 opacity-60 ${
-                      msg.senderId === currentTicket.userId
-                        ? "text-right"
-                        : "text-left"
+                      msg.senderId === currentTicket.userId ? "text-right" : "text-left"
                     }`}
                   >
                     {new Date(msg.createdAt).toLocaleString()}
@@ -310,7 +206,12 @@ export default function TicketsPage({
         </div>
 
         <form
-          onSubmit={handleSendMessage}
+          onSubmit={(e) => {
+            e.preventDefault()
+            void sendMessage(currentTicket.id, newMessage).then((msg) => {
+              if (msg) setNewMessage("")
+            })
+          }}
           className="bg-white rounded-2xl border border-[#e2e8f0] p-4"
         >
           <div className="flex gap-3">
@@ -336,6 +237,25 @@ export default function TicketsPage({
         </form>
       </div>
     )
+  }
+
+  const handleCreateTicket = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setErrors({})
+    const result = await createNewTicket({
+      subject: newSubject,
+      category: newCategory as TicketInput["category"],
+      priority: newPriority as TicketInput["priority"],
+    })
+    if (result.success && result.ticket) {
+      setNewSubject("")
+      setNewCategory("billing")
+      setNewPriority("medium")
+      setShowCreateForm(false)
+      navigate(`/tickets/${result.ticket.id}`)
+    } else if (result.errors) {
+      setErrors(result.errors)
+    }
   }
 
   return (

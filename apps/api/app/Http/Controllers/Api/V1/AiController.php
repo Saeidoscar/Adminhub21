@@ -18,6 +18,47 @@ class AiController extends Controller
         private readonly AiService $aiService,
     ) {}
 
+    public function models(Request $request): JsonResponse
+    {
+        $models = \App\Models\AiModel::query()->get();
+
+        return response()->json(['models' => $models]);
+    }
+
+    public function showConversation(Request $request, \App\Models\AiConversation $conversation): JsonResponse
+    {
+        return response()->json(['conversation' => $conversation->load('model', 'messages')]);
+    }
+
+    public function updateConversation(Request $request, \App\Models\AiConversation $conversation): JsonResponse
+    {
+        $validated = $request->validate([
+            'title' => ['required', 'string', 'max:255'],
+        ]);
+
+        $conversation->update($validated);
+
+        return response()->json(['conversation' => $conversation]);
+    }
+
+    public function destroyConversation(Request $request, \App\Models\AiConversation $conversation): JsonResponse
+    {
+        $conversation->delete();
+
+        return response()->json(null, 204);
+    }
+
+    public function switchModel(Request $request, \App\Models\AiConversation $conversation): JsonResponse
+    {
+        $validated = $request->validate([
+            'model_id' => ['required', 'integer', 'exists:ai_models,id'],
+        ]);
+
+        $conversation->update(['model_id' => $validated['model_id']]);
+
+        return response()->json(['conversation' => $conversation->load('model')]);
+    }
+
     public function chat(Request $request): JsonResponse
     {
         $request->validate([
@@ -47,10 +88,15 @@ class AiController extends Controller
     {
         $request->validate([
             'text' => ['required', 'string'],
-            'model_id' => ['required', 'integer', 'exists:ai_models,id'],
+            'model_id' => ['nullable', 'integer', 'exists:ai_models,id'],
+            'provider' => ['nullable', 'string', 'in:openai,anthropic,openrouter'],
         ]);
 
-        return response()->json(['message' => 'Analysis queued']);
+        $result = $this->aiService->analyze($request->text, [
+            'provider' => $request->provider ?? 'openai',
+        ]);
+
+        return response()->json($result);
     }
 
     public function history(Request $request): JsonResponse

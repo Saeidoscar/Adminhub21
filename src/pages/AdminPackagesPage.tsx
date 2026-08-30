@@ -3,19 +3,16 @@ import { useNavigate } from "react-router-dom"
 import { t, type Lang } from "../i18n"
 import { Icon } from "../components/layout/Icon"
 import { Button } from "../components/ui/Button"
-import { Input, Textarea, Select } from "../components/ui/Input"
 import { usePackages } from "../contexts/PackageContext"
+import { usePackageForm } from "../hooks/usePackageForm"
 import {
-  emptyPlatformConfig,
   platformLabel,
+  ALL_PLATFORM_KEYS,
 } from "../components/packages/platformSpecs"
 import { PLATFORM_SPECS } from "../components/packages/platformSpecs"
 import type {
   ContractPackage,
   PlatformKey,
-  BillingCycle,
-  PackageType,
-  PlatformConfig,
 } from "@adminhub/shared"
 
 const PLATFORM_COLORS: Record<string, string> = {
@@ -28,7 +25,7 @@ const PLATFORM_COLORS: Record<string, string> = {
 }
 
 const BILLING_CYCLES: {
-  value: BillingCycle
+  value: "monthly" | "project" | "hourly"
   labelEn: string
   labelFa: string
 }[] = [
@@ -39,133 +36,25 @@ const BILLING_CYCLES: {
 
 export default function AdminPackagesPage() {
   const navigate = useNavigate()
-  const { packages, addPackage, updatePackage, deletePackage } = usePackages()
+  const { packages, deletePackage } = usePackages()
   const [lang, setLang] = useState<Lang>("fa")
   const [activeTab, setActiveTab] = useState<"list" | "create">("list")
-  const [editingId, setEditingId] = useState<string | null>(null)
-  const [errors, setErrors] = useState<Record<string, string>>({})
-  const [form, setForm] = useState({
-    name: "",
-    description: "",
-    type: "platform" as PackageType,
-    platforms: [] as PlatformKey[],
-    priceToman: "",
-    priceUSD: "",
-    billingCycle: "monthly" as BillingCycle,
-    deliveryTime: "",
-    featured: false,
-    active: true,
-    platformConfigs: [] as PlatformConfig[],
-  })
-
   const isFa = lang === "fa"
   const tr = t[lang]
 
-  const resetForm = () => {
-    setForm({
-      name: "",
-      description: "",
-      type: "platform",
-      platforms: [],
-      priceToman: "",
-      priceUSD: "",
-      billingCycle: "monthly",
-      deliveryTime: "",
-      featured: false,
-      active: true,
-      platformConfigs: [],
-    })
-    setEditingId(null)
-  }
-
-  const togglePlatform = (p: PlatformKey) => {
-    setForm((f) => {
-      const next = f.platforms.includes(p)
-        ? f.platforms.filter((x) => x !== p)
-        : [...f.platforms, p]
-      return {
-        ...f,
-        platforms: next,
-        platformConfigs: next.map((pl) => {
-          const existing = f.platformConfigs.find((c) => c.platform === pl)
-          return existing ?? emptyPlatformConfig(pl)
-        }),
-      }
-    })
-  }
-
-  const updateConfig = (
-    platform: PlatformKey,
-    field: string,
-    value: unknown,
-  ) => {
-    setForm((f) => ({
-      ...f,
-      platformConfigs: f.platformConfigs.map((c) =>
-        c.platform === platform
-          ? { ...c, settings: { ...c.settings, [field]: value } }
-          : c,
-      ),
-    }))
-  }
-
-  const handleSubmit = async () => {
-    setErrors({})
-    const fieldErrors: Record<string, string> = {}
-    if (!form.name.trim()) fieldErrors.name = "Required"
-    if (form.platforms.length === 0) fieldErrors.platforms = "Select at least one platform"
-    if (!form.priceToman.trim() || isNaN(Number(form.priceToman)))
-      fieldErrors.priceToman = "Valid price required"
-    if (!form.priceUSD.trim() || isNaN(Number(form.priceUSD)))
-      fieldErrors.priceUSD = "Valid price required"
-    if (!form.deliveryTime.trim()) fieldErrors.deliveryTime = "Required"
-    if (Object.keys(fieldErrors).length > 0) {
-      setErrors(fieldErrors)
-      return
-    }
-    const now = new Date().toISOString()
-    const payload = {
-      adminId: "current",
-      name: form.name,
-      description: form.description,
-      type: form.type,
-      platforms: form.platforms,
-      platformConfigs: form.platformConfigs,
-      priceToman: parseInt(form.priceToman) || 0,
-      priceUSD: parseInt(form.priceUSD) || 0,
-      billingCycle: form.billingCycle,
-      deliveryTime: form.deliveryTime || "Within 24h",
-      featured: form.featured,
-      active: form.active,
-      createdAt: now,
-      updatedAt: now,
-    }
-    if (editingId) {
-      await updatePackage({ ...payload, id: editingId })
-    } else {
-      await addPackage(payload)
-    }
-    resetForm()
-    setActiveTab("list")
-  }
-
-  const startEdit = (pkg: ContractPackage) => {
-    setEditingId(pkg.id)
-    setForm({
-      name: pkg.name,
-      description: pkg.description,
-      type: pkg.type,
-      platforms: pkg.platforms,
-      priceToman: String(pkg.priceToman),
-      priceUSD: String(pkg.priceUSD),
-      billingCycle: pkg.billingCycle,
-      deliveryTime: pkg.deliveryTime,
-      featured: pkg.featured,
-      active: pkg.active,
-      platformConfigs: pkg.platformConfigs,
-    })
-    setActiveTab("create")
-  }
+  const {
+    form,
+    editingId,
+    errors,
+    setFormField,
+    togglePlatform,
+    updateConfig,
+    startEdit,
+    resetForm,
+    handleSubmit,
+  } = usePackageForm({
+    onSuccess: () => setActiveTab("list"),
+  })
 
   const handleDelete = async (id: string) => {
     if (
@@ -298,26 +187,15 @@ export default function AdminPackagesPage() {
                 </p>
                 <div className="flex items-center justify-between pt-3 border-t border-[#f2f5fa]">
                   <div>
-                    <div className="text-base font-bold text-[#1e3a5f]">
-                      {isFa
-                        ? `${(pkg.priceToman / 1000000).toFixed(1)}M ${tr.common.toman}`
-                        : `$${pkg.priceUSD}`}
-                      <span className="text-xs font-normal text-[#94a3b8] ml-1">
-                        {tr.common.perMonth}
-                      </span>
-                    </div>
-                    <div className="text-xs text-[#64748b] mt-0.5">
-                      {tr.common.deliveryTime}: {pkg.deliveryTime}
-                    </div>
+                    <span className="text-lg font-bold text-[#1e3a5f]">
+                      {(pkg.priceToman / 1000000).toFixed(1)}M
+                    </span>
+                    <span className="text-xs text-[#94a3b8] mr-1">
+                      {tr.common.perMonth}
+                    </span>
                   </div>
-                  <span
-                    className={`inline-flex px-2.5 py-1 rounded-full text-xs font-semibold ${
-                      pkg.active
-                        ? "bg-emerald-100 text-emerald-700"
-                        : "bg-gray-100 text-gray-600"
-                    }`}
-                  >
-                    {pkg.active ? tr.common.active : tr.common.inactive}
+                  <span className="text-xs text-[#64748b]">
+                    {pkg.deliveryTime}
                   </span>
                 </div>
               </div>
@@ -328,242 +206,217 @@ export default function AdminPackagesPage() {
 
       {activeTab === "create" && (
         <div className="bg-white rounded-2xl border border-[#e2e8f0] p-6 fade-in">
-          <h2 className="font-bold text-[#0f172a] text-lg mb-6">
+          <h2 className="font-bold text-[#0f172a] text-lg mb-5">
             {editingId
-              ? tr.adminProfile.editPackage
-              : tr.adminProfile.createPackage}
+              ? isFa
+                ? "ویرایش پکیج"
+                : "Edit Package"
+              : isFa
+                ? "ایجاد پکیج جدید"
+                : "Create New Package"}
           </h2>
+
           <div className="space-y-5">
             <div>
               <label className="block text-sm font-semibold text-[#0f172a] mb-1.5">
-                {tr.adminProfile.packageName}
+                {tr.packages.packageName}
               </label>
-              <Input
+              <input
                 value={form.name}
-                onChange={(v) => setForm((f) => ({ ...f, name: v }))}
-                placeholder={tr.adminProfile.packageNamePh}
-                error={errors.name}
+                onChange={(e) => setFormField("name", e.target.value)}
+                className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all"
               />
+              {errors.name && (
+                <p className="text-xs text-rose-600 mt-1">{errors.name}</p>
+              )}
             </div>
+
             <div>
               <label className="block text-sm font-semibold text-[#0f172a] mb-1.5">
-                {tr.adminProfile.packageDesc}
+                {isFa ? "توضیحات" : "Description"}
               </label>
-              <Textarea
+              <textarea
                 value={form.description}
-                onChange={(v) => setForm((f) => ({ ...f, description: v }))}
-                placeholder={tr.adminProfile.packageDescPh}
+                onChange={(e) => setFormField("description", e.target.value)}
                 rows={3}
+                className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all resize-none"
               />
             </div>
-            <div className="grid sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-semibold text-[#0f172a] mb-1.5">
-                  {tr.adminProfile.packageType}
-                </label>
-                <div className="grid grid-cols-2 gap-2">
-                  {[
-                    { key: "platform", label: tr.adminProfile.platformOnly },
-                    { key: "bundle", label: tr.adminProfile.bundle },
-                  ].map((pt) => (
-                    <button
-                      key={pt.key}
-                      onClick={() =>
-                        setForm((f) => ({ ...f, type: pt.key as PackageType }))
-                      }
-                      className={`py-2.5 rounded-xl text-xs font-bold border-2 transition-all btn-press ${
-                        form.type === pt.key
-                          ? "border-[#1e3a5f] bg-[#1e3a5f]/5 text-[#1e3a5f]"
-                          : "border-[#e2e8f0] text-[#64748b]"
-                      }`}
-                    >
-                      {pt.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-[#0f172a] mb-1.5">
-                  {tr.adminProfile.billingCycle}
-                </label>
-                <Select
-                  value={form.billingCycle}
-                  onChange={(v) =>
-                    setForm((f) => ({ ...f, billingCycle: v as BillingCycle }))
-                  }
-                  options={BILLING_CYCLES.map((bc) => ({
-                    value: bc.value,
-                    label: isFa ? bc.labelFa : bc.labelEn,
-                  }))}
-                />
-              </div>
-            </div>
+
             <div>
               <label className="block text-sm font-semibold text-[#0f172a] mb-2">
-                {tr.adminProfile.platformsIncluded}
+                {isFa ? "پلتفرم‌ها" : "Platforms"}
               </label>
               <div className="flex flex-wrap gap-2">
-                {Object.keys(PLATFORM_SPECS).map((p) => (
+                {ALL_PLATFORM_KEYS.map((pl) => (
                   <button
-                    key={p}
-                    onClick={() => togglePlatform(p as PlatformKey)}
-                    className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold transition-all btn-press border-2 ${
-                      form.platforms.includes(p as PlatformKey)
+                    key={pl}
+                    type="button"
+                    onClick={() => togglePlatform(pl)}
+                    className={`px-3 py-2 rounded-xl text-xs font-semibold border-2 transition-all btn-press ${
+                      form.platforms.includes(pl)
                         ? "border-[#1e3a5f] bg-[#1e3a5f]/5 text-[#1e3a5f]"
-                        : "border-[#e2e8f0] text-[#64748b] hover:border-[#1e3a5f]/40"
+                        : "border-[#e2e8f0] text-[#64748b]"
                     }`}
                   >
-                    {form.platforms.includes(p as PlatformKey) && (
-                      <Icon name="check" size={12} />
-                    )}
-                    {platformLabel(p as PlatformKey, lang)}
+                    {platformLabel(pl, lang)}
                   </button>
                 ))}
               </div>
+              {errors.platforms && (
+                <p className="text-xs text-rose-600 mt-1">{errors.platforms}</p>
+              )}
             </div>
-
-            {form.platforms.length > 0 && (
-              <div className="space-y-4">
-                {form.platformConfigs.map((config) => {
-                  const spec = PLATFORM_SPECS[config.platform]
-                  if (!spec) return null
-                  return (
-                    <div
-                      key={config.platform}
-                      className="bg-[#f8fafc] rounded-xl border border-[#e2e8f0] p-4"
-                    >
-                      <div className="flex items-center gap-2 mb-3">
-                        <div
-                          className={`w-6 h-6 rounded-md ${spec.colorClass} flex items-center justify-center text-white text-xs font-bold`}
-                        >
-                          {spec.label[lang].charAt(0)}
-                        </div>
-                        <span className="font-bold text-sm text-[#0f172a]">
-                          {spec.label[lang]}
-                        </span>
-                      </div>
-                      <div className="grid sm:grid-cols-2 gap-3">
-                        {spec.fields.map((field) => (
-                          <div key={field.id}>
-                            {field.type === "boolean" ? (
-                              <label className="flex items-center gap-2 cursor-pointer">
-                                <input
-                                  type="checkbox"
-                                  checked={
-                                    !!config.settings[field.id] as boolean
-                                  }
-                                  onChange={(e) =>
-                                    updateConfig(
-                                      config.platform,
-                                      field.id,
-                                      e.target.checked,
-                                    )
-                                  }
-                                  className="w-4 h-4 rounded border-[#e2e8f0] text-[#1e3a5f] focus:ring-[#1e3a5f]"
-                                />
-                                <span className="text-sm text-[#0f172a]">
-                                  {isFa ? field.label.fa : field.label.en}
-                                </span>
-                              </label>
-                            ) : (
-                              <div>
-                                <label className="block text-xs font-semibold text-[#64748b] mb-1">
-                                  {isFa ? field.label.fa : field.label.en}
-                                </label>
-                                <input
-                                  type="number"
-                                  value={String(
-                                    config.settings[field.id] ?? "",
-                                  )}
-                                  onChange={(e) =>
-                                    updateConfig(
-                                      config.platform,
-                                      field.id,
-                                      parseInt(e.target.value) || 0,
-                                    )
-                                  }
-                                  className="w-full px-3 py-2 rounded-lg border border-[#e2e8f0] bg-white text-sm text-[#0f172a] focus:border-[#1e3a5f] transition-all"
-                                  dir="ltr"
-                                  min={field.min}
-                                  max={field.max}
-                                />
-                              </div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-            )}
 
             <div className="grid sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-semibold text-[#0f172a] mb-1.5">
-                  {tr.common.priceToman}
+                  {isFa ? "قیمت (تومان)" : "Price (Toman)"}
                 </label>
-                <Input
+                <input
                   value={form.priceToman}
-                  onChange={(v) => setForm((f) => ({ ...f, priceToman: v }))}
-                  placeholder="4500000"
+                  onChange={(e) => setFormField("priceToman", e.target.value)}
                   dir="ltr"
-                  error={errors.priceToman}
+                  className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] transition-all"
                 />
+                {errors.priceToman && (
+                  <p className="text-xs text-rose-600 mt-1">{errors.priceToman}</p>
+                )}
               </div>
               <div>
                 <label className="block text-sm font-semibold text-[#0f172a] mb-1.5">
-                  {tr.common.priceUSD}
+                  {isFa ? "قیمت (دلار)" : "Price (USD)"}
                 </label>
-                <Input
+                <input
                   value={form.priceUSD}
-                  onChange={(v) => setForm((f) => ({ ...f, priceUSD: v }))}
-                  placeholder="108"
+                  onChange={(e) => setFormField("priceUSD", e.target.value)}
                   dir="ltr"
-                  error={errors.priceUSD}
+                  className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] transition-all"
                 />
+                {errors.priceUSD && (
+                  <p className="text-xs text-rose-600 mt-1">{errors.priceUSD}</p>
+                )}
               </div>
             </div>
-            <div>
-              <label className="block text-sm font-semibold text-[#0f172a] mb-1.5">
-                {tr.common.deliveryTime}
-              </label>
-              <Input
-                value={form.deliveryTime}
-                onChange={(v) => setForm((f) => ({ ...f, deliveryTime: v }))}
-                placeholder={tr.adminProfile.deliveryTimePh}
-                error={errors.deliveryTime}
-              />
+
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-semibold text-[#0f172a] mb-1.5">
+                  {isFa ? "چرخه صورتبندی" : "Billing Cycle"}
+                </label>
+                <select
+                  value={form.billingCycle}
+                  onChange={(e) => setFormField("billingCycle", e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] transition-all bg-white"
+                >
+                  {BILLING_CYCLES.map((bc) => (
+                    <option key={bc.value} value={bc.value}>
+                      {isFa ? bc.labelFa : bc.labelEn}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-[#0f172a] mb-1.5">
+                  {isFa ? "زمان تحویل" : "Delivery Time"}
+                </label>
+                <input
+                  value={form.deliveryTime}
+                  onChange={(e) => setFormField("deliveryTime", e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] transition-all"
+                />
+                {errors.deliveryTime && (
+                  <p className="text-xs text-rose-600 mt-1">{errors.deliveryTime}</p>
+                )}
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="featured"
-                checked={form.featured}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, featured: e.target.checked }))
-                }
-                className="w-4 h-4 rounded border-[#e2e8f0] text-[#1e3a5f] focus:ring-[#1e3a5f]"
-              />
-              <label
-                htmlFor="featured"
-                className="text-sm font-semibold text-[#0f172a] cursor-pointer"
-              >
-                {tr.adminProfile.featured}
-              </label>
-            </div>
+
+            {form.platforms.map((pl) => {
+              const spec = PLATFORM_SPECS[pl]
+              const config = form.platformConfigs.find((c) => c.platform === pl)
+              if (!spec || !config) return null
+              return (
+                <div key={pl} className="border border-[#e2e8f0] rounded-xl p-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <div
+                      className={`w-5 h-5 rounded ${spec.colorClass} flex items-center justify-center text-white text-[10px] font-bold`}
+                    >
+                      {spec.label.en.charAt(0)}
+                    </div>
+                    <span className="text-sm font-semibold text-[#0f172a]">
+                      {spec.label[lang]}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    {spec.fields.map((field) => (
+                      <div key={field.id}>
+                        <label className="block text-xs text-[#64748b] mb-1">
+                          {isFa ? field.label.fa : field.label.en}
+                        </label>
+                        {field.type === "boolean" ? (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              updateConfig(pl, field.id, !config.settings[field.id])
+                            }
+                            className={`w-full px-3 py-2 rounded-lg text-xs font-semibold border transition-all ${
+                              config.settings[field.id]
+                                ? "border-emerald-500 bg-emerald-50 text-emerald-700"
+                                : "border-[#e2e8f0] text-[#64748b]"
+                            }`}
+                          >
+                            {config.settings[field.id]
+                              ? isFa
+                                ? "شامل"
+                                : "Included"
+                              : isFa
+                                ? "خیر"
+                                : "No"}
+                          </button>
+                        ) : (
+                          <input
+                            type="number"
+                            value={String(config.settings[field.id] ?? "")}
+                            onChange={(e) =>
+                              updateConfig(
+                                pl,
+                                field.id,
+                                e.target.value ? Number(e.target.value) : field.default ?? 0,
+                              )
+                            }
+                            className="w-full px-3 py-2 rounded-lg border border-[#e2e8f0] text-xs focus:border-[#1e3a5f] transition-all"
+                            dir="ltr"
+                          />
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )
+            })}
+
             <div className="flex gap-3 pt-4">
-              <Button
+              <button
                 onClick={handleSubmit}
-                disabled={!form.name.trim() || form.platforms.length === 0}
+                className="px-6 py-3 rounded-xl bg-[#1e3a5f] text-white text-sm font-bold hover:bg-[#122435] transition-colors btn-press"
               >
-                {editingId ? tr.common.save : tr.adminProfile.savePackage}
-              </Button>
-              {editingId && (
-                <Button variant="secondary" onClick={resetForm}>
-                  {tr.common.cancel}
-                </Button>
-              )}
+                {editingId
+                  ? isFa
+                    ? "ذخیره تغییرات"
+                    : "Save Changes"
+                  : isFa
+                    ? "ایجاد پکیج"
+                    : "Create Package"}
+              </button>
+              <button
+                onClick={() => {
+                  resetForm()
+                  setActiveTab("list")
+                }}
+                className="px-6 py-3 rounded-xl border border-[#e2e8f0] text-sm font-semibold text-[#64748b] hover:bg-[#f2f5fa] transition-colors btn-press"
+              >
+                {tr.common.cancel}
+              </button>
             </div>
           </div>
         </div>

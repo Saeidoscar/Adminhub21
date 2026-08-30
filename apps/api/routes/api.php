@@ -23,5 +23,6 @@ require base_path('routes/api/v1/tickets.php');
 require base_path('routes/api/v1/content.php');
 require base_path('routes/api/v1/ai.php');
 require base_path('routes/api/v1/affiliate.php');
+require base_path('routes/api/v1/catalog.php');
 require base_path('routes/api/v1/public.php');
 require base_path('routes/api/v1/admin.php');

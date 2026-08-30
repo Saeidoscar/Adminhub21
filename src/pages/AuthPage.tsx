@@ -194,29 +194,24 @@ export default function AuthPage({
             <span className="text-xl font-bold">{tr.brand}</span>
           </div>
           <h1 className="text-4xl font-bold leading-tight mb-4">
-            {lang === "fa"
-              ? "بازار کار متخصصان دیجیتال"
-              : "The Digital Admin Marketplace"}
+            {tr.auth.heroTitle}
           </h1>
-          <p className="text-blue-200 text-lg leading-relaxed">{tr.tagline}</p>
+          <p className="text-blue-200 text-lg leading-relaxed">{tr.auth.heroSub}</p>
         </div>
 
         <div className="relative z-10 space-y-4">
           {[
             {
               icon: "shield",
-              textEn: "Contract protection & substitute insurance",
-              textFa: "حفاظت قرارداد و بیمه جایگزینی",
+              textKey: "feature1",
             },
             {
               icon: "check",
-              textEn: "100% verified professionals",
-              textFa: "۱۰۰٪ متخصصان تأییدشده",
+              textKey: "feature2",
             },
             {
               icon: "bot",
-              textEn: "AI-powered matching & contract generation",
-              textFa: "تطابق هوشمند و تولید قرارداد با هوش مصنوعی",
+              textKey: "feature3",
             },
           ].map((item) => (
             <div key={item.icon} className="flex items-center gap-3">
@@ -224,7 +219,7 @@ export default function AuthPage({
                 <Icon name={item.icon} size={16} className="text-white" />
               </div>
               <span className="text-blue-100 text-sm">
-                {lang === "fa" ? item.textFa : item.textEn}
+                {tr.auth[item.textKey as keyof typeof tr.auth]}
               </span>
             </div>
           ))}
@@ -268,9 +263,7 @@ export default function AuthPage({
                     : "text-[#64748b] hover:text-[#1e3a5f]"
                 }`}
               >
-                {mode === "email"
-                  ? (lang === "fa" ? "ایمیل" : "Email")
-                  : (lang === "fa" ? "تلفن" : "Phone")}
+                {mode === "email" ? tr.auth.emailMode : tr.auth.phoneMode}
               </button>
             ))}
           </div>
@@ -409,7 +402,7 @@ export default function AuthPage({
                   className="w-full py-3.5 rounded-xl bg-[#1e3a5f] text-white font-bold text-sm hover:bg-[#122435] transition-colors shadow-md btn-press mb-4 disabled:opacity-60"
                 >
                   {isSubmitting
-                    ? (lang === "fa" ? "در حال پردازش..." : "Processing...")
+                    ? tr.auth.processing
                     : (tab === "login" ? tr.auth.login : tr.auth.register)}
                 </button>
 
@@ -417,7 +410,7 @@ export default function AuthPage({
                   onClick={() => navigate("/dashboard")}
                   className="w-full py-3 rounded-xl border border-[#e2e8f0] bg-white text-[#64748b] text-sm hover:bg-[#f2f5fa] transition-colors btn-press"
                 >
-                  {tr.auth.demo} →
+                  {tr.auth.demo} {tr.auth.demoArrow}
                 </button>
 
                 <p className="text-center text-sm text-[#64748b] mt-6">
@@ -440,24 +433,22 @@ export default function AuthPage({
           {authMode === "phone" && (
             <div className="fade-in">
               <h2 className="text-2xl font-bold text-[#0f172a] mb-1">
-                {lang === "fa" ? "ورود با تلفن همراه" : "Phone Login"}
+                {tr.auth.otp.phoneTitle}
               </h2>
               <p className="text-[#64748b] text-sm mb-8">
-                {lang === "fa"
-                  ? "کد یکبار مصرف به شماره شما ارسال می‌شود"
-                  : "We'll send a one-time code to your phone"}
+                {tr.auth.otp.phoneSub}
               </p>
 
               <div className="space-y-4 mb-6">
                 <div>
                   <label className="block text-sm font-semibold text-[#0f172a] mb-1.5">
-                    {lang === "fa" ? "شماره تلفن" : "Phone Number"}
+                    {tr.auth.otp.phone}
                   </label>
                   <input
                     type="tel"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    placeholder={lang === "fa" ? "۰۹۱۲۳۴۵۶۷۸۹" : "+98 912 345 6789"}
+                    placeholder={tr.auth.otp.phonePh}
                     className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] bg-white text-sm text-[#0f172a] placeholder-[#94a3b8] focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all"
                     dir="ltr"
                     disabled={otpSent}
@@ -470,7 +461,7 @@ export default function AuthPage({
                 {otpSent && (
                   <div>
                     <label className="block text-sm font-semibold text-[#0f172a] mb-1.5">
-                      {lang === "fa" ? "کد تأیید" : "Verification Code"}
+                      {tr.auth.otp.code}
                     </label>
                     <input
                       type="text"
@@ -480,7 +471,7 @@ export default function AuthPage({
                           e.target.value.replace(/\D/g, "").slice(0, 6),
                         )
                       }
-                      placeholder={lang === "fa" ? "کد ۶ رقمی" : "6-digit code"}
+                      placeholder={tr.auth.otp.codePh}
                       className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] bg-white text-sm text-[#0f172a] placeholder-[#94a3b8] focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all"
                       dir="ltr"
                     />
@@ -505,8 +496,8 @@ export default function AuthPage({
                     className="w-full py-3.5 rounded-xl bg-[#1e3a5f] text-white font-bold text-sm hover:bg-[#122435] transition-colors shadow-md btn-press disabled:opacity-60"
                   >
                     {isSubmitting
-                      ? (lang === "fa" ? "در حال ارسال..." : "Sending...")
-                      : (lang === "fa" ? "ارسال کد" : "Send Code")}
+                      ? tr.auth.otp.sending
+                      : tr.auth.otp.sendCode}
                   </button>
                 ) : (
                   <button
@@ -515,8 +506,8 @@ export default function AuthPage({
                     className="w-full py-3.5 rounded-xl bg-[#1e3a5f] text-white font-bold text-sm hover:bg-[#122435] transition-colors shadow-md btn-press disabled:opacity-60"
                   >
                     {isSubmitting
-                      ? (lang === "fa" ? "در حال تأیید..." : "Verifying...")
-                      : (lang === "fa" ? "تأیید کد" : "Verify Code")}
+                      ? tr.auth.otp.verifying
+                      : tr.auth.otp.verifyCode}
                   </button>
                 )}
 
@@ -529,7 +520,7 @@ export default function AuthPage({
                     }}
                     className="w-full py-3 rounded-xl border border-[#e2e8f0] bg-white text-[#64748b] text-sm hover:bg-[#f2f5fa] transition-colors btn-press"
                   >
-                    {lang === "fa" ? "تغییر شماره تلفن" : "Change Phone Number"}
+                    {tr.auth.otp.changePhone}
                   </button>
                 )}
               </div>

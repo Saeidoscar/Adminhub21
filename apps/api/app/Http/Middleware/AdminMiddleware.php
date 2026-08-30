@@ -12,7 +12,7 @@ class AdminMiddleware
     {
         $user = $request->user();
 
-        if (!$user || !$user->hasRole('super_admin')) {
+        if (!$user || !($user->hasRole('admin') || $user->hasRole('super_admin'))) {
             return response()->json(['message' => 'Forbidden'], 403);
         }
 

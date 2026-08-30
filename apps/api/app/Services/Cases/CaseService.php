@@ -5,11 +5,17 @@ namespace App\Services\Cases;
 use App\Models\OfficeCase;
 use App\Models\Office;
 use App\Models\User;
+use App\Models\OfficeCaseEvent;
+use App\Models\OfficeTimeLog;
 use App\Actions\Cases\CreateCaseAction;
 use App\Actions\Cases\AssignTaskAction;
 use App\Actions\Cases\LogTimeAction;
 use App\Actions\Cases\AddEventAction;
 use App\Actions\Cases\TrackProgressAction;
+use App\Actions\Cases\UpdateEventAction;
+use App\Actions\Cases\DestroyEventAction;
+use App\Actions\Cases\UpdateTimeLogAction;
+use App\Actions\Cases\DestroyTimeLogAction;
 
 class CaseService
 {
@@ -19,6 +25,10 @@ class CaseService
         private readonly LogTimeAction $logTime,
         private readonly AddEventAction $addEvent,
         private readonly TrackProgressAction $trackProgress,
+        private readonly UpdateEventAction $updateEventAction,
+        private readonly DestroyEventAction $destroyEventAction,
+        private readonly UpdateTimeLogAction $updateTimeLogAction,
+        private readonly DestroyTimeLogAction $destroyTimeLogAction,
     ) {}
 
     public function createCase(Office $office, array $data): OfficeCase
@@ -44,5 +54,25 @@ class CaseService
     public function trackProgress(OfficeCase $case, int $progress): OfficeCase
     {
         return $this->trackProgress->execute($case, $progress);
+    }
+
+    public function updateEvent(OfficeCaseEvent $event, array $data): OfficeCaseEvent
+    {
+        return $this->updateEventAction->execute($event, $data);
+    }
+
+    public function destroyEvent(OfficeCaseEvent $event): void
+    {
+        $this->destroyEventAction->execute($event);
+    }
+
+    public function updateTimeLog(OfficeTimeLog $log, array $data): OfficeTimeLog
+    {
+        return $this->updateTimeLogAction->execute($log, $data);
+    }
+
+    public function destroyTimeLog(OfficeTimeLog $log): void
+    {
+        $this->destroyTimeLogAction->execute($log);
     }
 }

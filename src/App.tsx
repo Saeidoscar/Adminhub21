@@ -51,16 +51,68 @@ interface AppCtx {
 }
 
 const Ctx = createContext<AppCtx>(null as never)
-const useApp = () => useContext(Ctx)
+export const useApp = () => useContext(Ctx)
+
+// ─── Route metadata ──────────────────────────────────────────────────────────
+
+const ROUTE_META: Record<string, { page: Page; titleKey?: string }> = {
+  "/marketplace": { page: "marketplace", titleKey: "marketplace" },
+  "/tools-rental": { page: "toolsRental", titleKey: "toolsRental" },
+  "/editors": { page: "editors", titleKey: "editors" },
+  "/vibe-coders": { page: "vibeCoders", titleKey: "vibeCoders" },
+  "/skills": { page: "skills", titleKey: "skills" },
+  "/contracts": { page: "contracts", titleKey: "contracts" },
+  "/contracts/history": { page: "contractsHistory", titleKey: "contractsHistory" },
+  "/tickets": { page: "tickets", titleKey: "tickets" },
+  "/packages": { page: "packages", titleKey: "packages" },
+  "/admin-users": { page: "adminUsers", titleKey: "adminUsers" },
+  "/admin-content": { page: "adminContent", titleKey: "adminContent" },
+  "/admin-tickets": { page: "adminTickets", titleKey: "adminTickets" },
+  "/admin-workspace": { page: "adminWorkspace", titleKey: "adminWorkspace" },
+  "/admin-portfolio": { page: "adminPortfolio", titleKey: "adminPortfolio" },
+  "/compare": { page: "compare", titleKey: "compare" },
+  "/ai": { page: "ai", titleKey: "ai" },
+  "/profile": { page: "profile", titleKey: "profile" },
+  "/": { page: "dashboard", titleKey: "dashboard" },
+}
+
+function getPageMeta(
+  pathname: string,
+  lang: Lang,
+  tr: typeof t["en"],
+): { page: Page; title: string } {
+  const exactMatch = ROUTE_META[pathname]
+  if (exactMatch) {
+    const meta = exactMatch
+    const title = meta.titleKey ? tr.nav[meta.titleKey as keyof typeof tr.nav] || tr.nav.dashboard : tr.nav.dashboard
+    return { page: meta.page, title }
+  }
+
+  if (pathname.startsWith("/tickets")) {
+    return { page: "tickets", title: tr.tickets.title }
+  }
+  if (pathname.startsWith("/ai")) {
+    return { page: "ai", title: tr.nav.ai }
+  }
+  if (pathname.startsWith("/admin/")) {
+    return { page: "adminUsers", title: tr.adminUsers.title }
+  }
+
+  return { page: "dashboard", title: tr.nav.dashboard }
+}
 
 // ─── Placeholder Page ─────────────────────────────────────────────────────────
 
 function PlaceholderPage({
   title,
   subtitle,
+  comingSoon,
+  underConstruction,
 }: {
   title: string
   subtitle: string
+  comingSoon: string
+  underConstruction: string
 }) {
   return (
     <div className="p-6 lg:p-8 max-w-6xl mx-auto fade-in">
@@ -70,9 +122,9 @@ function PlaceholderPage({
       </div>
       <div className="bg-white rounded-2xl border border-[#e2e8f0] p-12 text-center">
         <div className="text-4xl mb-4">🚧</div>
-        <div className="font-bold text-[#0f172a] mb-1">Coming Soon</div>
+        <div className="font-bold text-[#0f172a] mb-1">{comingSoon}</div>
         <div className="text-sm text-[#64748b]">
-          This page is under construction.
+          {underConstruction}
         </div>
       </div>
     </div>
@@ -95,43 +147,7 @@ export default function App() {
   const tr = t[lang]
   const role = (user?.role as Role) || "employer"
 
-  const page = (
-    pathname === "/marketplace"
-      ? "marketplace"
-      : pathname === "/tools-rental"
-        ? "toolsRental"
-        : pathname === "/editors"
-          ? "editors"
-          : pathname === "/vibe-coders"
-            ? "vibeCoders"
-            : pathname === "/skills"
-              ? "skills"
-              : pathname === "/contracts"
-                ? "contracts"
-                : pathname === "/contracts/history"
-                  ? "contractsHistory"
-                  : pathname.startsWith("/tickets")
-                    ? "tickets"
-                    : pathname.startsWith("/ai")
-                      ? "ai"
-                      : pathname === "/packages"
-                        ? "packages"
-                        : pathname === "/compare"
-                          ? "compare"
-                          : pathname === "/admin-users"
-                            ? "adminUsers"
-                            : pathname === "/admin-content"
-                              ? "adminContent"
-                              : pathname === "/admin-tickets"
-                                ? "adminTickets"
-                                : pathname === "/admin-workspace"
-                                  ? "adminWorkspace"
-                                  : pathname === "/admin-portfolio"
-                                    ? "adminPortfolio"
-                                    : pathname === "/profile"
-                                      ? "profile"
-                                      : "dashboard"
-  ) as Page
+  const { page, title: pageTitle } = getPageMeta(pathname, lang, tr)
 
   const navItems: {
     id: Page
@@ -148,11 +164,11 @@ export default function App() {
     ...(role === "admin"
       ? [
           { id: "packages" as Page, icon: "package", label: tr.nav.packages },
-          { id: "adminUsers" as Page, icon: "users", label: lang === "fa" ? "مدیریت کاربران" : "Users" },
-          { id: "adminContent" as Page, icon: "edit", label: lang === "fa" ? "محتوای کاربران" : "Content" },
-          { id: "adminTickets" as Page, icon: "tickets", label: lang === "fa" ? "تیکت‌ها" : "Tickets" },
-          { id: "adminWorkspace" as Page, icon: "dashboard", label: lang === "fa" ? "فضای کاری" : "Workspace" },
-          { id: "adminPortfolio" as Page, icon: "image", label: lang === "fa" ? "نمونه کارها" : "Portfolio" },
+          { id: "adminUsers" as Page, icon: "users", label: tr.adminUsers.title },
+          { id: "adminContent" as Page, icon: "edit", label: tr.adminContent.title },
+          { id: "adminTickets" as Page, icon: "tickets", label: tr.adminTickets.title },
+          { id: "adminWorkspace" as Page, icon: "dashboard", label: tr.adminWorkspace.title },
+          { id: "adminPortfolio" as Page, icon: "image", label: tr.adminPortfolio.title },
         ]
       : []),
     ...(role === "employer"
@@ -161,43 +177,6 @@ export default function App() {
     { id: "ai", icon: "ai", label: tr.nav.ai },
     { id: "profile", icon: "profile", label: tr.nav.profile },
   ]
-
-  const pageTitle =
-    page === "dashboard"
-      ? tr.nav.dashboard
-      : page === "marketplace"
-        ? tr.nav.marketplace
-        : page === "toolsRental"
-          ? tr.nav.toolsRental
-          : page === "editors"
-            ? tr.nav.editors
-            : page === "vibeCoders"
-              ? tr.nav.vibeCoders
-              : page === "skills"
-                ? tr.nav.skills
-                : page === "contracts"
-                  ? tr.nav.contracts
-                  : page === "contractsHistory"
-                    ? lang === "fa" ? "قراردادهای من" : "My Contracts"
-                    : page === "tickets"
-                      ? tr.tickets.title
-                      : page === "packages"
-                        ? tr.nav.packages
-                        : page === "compare"
-                          ? tr.nav.compare
-                          : page === "adminUsers"
-                            ? lang === "fa" ? "مدیریت کاربران" : "User Management"
-                            : page === "adminContent"
-                              ? lang === "fa" ? "نظارت بر محتوا" : "Content Moderation"
-                              : page === "adminTickets"
-                                ? lang === "fa" ? "تیکت‌های پشتیبانی" : "Support Tickets"
-                                : page === "adminWorkspace"
-                                  ? lang === "fa" ? "فضای کاری" : "Workspace"
-                                  : page === "adminPortfolio"
-                                    ? lang === "fa" ? "نمونه کارها" : "Portfolio"
-                                    : page === "ai"
-                                      ? tr.nav.ai
-                                      : tr.nav.profile
 
   const ctx: AppCtx = {
     lang,
@@ -359,11 +338,9 @@ export default function App() {
                     <div className="flex-1 overflow-y-auto">
                       <PlaceholderPage
                         title={tr.nav.skills}
-                        subtitle={
-                          lang === "fa"
-                            ? "بزودی قابل استفاده خواهد بود"
-                            : "Coming soon"
-                        }
+                        subtitle={tr.skills.sub}
+                        comingSoon={tr.common.comingSoon}
+                        underConstruction={tr.common.underConstruction}
                       />
                     </div>
                   </ProtectedRoute>

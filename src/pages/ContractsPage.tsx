@@ -1,21 +1,13 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { t, type Lang } from "../i18n"
 import { Icon } from "../components/layout/Icon"
 import { Badge } from "../components/ui/Badge"
-import {
-  listContracts,
-  getContract,
-  updateContractStatus,
-  type Contract,
-} from "../lib/api"
 import { ListSkeleton } from "../components/ui/Skeleton"
-
-const STATUS_COLORS: Record<string, string> = {
-  active: "bg-emerald-100 text-emerald-700",
-  pending: "bg-amber-100 text-amber-700",
-  completed: "bg-blue-100 text-blue-700",
-  disputed: "bg-red-100 text-red-700",
-}
+import { contractStatusLabel, contractStatusColor } from "../domain/contract"
+import { contractAmountDisplay } from "../services/contractService"
+import { useContracts } from "../hooks/useMarketplace"
+import type { Contract } from "@adminhub/shared"
+import ContractDetailView from "../components/contracts/ContractDetailView"
 
 const STATUS_OPTIONS = ["active", "pending", "completed", "disputed"] as const
 
@@ -26,230 +18,43 @@ export default function ContractsPage({
   tr: typeof t["en"]
   lang: Lang
 }) {
-  const [contracts, setContracts] = useState<Contract[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const { contracts, loading, error, updateStatus, viewContract } = useContracts()
   const [updatingId, setUpdatingId] = useState<string | null>(null)
   const [selectedContract, setSelectedContract] = useState<Contract | null>(null)
 
   const isFa = lang === "fa"
 
-  const loadContracts = async () => {
-    setLoading(true)
-    setError(null)
-    try {
-      const data = await listContracts()
-      setContracts(data)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load contracts")
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    loadContracts()
-  }, [])
-
   const handleStatusChange = async (contractId: string, status: string) => {
     setUpdatingId(contractId)
     try {
-      const updated = await updateContractStatus(contractId, { status })
-      setContracts((prev) =>
-        prev.map((c) => (c.id === contractId ? updated : c)),
-      )
+      const updated = await updateStatus(contractId, status)
       if (selectedContract?.id === contractId) {
         setSelectedContract(updated)
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to update status")
+      console.error(err)
     } finally {
       setUpdatingId(null)
     }
   }
 
-  const viewContract = async (id: string) => {
-    try {
-      const contract = await getContract(id)
-      if (contract) {
-        setSelectedContract(contract)
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load contract")
+  const handleViewContract = async (id: string) => {
+    const contract = await viewContract(id)
+    if (contract) {
+      setSelectedContract(contract)
     }
   }
 
   if (selectedContract) {
     return (
-      <div className="p-6 lg:p-8 max-w-3xl mx-auto fade-in">
-        <div className="mb-6">
-          <button
-            onClick={() => setSelectedContract(null)}
-            className="flex items-center gap-2 text-sm text-[#1e3a5f] font-semibold hover:underline mb-4"
-          >
-            <Icon name="chevronLeft" size={16} className="rtl:rotate-180" />
-            {tr.common.back}
-          </button>
-          <h1 className="text-2xl font-bold text-[#0f172a]">
-            {selectedContract.code}
-          </h1>
-          <p className="text-[#64748b] mt-1">
-            {isFa ? "جزئیات قرارداد" : "Contract Details"}
-          </p>
-        </div>
-
-        <div className="bg-white rounded-2xl border border-[#e2e8f0] p-6 mb-6">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <div className="text-sm text-[#64748b]">
-                {isFa ? "وضعیت" : "Status"}
-              </div>
-              <span
-                className={`inline-block mt-1 px-3 py-1 rounded-full text-xs font-semibold ${STATUS_COLORS[selectedContract.status] || "bg-gray-100 text-gray-700"}`}
-              >
-                {isFa
-                  ? {
-                      active: "فعال",
-                      pending: "در انتظار",
-                      completed: "تکمیل شده",
-                      disputed: "در حال رسیدگی",
-                    }[selectedContract.status] || selectedContract.status
-                  : selectedContract.status}
-              </span>
-            </div>
-            <div className="text-left">
-              <div className="text-sm text-[#64748b]">
-                {isFa ? "مبلغ" : "Amount"}
-              </div>
-              <div className="text-base font-bold text-[#1e3a5f]">
-                {isFa
-                  ? `${(selectedContract.amountToman / 1000000).toFixed(1)}M ${tr.common.toman}`
-                  : `$${selectedContract.amountUSD}`}
-              </div>
-            </div>
-          </div>
-
-          <div className="grid sm:grid-cols-2 gap-4 mb-4">
-            <div>
-              <div className="text-xs text-[#64748b] mb-1">
-                {isFa ? "کارفرما" : "Employer"}
-              </div>
-              <div className="text-sm font-semibold text-[#0f172a]">
-                {selectedContract.employerName}
-              </div>
-            </div>
-            <div>
-              <div className="text-xs text-[#64748b] mb-1">
-                {isFa ? "ادمین" : "Admin"}
-              </div>
-              <div className="text-sm font-semibold text-[#0f172a]">
-                {selectedContract.adminNameEn}
-              </div>
-            </div>
-            <div>
-              <div className="text-xs text-[#64748b] mb-1">
-                {isFa ? "پلتفرم" : "Platform"}
-              </div>
-              <div className="text-sm font-semibold text-[#0f172a] capitalize">
-                {selectedContract.platform}
-              </div>
-            </div>
-            <div>
-              <div className="text-xs text-[#64748b] mb-1">
-                {isFa ? "بیمه" : "Insurance"}
-              </div>
-              <div className="text-sm font-semibold text-[#0f172a]">
-                {selectedContract.hasInsurance
-                  ? isFa ? "بله" : "Yes"
-                  : isFa ? "خیر" : "No"}
-              </div>
-            </div>
-            <div>
-              <div className="text-xs text-[#64748b] mb-1">
-                {isFa ? "جایگزین" : "Substitute"}
-              </div>
-              <div className="text-sm font-semibold text-[#0f172a]">
-                {selectedContract.hasSubstitute
-                  ? isFa ? "بله" : "Yes"
-                  : isFa ? "خیر" : "No"}
-              </div>
-            </div>
-            {selectedContract.startDate && (
-              <div>
-                <div className="text-xs text-[#64748b] mb-1">
-                  {isFa ? "تاریخ شروع" : "Start Date"}
-                </div>
-                <div className="text-sm font-semibold text-[#0f172a]">
-                  {selectedContract.startDate}
-                </div>
-              </div>
-            )}
-            {selectedContract.endDate && (
-              <div>
-                <div className="text-xs text-[#64748b] mb-1">
-                  {isFa ? "تاریخ پایان" : "End Date"}
-                </div>
-                <div className="text-sm font-semibold text-[#0f172a]">
-                  {selectedContract.endDate}
-                </div>
-              </div>
-            )}
-          </div>
-
-          {selectedContract.termClause && (
-            <div className="mb-4">
-              <div className="text-xs text-[#64748b] mb-1">
-                {tr.contract.termClause}
-              </div>
-              <p className="text-sm text-[#0f172a] bg-[#f8fafc] rounded-lg p-3">
-                {selectedContract.termClause}
-              </p>
-            </div>
-          )}
-
-          {selectedContract.substituteClause && (
-            <div className="mb-4">
-              <div className="text-xs text-[#64748b] mb-1">
-                {tr.contract.subClause}
-              </div>
-              <p className="text-sm text-[#0f172a] bg-emerald-50 rounded-lg p-3">
-                {selectedContract.substituteClause}
-              </p>
-            </div>
-          )}
-
-          <div className="mt-6 pt-6 border-t border-[#e2e8f0]">
-            <label className="block text-sm font-semibold text-[#0f172a] mb-2">
-              {isFa ? "تغییر وضعیت" : "Update Status"}
-            </label>
-            <div className="flex flex-wrap gap-2">
-              {STATUS_OPTIONS.map((status) => (
-                <button
-                  key={status}
-                  onClick={() =>
-                    handleStatusChange(selectedContract.id, status)
-                  }
-                  disabled={updatingId === selectedContract.id}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all btn-press disabled:opacity-50 ${
-                    selectedContract.status === status
-                      ? "bg-[#1e3a5f] text-white"
-                      : "bg-[#f2f5fa] text-[#64748b] hover:bg-[#e2e8f0]"
-                  }`}
-                >
-                  {isFa
-                    ? {
-                        active: "فعال",
-                        pending: "در انتظار",
-                        completed: "تکمیل شده",
-                        disputed: "در حال رسیدگی",
-                      }[status]
-                    : status}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
+      <ContractDetailView
+        contract={selectedContract}
+        lang={lang}
+        tr={tr}
+        onBack={() => setSelectedContract(null)}
+        onStatusChange={handleStatusChange}
+        updatingId={updatingId}
+      />
     )
   }
 
@@ -333,9 +138,7 @@ export default function ContractsPage({
                       {contract.platform}
                     </td>
                     <td className="px-4 py-3 text-[#0f172a]">
-                      {isFa
-                        ? `${(contract.amountToman / 1000000).toFixed(1)}M ${tr.common.toman}`
-                        : `$${contract.amountUSD}`}
+                      {contractAmountDisplay(contract.amountToman, contract.amountUSD, lang)}
                     </td>
                     <td className="px-4 py-3">
                       <select
@@ -344,18 +147,11 @@ export default function ContractsPage({
                           handleStatusChange(contract.id, e.target.value)
                         }
                         disabled={updatingId === contract.id}
-                        className={`px-2 py-1 rounded-lg text-xs font-semibold border-0 cursor-pointer disabled:cursor-wait ${STATUS_COLORS[contract.status] || "bg-gray-100 text-gray-700"}`}
+                        className={`px-2 py-1 rounded-lg text-xs font-semibold border-0 cursor-pointer disabled:cursor-wait ${contractStatusColor(contract.status)}`}
                       >
                         {STATUS_OPTIONS.map((status) => (
                           <option key={status} value={status}>
-                            {isFa
-                              ? {
-                                  active: "فعال",
-                                  pending: "در انتظار",
-                                  completed: "تکمیل شده",
-                                  disputed: "در حال رسیدگی",
-                                }[status]
-                              : status}
+                            {contractStatusLabel(status, lang)}
                           </option>
                         ))}
                       </select>

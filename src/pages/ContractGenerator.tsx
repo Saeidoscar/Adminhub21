@@ -2,10 +2,11 @@ import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { t, type Lang } from "../i18n"
 import { Icon } from "../components/layout/Icon"
-import { Stars } from "../components/platform/Stars"
-import { Badge } from "../components/ui/Badge"
 import { createContract, listAdminProfiles, type AdminProfile } from "../lib/api"
-import { z } from "zod"
+import { contractFormSchema, createDefaultContractForm, validateContractForm } from "../domain/contract/contractFormSchema"
+import { computeContractAmounts } from "../domain/package"
+import { ContractStepIndicator } from "../components/contracts/ContractStepIndicator"
+import { ContractReviewStep } from "../components/contracts/ContractReviewStep"
 
 const PLATFORMS = [
   { value: "instagram", label: "Instagram" },
@@ -15,20 +16,6 @@ const PLATFORMS = [
   { value: "digikala", label: "Digikala" },
   { value: "linkedin", label: "LinkedIn" },
 ]
-
-const STATUS_COLORS: Record<string, string> = {
-  active: "bg-emerald-100 text-emerald-700",
-  pending: "bg-amber-100 text-amber-700",
-  completed: "bg-blue-100 text-blue-700",
-  disputed: "bg-red-100 text-red-700",
-}
-
-const STATUS_LABELS: Record<string, string> = {
-  active: "Active",
-  pending: "Pending",
-  completed: "Completed",
-  disputed: "Disputed",
-}
 
 export default function ContractGenerator({
   tr,
@@ -82,9 +69,17 @@ export default function ContractGenerator({
               </div>
             </div>
             <span
-              className={`px-3 py-1 rounded-full text-xs font-semibold ${STATUS_COLORS[initialContract.status] || "bg-gray-100 text-gray-700"}`}
+              className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                initialContract.status === "active"
+                  ? "bg-emerald-100 text-emerald-700"
+                  : initialContract.status === "pending"
+                    ? "bg-amber-100 text-amber-700"
+                    : initialContract.status === "completed"
+                      ? "bg-blue-100 text-blue-700"
+                      : "bg-red-100 text-red-700"
+              }`}
             >
-              {STATUS_LABELS[initialContract.status] || initialContract.status}
+              {initialContract.status}
             </span>
           </div>
 
@@ -192,34 +187,9 @@ export default function ContractGenerator({
 
   const [step, setStep] = useState(1)
   const totalSteps = 5
-  const [form, setForm] = useState({
-    employerName: lang === "fa" ? "علی رضایی" : "Ali Rezaei",
-    employerCo: lang === "fa" ? "استارتاپ پارسه" : "Parseh Startup",
-    adminId: "",
-    platform: "instagram",
-    projectTitle:
-      lang === "fa"
-        ? "مدیریت صفحه اینستاگرام برند"
-        : "Brand Instagram Page Management",
-    startDate: "2026-09-01",
-    endDate: "2026-12-01",
-    description:
-      lang === "fa"
-        ? "مدیریت کامل صفحه اینستاگرام برند شامل تولید محتوا، پست‌گذاری روزانه، پاسخ به کامنت‌ها و گزارش‌دهی هفتگی."
-        : "Full management of brand Instagram including content creation, daily posting, comment replies and weekly reporting.",
-    deliverables:
-      lang === "fa"
-        ? "۳۰ پست در ماه\n۱۰۰ استوری در ماه\nگزارش هفتگی آنالیتیکس\nمدیریت روزانه DM‌ها"
-        : "30 posts/month\n100 stories/month\nWeekly analytics report\nDaily DM management",
-    payType: "monthly",
-    amount: lang === "fa" ? "4500000" : "108",
-    currency: lang === "fa" ? "toman" : "usd",
-    paySchedule: "payMonthly",
-    termClause: tr.contract.termDefault,
-    subClause: tr.contract.subDefault,
-    hasInsurance: false,
-    hasSubstitute: false,
-  })
+  const [form, setForm] = useState(() =>
+    createDefaultContractForm(lang, tr.contract.termDefault, tr.contract.subDefault),
+  )
 
   useEffect(() => {
     let cancelled = false
@@ -247,7 +217,7 @@ export default function ContractGenerator({
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [form.adminId])
 
   const setF = (k: string, v: string | boolean) => setForm((f) => ({ ...f, [k]: v }))
   const steps = [
@@ -262,15 +232,7 @@ export default function ContractGenerator({
     setSubmitting(true)
     setError(null)
     setErrors({})
-    const fieldErrors: Record<string, string> = {}
-    if (!form.employerName.trim()) fieldErrors.employerName = "Required"
-    if (!form.projectTitle.trim()) fieldErrors.projectTitle = "Required"
-    if (!form.description.trim()) fieldErrors.description = "Required"
-    const amountNum = Number(form.amount)
-    if (isNaN(amountNum) || amountNum < 0) fieldErrors.amount = "Invalid amount"
-    if (!form.adminId) fieldErrors.adminId = "Select an admin"
-    if (!form.platform) fieldErrors.platform = "Select a platform"
-
+    const fieldErrors = validateContractForm(form)
     if (Object.keys(fieldErrors).length > 0) {
       setErrors(fieldErrors)
       setSubmitting(false)
@@ -278,9 +240,7 @@ export default function ContractGenerator({
     }
 
     try {
-      const amountVal = Number(form.amount)
-      const amountToman = form.currency === "toman" ? amountVal : 0
-      const amountUSD = form.currency === "usd" ? amountVal : 0
+      const { amountToman, amountUSD } = computeContractAmounts(form.amount, form.currency as "toman" | "usd")
       await createContract({
         adminId: form.adminId,
         platform: form.platform,
@@ -327,42 +287,8 @@ export default function ContractGenerator({
         <p className="text-[#64748b] mt-1">{tr.contract.sub}</p>
       </div>
 
-      {/* Step indicators */}
-      <div className="flex items-center mb-8">
-        {steps.map((label, i) => (
-          <div key={i} className="flex items-center flex-1 last:flex-none">
-            <div className="flex flex-col items-center">
-              <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
-                  i + 1 < step
-                    ? "bg-emerald-500 text-white"
-                    : i + 1 === step
-                      ? "bg-[#1e3a5f] text-white"
-                      : "bg-[#e2e8f0] text-[#94a3b8]"
-                }`}
-              >
-                {i + 1 < step ? <Icon name="check" size={14} /> : i + 1}
-              </div>
-              <div
-                className={`text-xs mt-1 font-medium hidden sm:block ${
-                  i + 1 === step ? "text-[#1e3a5f]" : "text-[#94a3b8]"
-                }`}
-              >
-                {label}
-              </div>
-            </div>
-            {i < steps.length - 1 && (
-              <div
-                className={`step-connector mx-1 mt-0 sm:-mt-4 ${
-                  i + 1 < step ? "active" : ""
-                }`}
-              />
-            )}
-          </div>
-        ))}
-      </div>
+      <ContractStepIndicator step={step} totalSteps={totalSteps} steps={steps} />
 
-      {/* Step content */}
       <div className="bg-white rounded-2xl border border-[#e2e8f0] p-6 mb-6">
         {step === 1 && (
           <div className="space-y-5 fade-in">
@@ -643,155 +569,41 @@ export default function ContractGenerator({
         )}
 
         {step === 5 && (
-          <div className="fade-in">
-            <div className="flex items-center justify-between mb-5">
-              <h2 className="font-bold text-[#0f172a] text-lg">
-                {tr.contract.contractPreview}
-              </h2>
-              <span className="px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold">
-                {lang === "fa" ? "آماده برای امضا" : "Ready for Signing"}
-              </span>
-            </div>
-            <div className="bg-[#f8fafc] rounded-xl border border-[#e2e8f0] p-6 text-sm leading-relaxed text-[#0f172a] font-mono space-y-4 max-h-80 overflow-y-auto">
-              <div className="text-center font-bold text-base text-[#1e3a5f] pb-4 border-b border-[#e2e8f0]">
-                {tr.contract.partiesTitle}
-              </div>
-              <p>
-                {tr.contract.between} <strong>{form.employerName}</strong>{" "}
-                {form.employerCo ? `(${form.employerCo})` : ""},{" "}
-                {tr.contract.partyEmployer},<br />
-                {tr.contract.and} <strong>{admins.find(a => a.id === form.adminId)?.nameEn || form.adminId}</strong>,{" "}
-                {tr.contract.partyAdmin}.
-              </p>
-              <p>
-                <strong>{lang === "fa" ? "پروژه:" : "Project:"}</strong>{" "}
-                {form.projectTitle}
-              </p>
-              <p>
-                <strong>{lang === "fa" ? "مدت:" : "Duration:"}</strong>{" "}
-                {form.startDate} → {form.endDate}
-              </p>
-              <p>
-                <strong>{lang === "fa" ? "توضیحات:" : "Description:"}</strong>
-                <br />
-                {form.description}
-              </p>
-              <p>
-                <strong>{lang === "fa" ? "تحویلی‌ها:" : "Deliverables:"}</strong>
-                <br />
-                {form.deliverables.split("\n").map((d, i) => (
-                  <span key={i}>
-                    • {d}
-                    <br />
-                  </span>
-                ))}
-              </p>
-              <p>
-                <strong>{lang === "fa" ? "پرداخت:" : "Payment:"}</strong>{" "}
-                {form.amount}{" "}
-                {form.currency === "toman"
-                  ? tr.contract.toman
-                  : tr.contract.usd}
-              </p>
-              <p>
-                <strong>{lang === "fa" ? "بند فسخ:" : "Termination:"}</strong>
-                <br />
-                {form.termClause}
-              </p>
-              <p>
-                <strong>
-                  {lang === "fa"
-                    ? "بیمه و جایگزینی:"
-                    : "Substitution & Insurance:"}
-                </strong>
-                <br />
-                {form.subClause}
-              </p>
-              <p>
-                <strong>{lang === "fa" ? "بیمه:" : "Insurance:"}</strong>{" "}
-                {form.hasInsurance
-                  ? lang === "fa" ? "بله" : "Yes"
-                  : lang === "fa" ? "خیر" : "No"}
-              </p>
-              <p>
-                <strong>{lang === "fa" ? "جایگزین:" : "Substitute:"}</strong>{" "}
-                {form.hasSubstitute
-                  ? lang === "fa" ? "بله" : "Yes"
-                  : lang === "fa" ? "خیر" : "No"}
-              </p>
-            </div>
-            {error && (
-              <div className="mt-4 p-3 rounded-xl bg-red-50 border border-red-200 text-sm text-red-700">
-                {error}
-              </div>
-            )}
-            <div className="mt-4 grid sm:grid-cols-2 gap-3">
-              <button
-                onClick={() => {
-                  const admin = admins.find((a) => a.id === form.adminId)
-                  const lines = [
-                    "CONTRACT",
-                    "=".repeat(40),
-                    "",
-                    `Employer: ${form.employerName}${form.employerCo ? ` (${form.employerCo})` : ""}`,
-                    `Admin: ${admin?.nameEn || form.adminId}`,
-                    `Platform: ${form.platform}`,
-                    `Project: ${form.projectTitle}`,
-                    `Duration: ${form.startDate} → ${form.endDate}`,
-                    `Payment: ${form.amount} ${form.currency === "toman" ? "Toman" : "USD"}`,
-                    `Pay Schedule: ${form.paySchedule}`,
-                    "",
-                    "DESCRIPTION",
-                    form.description,
-                    "",
-                    "DELIVERABLES",
-                    form.deliverables,
-                    "",
-                    "TERMINATION CLAUSE",
-                    form.termClause,
-                    "",
-                    "SUBSTITUTION & INSURANCE",
-                    form.subClause,
-                    `Insurance: ${form.hasInsurance ? "Yes" : "No"}`,
-                    `Substitute: ${form.hasSubstitute ? "Yes" : "No"}`,
-                  ]
-                  const blob = new Blob([lines.join("\n")], { type: "text/plain" })
-                  const url = URL.createObjectURL(blob)
-                  const a = document.createElement("a")
-                  a.href = url
-                  a.download = `contract-${form.projectTitle.replace(/\s+/g, "-").toLowerCase()}.txt`
-                  document.body.appendChild(a)
-                  a.click()
-                  document.body.removeChild(a)
-                  URL.revokeObjectURL(url)
-                }}
-                className="py-3 rounded-xl border-2 border-[#1e3a5f] text-[#1e3a5f] text-sm font-bold hover:bg-[#1e3a5f]/5 transition-colors btn-press"
-              >
-                {tr.contract.downloadPdf}
-              </button>
-              <button
-                onClick={handleSubmit}
-                disabled={submitting}
-                className="py-3 rounded-xl bg-emerald-500 text-white text-sm font-bold hover:bg-emerald-600 transition-colors shadow-md btn-press disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {submitting
-                  ? (lang === "fa" ? "در حال ارسال..." : "Sending...")
-                  : tr.contract.sendForSigning}
-              </button>
-            </div>
-            <div className="mt-4 text-center">
-              <button
-                onClick={() => navigate("/contracts/history")}
-                className="text-sm text-[#1e3a5f] font-semibold hover:underline"
-              >
-                {lang === "fa" ? "مشاهده قراردادهای من" : "View My Contracts"}
-              </button>
-            </div>
-          </div>
+          <ContractReviewStep
+            form={form}
+            admins={admins}
+            lang={lang}
+            tr={tr}
+            error={error}
+            onDownloadPdf={() => {
+              const admin = admins.find((a) => a.id === form.adminId)
+              const lines = buildContractPdfLines({
+                employerName: form.employerName,
+                employerCo: form.employerCo,
+                adminNameEn: admin?.nameEn || form.adminId,
+                platform: form.platform,
+                projectTitle: form.projectTitle,
+                startDate: form.startDate,
+                endDate: form.endDate,
+                amount: form.amount,
+                currency: form.currency,
+                paySchedule: form.paySchedule,
+                description: form.description,
+                deliverables: form.deliverables,
+                termClause: form.termClause,
+                subClause: form.subClause,
+                hasInsurance: form.hasInsurance,
+                hasSubstitute: form.hasSubstitute,
+              })
+              downloadContractPdf(lines, form.projectTitle)
+            }}
+            onSubmit={handleSubmit}
+            submitting={submitting}
+            onViewContracts={() => navigate("/contracts/history")}
+          />
         )}
       </div>
 
-      {/* Navigation */}
       <div className="flex justify-between">
         <button
           onClick={() => setStep(Math.max(1, step - 1))}

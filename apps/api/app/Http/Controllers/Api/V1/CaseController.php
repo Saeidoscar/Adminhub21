@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api\V1;
 use App\Services\Cases\CaseService;
 use App\Models\OfficeCase;
 use App\Models\Office;
+use App\Models\OfficeCaseEvent;
+use App\Models\OfficeTimeLog;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -92,5 +94,71 @@ class CaseController extends Controller
         ]));
 
         return response()->json($task);
+    }
+
+    public function addEvent(Request $request, OfficeCase $case): JsonResponse
+    {
+        $event = $this->caseService->addEvent($case, $request->validate([
+            'title' => ['required', 'string', 'max:255'],
+            'type' => ['nullable', 'string', 'max:100'],
+            'notes' => ['nullable', 'string'],
+            'event_at' => ['required', 'date'],
+            'reminder_before' => ['nullable', 'integer', 'min:0'],
+            'reminder_sent' => ['nullable', 'boolean'],
+        ]));
+
+        return response()->json($event, 201);
+    }
+
+    public function updateEvent(Request $request, OfficeCase $case, $eventId): JsonResponse
+    {
+        $event = $case->events()->findOrFail($eventId);
+        $event = $this->caseService->updateEvent($event, $request->validate([
+            'title' => ['nullable', 'string', 'max:255'],
+            'type' => ['nullable', 'string', 'max:100'],
+            'notes' => ['nullable', 'string'],
+            'event_at' => ['nullable', 'date'],
+            'reminder_before' => ['nullable', 'integer', 'min:0'],
+            'reminder_sent' => ['nullable', 'boolean'],
+        ]));
+
+        return response()->json($event);
+    }
+
+    public function destroyEvent(Request $request, OfficeCase $case, $eventId): JsonResponse
+    {
+        $event = $case->events()->findOrFail($eventId);
+        $this->caseService->destroyEvent($event);
+
+        return response()->json(null, 204);
+    }
+
+    public function addTimeLog(Request $request, OfficeCase $case): JsonResponse
+    {
+        $log = $this->caseService->logTime($case, $request->user(), $request->validate([
+            'duration' => ['required', 'numeric', 'min:0'],
+            'description' => ['nullable', 'string'],
+        ]));
+
+        return response()->json($log, 201);
+    }
+
+    public function updateTimeLog(Request $request, OfficeCase $case, $logId): JsonResponse
+    {
+        $log = $case->timeLogs()->findOrFail($logId);
+        $log = $this->caseService->updateTimeLog($log, $request->validate([
+            'duration' => ['nullable', 'numeric', 'min:0'],
+            'description' => ['nullable', 'string'],
+        ]));
+
+        return response()->json($log);
+    }
+
+    public function destroyTimeLog(Request $request, OfficeCase $case, $logId): JsonResponse
+    {
+        $log = $case->timeLogs()->findOrFail($logId);
+        $this->caseService->destroyTimeLog($log);
+
+        return response()->json(null, 204);
     }
 }
