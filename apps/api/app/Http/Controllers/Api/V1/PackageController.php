@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Http\Controllers\Controller;
+
 use App\Actions\Packages\CreatePackageAction;
 use App\Actions\Packages\UpdatePackageAction;
 use App\Actions\Packages\TogglePackageStatusAction;
@@ -75,3 +77,5 @@ class PackageController extends Controller
         return response()->json($package);
     }
 }
+
+

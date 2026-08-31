@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Http\Controllers\Controller;
+
 use App\Services\Cases\CaseService;
 use App\Services\Schedule\ScheduleService;
 use App\Models\OfficeCase;
@@ -138,3 +140,5 @@ class ScheduleController extends Controller
         return response()->json($logs);
     }
 }
+
+

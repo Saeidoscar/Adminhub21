@@ -56,7 +56,6 @@ return [
          * Package Service Providers...
          */
         Laravel\Sanctum\SanctumServiceProvider::class,
-        Fruitcake\Cors\CorsServiceProvider::class,
 
         /*
          * Application Service Providers...

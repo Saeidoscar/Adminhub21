@@ -14,7 +14,7 @@ import type {
   WalletTransactionRow,
 } from "@adminhub/shared"
 
-const DEFAULT_API_BASE_URL = "http://localhost:8787"
+const DEFAULT_API_BASE_URL = "http://localhost:8000"
 
 function getApiBaseUrl() {
   return (import.meta.env.VITE_API_BASE_URL?.trim() || DEFAULT_API_BASE_URL)
@@ -120,7 +120,7 @@ export async function listAdminProfiles(
   const queryString = params.toString()
 
   const payload = await apiFetch<Record<string, unknown>>(
-    `/api/admin-profiles${queryString ? `?${queryString}` : ""}`,
+    `/api/profiles${queryString ? `?${queryString}` : ""}`,
   )
 
   return unwrapList<AdminProfile>(payload, "profiles")
@@ -130,7 +130,7 @@ export async function getAdminProfile(
   id: string,
 ): Promise<AdminProfile | null> {
   const payload = await apiFetch<Record<string, unknown>>(
-    `/api/admin-profiles/${id}`,
+    `/api/profiles/${id}`,
   )
 
   return unwrapItem<AdminProfile>(payload, "profile")
@@ -151,7 +151,7 @@ export async function updateAdminProfile(
   data: UpdateAdminProfileInput,
 ): Promise<AdminProfile> {
   const payload = await apiFetch<Record<string, unknown>>(
-    `/api/admin-profiles/me`,
+    `/api/profile/me`,
     {
       method: "PUT",
       body: JSON.stringify(data),
@@ -457,9 +457,9 @@ export async function updateContractStatus(
   input: { status: ContractRow["status"] },
 ): Promise<ContractRow> {
   const payload = await apiFetch<Record<string, unknown>>(
-    `/api/contracts/${id}/status`,
+    `/api/contracts/${id}`,
     {
-      method: "PATCH",
+      method: "PUT",
       body: JSON.stringify(input),
     },
   )
@@ -616,7 +616,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
 }
 
 export async function getWallet(): Promise<WalletRow> {
-  const payload = await apiFetch<Record<string, unknown>>("/api/wallets/me")
+  const payload = await apiFetch<Record<string, unknown>>("/api/wallet/balance")
 
   const wallet = unwrapItem<WalletRow>(payload, "wallet")
 
@@ -680,7 +680,7 @@ export async function listTransactions(
 
   const queryString = params.toString()
   const payload = await apiFetch<Record<string, unknown>>(
-    `/api/wallets/me/transactions${queryString ? `?${queryString}` : ""}`,
+    `/api/wallet/transactions${queryString ? `?${queryString}` : ""}`,
   )
 
   return unwrapList<WalletTransactionRow>(payload, "transactions")
@@ -748,11 +748,11 @@ export async function listReviews(
   const params = new URLSearchParams()
 
   if (query.adminId) {
-    params.set("adminId", query.adminId)
+    params.set("targetId", query.adminId)
   }
 
   if (query.employerId) {
-    params.set("employerId", query.employerId)
+    params.set("targetId", query.employerId)
   }
 
   const queryString = params.toString()
@@ -825,7 +825,7 @@ export async function login(
 export async function sendOtp(
   input: OtpSendInput,
 ): Promise<{ message: string; phone: string }> {
-  const payload = await apiFetch<Record<string, unknown>>("/api/auth/otp/send", {
+  const payload = await apiFetch<Record<string, unknown>>("/api/auth/otp/request", {
     method: "POST",
     body: JSON.stringify(input),
   })
@@ -1249,13 +1249,13 @@ export async function updateAdminCase(
 
 export async function listAdminTasks(caseId: string): Promise<TaskRow[]> {
   const payload = await apiFetch<Record<string, unknown>>(
-    `/api/tasks/case/${caseId}`,
+    `/api/schedule/tasks?caseId=${encodeURIComponent(caseId)}`,
   )
   return unwrapList<TaskRow>(payload, "tasks")
 }
 
 export async function getAdminTask(id: string): Promise<TaskRow | null> {
-  const payload = await apiFetch<Record<string, unknown>>(`/api/tasks/${id}`)
+  const payload = await apiFetch<Record<string, unknown>>(`/api/schedule/tasks/${id}`)
   return unwrapItem<TaskRow>(payload, "task")
 }
 
@@ -1268,7 +1268,7 @@ export async function createAdminTask(data: {
   priority?: string
   dueDate?: string
 }): Promise<TaskRow> {
-  const payload = await apiFetch<Record<string, unknown>>("/api/tasks", {
+  const payload = await apiFetch<Record<string, unknown>>("/api/schedule/tasks", {
     method: "POST",
     body: JSON.stringify(data),
   })
@@ -1290,7 +1290,7 @@ export async function updateAdminTask(
     dueDate: string
   }>,
 ): Promise<TaskRow> {
-  const payload = await apiFetch<Record<string, unknown>>(`/api/tasks/${id}`, {
+  const payload = await apiFetch<Record<string, unknown>>(`/api/schedule/tasks/${id}`, {
     method: "PATCH",
     body: JSON.stringify(data),
   })
@@ -1310,13 +1310,13 @@ export async function listAdminEvents(query: {
   if (query.to) params.set("to", query.to)
   const qs = params.toString()
   const payload = await apiFetch<Record<string, unknown>>(
-    `/api/events${qs ? `?${qs}` : ""}`,
+    `/api/schedule/events${qs ? `?${qs}` : ""}`,
   )
   return unwrapList<EventRow>(payload, "events")
 }
 
 export async function getAdminEvent(id: string): Promise<EventRow | null> {
-  const payload = await apiFetch<Record<string, unknown>>(`/api/events/${id}`)
+  const payload = await apiFetch<Record<string, unknown>>(`/api/schedule/events/${id}`)
   return unwrapItem<EventRow>(payload, "event")
 }
 
@@ -1328,7 +1328,7 @@ export async function createAdminEvent(data: {
   allDay?: boolean
   color?: string
 }): Promise<EventRow> {
-  const payload = await apiFetch<Record<string, unknown>>("/api/events", {
+  const payload = await apiFetch<Record<string, unknown>>("/api/schedule/events", {
     method: "POST",
     body: JSON.stringify(data),
   })
@@ -1350,7 +1350,7 @@ export async function updateAdminEvent(
     color: string
   }>,
 ): Promise<EventRow> {
-  const payload = await apiFetch<Record<string, unknown>>(`/api/events/${id}`, {
+  const payload = await apiFetch<Record<string, unknown>>(`/api/schedule/events/${id}`, {
     method: "PATCH",
     body: JSON.stringify(data),
   })
@@ -1362,7 +1362,7 @@ export async function updateAdminEvent(
 }
 
 export async function deleteAdminEvent(id: string): Promise<void> {
-  await apiFetch<Record<string, unknown>>(`/api/events/${id}`, {
+  await apiFetch<Record<string, unknown>>(`/api/schedule/events/${id}`, {
     method: "DELETE",
   })
 }
@@ -1376,13 +1376,13 @@ export async function listAdminTimeLogs(query: {
   if (query.taskId) params.set("taskId", query.taskId)
   const qs = params.toString()
   const payload = await apiFetch<Record<string, unknown>>(
-    `/api/time-logs${qs ? `?${qs}` : ""}`,
+    `/api/schedule/timelogs${qs ? `?${qs}` : ""}`,
   )
   return unwrapList<TimeLogRow>(payload, "timeLogs")
 }
 
 export async function getAdminTimeLog(id: string): Promise<TimeLogRow | null> {
-  const payload = await apiFetch<Record<string, unknown>>(`/api/time-logs/${id}`)
+  const payload = await apiFetch<Record<string, unknown>>(`/api/schedule/timelogs/${id}`)
   return unwrapItem<TimeLogRow>(payload, "timeLog")
 }
 
@@ -1393,7 +1393,7 @@ export async function createAdminTimeLog(data: {
   startedAt: string
   endedAt: string
 }): Promise<TimeLogRow> {
-  const payload = await apiFetch<Record<string, unknown>>("/api/time-logs", {
+  const payload = await apiFetch<Record<string, unknown>>("/api/schedule/timelogs", {
     method: "POST",
     body: JSON.stringify(data),
   })
@@ -1406,13 +1406,13 @@ export async function createAdminTimeLog(data: {
 
 export async function listAdminPortfolio(adminId: string): Promise<PortfolioRow[]> {
   const payload = await apiFetch<Record<string, unknown>>(
-    `/api/portfolio/admin/${adminId}`,
+    `/api/portfolio/${adminId}`,
   )
   return unwrapList<PortfolioRow>(payload, "portfolio")
 }
 
 export async function getAdminPortfolio(id: string): Promise<PortfolioRow | null> {
-  const payload = await apiFetch<Record<string, unknown>>(`/api/portfolio/${id}`)
+  const payload = await apiFetch<Record<string, unknown>>(`/api/portfolio/item/${id}`)
   return unwrapItem<PortfolioRow>(payload, "portfolio")
 }
 

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Http\Controllers\Controller;
+
 use App\Actions\Ai\CreateConversationAction;
 use App\Actions\Ai\SendMessageAction;
 use App\Actions\Ai\TrackTokensAction;
@@ -159,3 +161,5 @@ class AiController extends Controller
         return response()->json($message);
     }
 }
+
+

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Http\Controllers\Controller;
+
 use App\Actions\Contracts\CreateContractAction;
 use App\Actions\Contracts\ActivateContractAction;
 use App\Actions\Contracts\CompleteContractAction;
@@ -135,3 +137,5 @@ class ContractController extends Controller
         return response()->json($review, 201);
     }
 }
+
+

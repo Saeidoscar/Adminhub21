@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Http\Controllers\Controller;
+
 use App\Services\Tickets\TicketService;
 use App\Models\Ticket;
 use App\Models\User;
@@ -100,3 +102,5 @@ class TicketController extends Controller
         return response()->json($ticket);
     }
 }
+
+

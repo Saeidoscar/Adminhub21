@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Http\Controllers\Controller;
+
 use App\Enums\OfferStatus;
 use App\Models\Offer;
 use App\Models\Package;
@@ -86,3 +88,5 @@ class OfferController extends Controller
         return response()->json($offer->load(['user', 'targetUser', 'package']));
     }
 }
+
+

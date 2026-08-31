@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Http\Controllers\Controller;
+
 use App\Models\Affiliate;
 use App\Models\AffiliateCommission;
 use Illuminate\Http\JsonResponse;
@@ -217,3 +219,5 @@ class CatalogController extends Controller
         return response()->json(['vibeCoders' => $vibeCoders]);
     }
 }
+
+

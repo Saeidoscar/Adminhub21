@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Http\Controllers\Controller;
+
 use App\Actions\Reviews\SubmitReviewAction;
 use App\Actions\Reviews\RecalculateReviewAveragesAction;
 use App\Http\Requests\Api\V1\StoreReviewRequest;
@@ -45,3 +47,5 @@ class ReviewController extends Controller
         return response()->json(['message' => 'Review averages recalculated']);
     }
 }
+
+

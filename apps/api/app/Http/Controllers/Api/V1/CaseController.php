@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Http\Controllers\Controller;
+
 use App\Services\Cases\CaseService;
 use App\Models\OfficeCase;
 use App\Models\Office;
@@ -162,3 +164,5 @@ class CaseController extends Controller
         return response()->json(null, 204);
     }
 }
+
+

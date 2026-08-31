@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Http\Controllers\Controller;
+
 use App\Actions\Content\PublishStoryAction;
 use App\Actions\Content\UnpublishStoryAction;
 use App\Actions\Content\PublishBlogAction;
@@ -149,3 +151,5 @@ class ContentController extends Controller
         return response()->json($tags);
     }
 }
+
+

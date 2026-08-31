@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Http\Controllers\Controller;
+
 use App\Models\Story;
 use App\Models\Blog;
 use App\Models\Comment;
@@ -109,3 +111,5 @@ class AdminContentController extends Controller
         return response()->json(null, 204);
     }
 }
+
+

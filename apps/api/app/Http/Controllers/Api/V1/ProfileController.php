@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Http\Controllers\Controller;
+
 use App\Actions\AdminProfile\CreateAdminProfileAction;
 use App\Actions\AdminProfile\UpdateAdminProfileAction;
 use App\Actions\AdminProfile\ToggleVerificationAction;
@@ -82,3 +84,5 @@ class ProfileController extends Controller
         return response()->json(null, 204);
     }
 }
+
+

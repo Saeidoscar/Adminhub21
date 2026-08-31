@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Http\Controllers\Controller;
+
 use App\Models\Ticket;
 use App\Models\TicketMessage;
 use App\Models\User;
@@ -98,3 +100,5 @@ class AdminTicketController extends Controller
         return response()->json(['message' => $message], 201);
     }
 }
+
+

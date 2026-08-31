@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Http\Controllers\Controller;
+
 use App\Enums\PaymentGateway;
 use App\Models\PaymentGateway as PaymentGatewayModel;
 use App\Services\Payments\PaymentGatewayService;
@@ -56,3 +58,5 @@ class PaymentController extends Controller
         return response()->json(['message' => 'Crypto callback processed']);
     }
 }
+
+
