@@ -16,24 +16,91 @@ services:
       timeout: 5s
       retries: 5
 
+  redis:
+    image: redis:7-alpine
+    container_name: adminhub-redis
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
   api:
     build:
       context: .
-      dockerfile: apps/server/Dockerfile
-      target: runner
+      dockerfile: apps/api/Dockerfile
     container_name: adminhub-api
     depends_on:
       postgres:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     environment:
-      DATABASE_URL: postgres://postgres:postgres@postgres:5432/adminhub
-      PORT: 8787
-      NODE_ENV: development
-      JWT_ACCESS_SECRET: dev-only-access-secret-change-me
-      JWT_REFRESH_SECRET: dev-only-refresh-secret-change-me
-      CORS_ORIGINS: http://localhost:8443,http://localhost:5173,http://localhost:3000
+      APP_ENV: local
+      APP_DEBUG: "true"
+      APP_URL: http://localhost:8080
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: adminhub
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      CACHE_DRIVER: redis
+      QUEUE_CONNECTION: redis
+      SESSION_DRIVER: redis
+      MAIL_HOST: mailpit
+      MAIL_PORT: 1025
+      MAIL_ENCRYPTION: ""
+    volumes:
+      - ./apps/api:/var/www/html
+      - /var/www/html/vendor
+      - /var/www/html/storage
+    init: true
+
+  nginx:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile.nginx
+    container_name: adminhub-nginx
+    depends_on:
+      - api
     ports:
-      - "8787:8787"
+      - "8080:80"
+    init: true
+
+  horizon:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    container_name: adminhub-horizon
+    command: ["php", "/var/www/html/artisan", "horizon"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      APP_ENV: local
+      APP_DEBUG: "true"
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: adminhub
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      CACHE_DRIVER: redis
+      QUEUE_CONNECTION: redis
+      SESSION_DRIVER: redis
+    volumes:
+      - ./apps/api:/var/www/html
+      - /var/www/html/vendor
     init: true
 
   web:
@@ -43,12 +110,45 @@ services:
       target: runner
     container_name: adminhub-web
     depends_on:
-      - api
+      - nginx
     ports:
       - "8443:80"
     environment:
-      VITE_API_BASE_URL: http://localhost:8787
+      VITE_API_BASE_URL: http://localhost:8080
+    init: true
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: adminhub-mailpit
+    ports:
+      - "8025:8025"
+      - "1025:1025"
     init: true
 
 volumes:
   pg_data:
+  redis_data:
+
+# Archived: Hono backend service (apps/server)
+# The Node.js/Hono API has been replaced with Laravel PHP-FPM + Nginx
+# Original configuration kept for reference:
+#
+# api:
+#   build:
+#     context: .
+#     dockerfile: apps/server/Dockerfile
+#     target: runner
+#   container_name: adminhub-api
+#   depends_on:
+#     postgres:
+#       condition: service_healthy
+#   environment:
+#     DATABASE_URL: postgres://postgres:postgres@postgres:5432/adminhub
+#     PORT: 8787
+#     NODE_ENV: development
+#     JWT_ACCESS_SECRET: dev-only-access-secret-change-me
+#     JWT_REFRESH_SECRET: dev-only-refresh-secret-change-me
+#     CORS_ORIGINS: http://localhost:8443,http://localhost:5173,http://localhost:3000
+#   ports:
+#     - "8787:8787"
+#   init: true

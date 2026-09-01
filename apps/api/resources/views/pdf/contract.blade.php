@@ -1,62 +1,158 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <title>Contract</title>
+    <meta charset="UTF-8">
+    <title>Contract #{{ $contract->id }}</title>
     <style>
-        body { font-family: DejaVu Sans, sans-serif; font-size: 12px; }
-        h1 { font-size: 18px; margin-bottom: 10px; }
-        .meta { margin-bottom: 20px; }
-        .meta p { margin: 4px 0; }
-        .section { margin-bottom: 20px; }
-        .section h2 { font-size: 14px; margin-bottom: 8px; border-bottom: 1px solid #ccc; padding-bottom: 4px; }
+        body {
+            font-family: 'DejaVu Sans', Arial, sans-serif;
+            font-size: 12px;
+            line-height: 1.5;
+            color: #333;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #333;
+            padding-bottom: 20px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .header p {
+            margin: 5px 0 0;
+            color: #666;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        .section h2 {
+            font-size: 16px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+        }
+        .info-grid {
+            display: table;
+            width: 100%;
+        }
+        .info-row {
+            display: table-row;
+        }
+        .info-label {
+            display: table-cell;
+            font-weight: bold;
+            width: 30%;
+            padding: 5px 0;
+        }
+        .info-value {
+            display: table-cell;
+            width: 70%;
+            padding: 5px 0;
+        }
+        .clauses {
+            margin-top: 20px;
+        }
+        .clause {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #f9f9f9;
+            border-left: 3px solid #333;
+        }
+        .clause-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .signatures {
+            margin-top: 40px;
+            display: table;
+            width: 100%;
+        }
+        .signature-block {
+            display: table-cell;
+            width: 50%;
+            padding: 20px;
+        }
+        .signature-line {
+            border-top: 1px solid #333;
+            margin-top: 50px;
+            padding-top: 5px;
+        }
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 10px;
+            color: #999;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+        }
     </style>
 </head>
 <body>
-    <h1>Contract: {{ $contract->title }}</h1>
-
-    <div class="meta">
-        <p><strong>Contract ID:</strong> {{ $contract->id }}</p>
-        <p><strong>Status:</strong> {{ $contract->statusLabel() }}</p>
-        <p><strong>Amount:</strong> {{ $contract->currency }} {{ number_format($contract->amount, 2) }}</p>
-        <p><strong>Starts At:</strong> {{ $contract->starts_at?->format('Y-m-d H:i') }}</p>
-        <p><strong>Ends At:</strong> {{ $contract->ends_at?->format('Y-m-d H:i') }}</p>
-        <p><strong>Signed At:</strong> {{ $contract->signed_at?->format('Y-m-d H:i') }}</p>
+    <div class="header">
+        <h1>Service Contract</h1>
+        <p>Contract #{{ $contract->id }} | Generated on {{ now()->format('Y-m-d H:i') }}</p>
     </div>
 
-    @if($contract->description)
     <div class="section">
-        <h2>Description</h2>
-        <p>{{ $contract->description }}</p>
+        <h2>Contract Details</h2>
+        <div class="info-grid">
+            <div class="info-row">
+                <div class="info-label">Status:</div>
+                <div class="info-value">{{ $contract->status->value }}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Service Provider:</div>
+                <div class="info-value">{{ $contract->user->name ?? 'N/A' }}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Client:</div>
+                <div class="info-value">{{ $contract->client->name ?? 'N/A' }}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Package:</div>
+                <div class="info-value">{{ $contract->package->name ?? 'N/A' }}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Created:</div>
+                <div class="info-value">{{ $contract->created_at->format('Y-m-d') }}</div>
+            </div>
+        </div>
+    </div>
+
+    @if($clauses && $clauses->count() > 0)
+    <div class="section clauses">
+        <h2>Contract Clauses</h2>
+        @foreach($clauses as $index => $clause)
+        <div class="clause">
+            <div class="clause-title">{{ $index + 1 }}. {{ $clause->title }}</div>
+            <div>{{ $clause->content }}</div>
+        </div>
+        @endforeach
     </div>
     @endif
 
-    @if(!empty($contract->milestones))
-    <div class="section">
-        <h2>Milestones</h2>
-        <ul>
-            @foreach($contract->milestones as $milestone)
-                <li>{{ $milestone['title'] ?? $milestone }}</li>
-            @endforeach
-        </ul>
+    <div class="signatures">
+        <div class="signature-block">
+            <div class="signature-line">
+                <strong>Service Provider</strong><br>
+                {{ $contract->user->name ?? 'N/A' }}<br>
+                Date: _______________
+            </div>
+        </div>
+        <div class="signature-block">
+            <div class="signature-line">
+                <strong>Client</strong><br>
+                {{ $contract->client->name ?? 'N/A' }}<br>
+                Date: _______________
+            </div>
+        </div>
     </div>
-    @endif
 
-    @if(!empty($contract->signatures))
-    <div class="section">
-        <h2>Signatures</h2>
-        <ul>
-            @foreach($contract->signatures as $signature)
-                <li>{{ $signature['name'] ?? 'Unknown' }} - {{ $signature['signed_at'] ?? 'N/A' }}</li>
-            @endforeach
-        </ul>
-    </div>
-    @endif
-
-    <div class="section">
-        <h2>Parties</h2>
-        <p><strong>User:</strong> {{ $contract->user?->name ?? 'N/A' }}</p>
-        <p><strong>Client:</strong> {{ $contract->client?->name ?? 'N/A' }}</p>
+    <div class="footer">
+        <p>This document was generated by AdminHub21. Contract #{{ $contract->id }}</p>
+        <p>For questions, contact support@adminhub21.com</p>
     </div>
 </body>
 </html>

@@ -9,9 +9,21 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
     volumes:
       - pg_data:/var/lib/postgresql/data
-      - ./apps/server/drizzle:/docker-entrypoint-initdb.d
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d adminhub"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: adminhub-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-}
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-}", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -19,19 +31,79 @@ services:
   api:
     build:
       context: .
-      dockerfile: apps/server/Dockerfile
+      dockerfile: apps/api/Dockerfile
     container_name: adminhub-api
+    restart: unless-stopped
     depends_on:
       postgres:
         condition: service_healthy
-    restart: unless-stopped
+      redis:
+        condition: service_healthy
     environment:
-      DATABASE_URL: postgres://postgres:${POSTGRES_PASSWORD:-postgres}@postgres:5432/adminhub
-      PORT: 8787
-      NODE_ENV: production
-      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:-dev-only-access-secret-change-me}
-      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-dev-only-refresh-secret-change-me}
-      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:8443}
+      APP_ENV: production
+      APP_DEBUG: "false"
+      APP_URL: ${APP_URL:-https://api.adminhub21.com}
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: adminhub
+      DB_USERNAME: postgres
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      REDIS_HOST: redis
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+      REDIS_PORT: 6379
+      CACHE_DRIVER: redis
+      QUEUE_CONNECTION: redis
+      SESSION_DRIVER: redis
+      MAIL_MAILER: ${MAIL_MAILER:-smtp}
+      MAIL_HOST: ${MAIL_HOST:-}
+      MAIL_PORT: ${MAIL_PORT:-587}
+      MAIL_USERNAME: ${MAIL_USERNAME:-}
+      MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+      MAIL_ENCRYPTION: ${MAIL_ENCRYPTION:-tls}
+      MAIL_FROM_ADDRESS: ${MAIL_FROM_ADDRESS:-noreply@adminhub21.com}
+      MAIL_FROM_NAME: "${APP_NAME:-AdminHub21 API}"
+    volumes:
+      - api_storage:/var/www/html/storage
+    init: true
+
+  nginx:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile.nginx
+    container_name: adminhub-nginx
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - "8080:80"
+    init: true
+
+  horizon:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    container_name: adminhub-horizon
+    restart: unless-stopped
+    command: ["php", "/var/www/html/artisan", "horizon"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      APP_ENV: production
+      APP_DEBUG: "false"
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: adminhub
+      DB_USERNAME: postgres
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      REDIS_HOST: redis
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+      REDIS_PORT: 6379
+      CACHE_DRIVER: redis
+      QUEUE_CONNECTION: redis
+      SESSION_DRIVER: redis
     init: true
 
   web:
@@ -39,12 +111,16 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:8787}
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:8080}
     container_name: adminhub-web
-    depends_on:
-      - api
     restart: unless-stopped
+    depends_on:
+      - nginx
+    ports:
+      - "${WEB_PORT:-8443}:80"
     init: true
 
 volumes:
   pg_data:
+  redis_data:
+  api_storage:
