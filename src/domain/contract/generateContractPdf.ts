@@ -16,7 +16,7 @@ export function buildContractPdfLines(form: {
   hasInsurance: boolean
   hasSubstitute: boolean
 }): string[] {
-  const admin = form.adminNameEn || form.adminId
+  const admin = form.adminNameEn
   const lines = [
     "CONTRACT",
     "=".repeat(40),
@@ -47,11 +47,12 @@ export function buildContractPdfLines(form: {
 }
 
 export function downloadContractPdf(lines: string[], projectTitle: string) {
+  const safeTitle = projectTitle.trim() || "untitled"
   const blob = new Blob([lines.join("\n")], { type: "text/plain" })
   const url = URL.createObjectURL(blob)
   const a = document.createElement("a")
   a.href = url
-  a.download = `contract-${projectTitle.replace(/\s+/g, "-").toLowerCase()}.txt`
+  a.download = `contract-${safeTitle.replace(/\s+/g, "-").toLowerCase()}.txt`
   document.body.appendChild(a)
   a.click()
   document.body.removeChild(a)

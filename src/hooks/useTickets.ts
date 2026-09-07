@@ -110,8 +110,10 @@ export function useTickets({ onTicketCreated, onError }: UseTicketsOptions = {})
   }, [onError])
 
   const changeStatus = useCallback(async (ticketId: string, status: string) => {
+    const validStatuses = ["open", "in_progress", "resolved", "closed"] as const
+    const safeStatus = validStatuses.includes(status as (typeof validStatuses)[number]) ? (status as (typeof validStatuses)[number]) : undefined
     try {
-      const updated = await updateTicket(ticketId, { status: status as Ticket["status"] })
+      const updated = await updateTicket(ticketId, { status: safeStatus })
       setTickets((prev) => prev.map((t) => (t.id === ticketId ? updated : t)))
       if (currentTicket?.id === ticketId) {
         setCurrentTicket(updated)

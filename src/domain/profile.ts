@@ -1,17 +1,8 @@
 import type { AdminProfile, PlatformKey } from "@adminhub/shared"
+import { platformLabel } from "../components/packages/platformSpecs"
+import { TOMAN_PER_MILLION } from "../lib/constants"
 
-export const PLATFORM_LABELS: Record<PlatformKey, { en: string; fa: string }> = {
-  instagram: { en: "Instagram", fa: "اینستاگرام" },
-  telegram: { en: "Telegram", fa: "تلگرام" },
-  whatsapp: { en: "WhatsApp", fa: "واتساپ" },
-  torob: { en: "Torob", fa: "ترب" },
-  digikala: { en: "Digikala", fa: "دیجی‌کالا" },
-  linkedin: { en: "LinkedIn", fa: "لینکدین" },
-}
-
-export function platformLabel(key: PlatformKey, lang: "en" | "fa"): string {
-  return PLATFORM_LABELS[key]?.[lang] || key
-}
+export { platformLabel }
 
 export function adminName(admin: AdminProfile, lang: "en" | "fa"): string {
   return lang === "fa" ? admin.nameFa : admin.nameEn
@@ -27,7 +18,7 @@ export function adminSkills(admin: AdminProfile, lang: "en" | "fa"): string[] {
 
 export function formatAdminPrice(admin: AdminProfile, lang: "en" | "fa"): string {
   if (lang === "fa") {
-    return `${(admin.monthlyToman / 1000000).toFixed(1)}M تومان`
+    return `${(admin.monthlyToman / TOMAN_PER_MILLION).toFixed(1)}M تومان`
   }
   return `$${admin.monthlyUSD}`
 }

@@ -40,7 +40,20 @@ export interface AuthContextValue {
   fetchMe: () => Promise<void>
 }
 
-const AuthContext = createContext<AuthContextValue>(null as never)
+const AuthContext = createContext<AuthContextValue>({
+  user: null,
+  accessToken: null,
+  isLoading: true,
+  error: null,
+  register: async () => {},
+  login: async () => {},
+  loginWithOtp: async () => {},
+  sendOtp: async () => {},
+  logout: async () => {},
+  refreshToken: async () => {},
+  clearError: () => {},
+  fetchMe: async () => {},
+})
 
 export function useAuth() {
   return useContext(AuthContext)

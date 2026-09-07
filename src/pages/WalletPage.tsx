@@ -9,6 +9,7 @@ import {
   listTransactions,
   createTransaction,
 } from "../lib/api"
+import { TOMAN_PER_MILLION } from "../lib/constants"
 
 const TRANSACTION_TYPE_LABELS: Record<string, Record<string, string>> = {
   en: {
@@ -80,8 +81,8 @@ export default function WalletPage() {
     try {
       await createTransaction({
         type: txType,
-        amountToman: amountToman ? parseInt(amountToman) : undefined,
-        amountUSD: amountUSD ? parseInt(amountUSD) : undefined,
+        amountToman: amountToman ? parseInt(amountToman, 10) : undefined,
+        amountUSD: amountUSD ? parseInt(amountUSD, 10) : undefined,
         currency,
         note: note.trim() || undefined,
       })
@@ -102,7 +103,7 @@ export default function WalletPage() {
 
   const fmtMoney = (toman: number, usd: number) =>
     isFa
-      ? `${(toman / 1000000).toFixed(1)}M ${tr.common.toman}`
+      ? `${(toman / TOMAN_PER_MILLION).toFixed(1)}M ${tr.common.toman}`
       : `$${usd}`
 
   return (
@@ -141,7 +142,7 @@ export default function WalletPage() {
                 {tr.common.toman} {tr.dash.balance}
               </div>
               <div className="text-3xl font-bold">
-                {wallet ? (wallet.balanceToman / 1000000).toFixed(1) : "0"}M
+                {wallet ? (wallet.balanceToman / TOMAN_PER_MILLION).toFixed(1) : "0"}M
               </div>
             </div>
             <div className="bg-gradient-to-br from-emerald-600 to-emerald-800 rounded-2xl p-6 text-white">
@@ -200,7 +201,7 @@ export default function WalletPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-[#0f172a] mb-1.5">
-                    {tr.common.cancel}
+                    {tr.common.currency}
                   </label>
                   <select
                     value={currency}
@@ -305,7 +306,7 @@ export default function WalletPage() {
                         {tx.type === "deposit" ? "+" : "-"}
                         {tx.amountToman > 0
                           ? isFa
-                            ? `${(tx.amountToman / 1000000).toFixed(1)}M ${tr.common.toman}`
+                            ? `${(tx.amountToman / TOMAN_PER_MILLION).toFixed(1)}M ${tr.common.toman}`
                             : `$${tx.amountUSD}`
                           : `$${tx.amountUSD}`}
                       </div>

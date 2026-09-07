@@ -34,7 +34,9 @@ export function useContracts() {
   }, [loadContracts])
 
   const updateStatus = useCallback(async (contractId: string, status: string) => {
-    const updated = await updateContractStatus(contractId, { status: status as Contract["status"] })
+    const validStatuses = ["active", "pending", "completed", "disputed"] as const
+    const safeStatus = validStatuses.includes(status as (typeof validStatuses)[number]) ? (status as (typeof validStatuses)[number]) : undefined
+    const updated = await updateContractStatus(contractId, { status: safeStatus })
     setContracts((prev) => prev.map((c) => (c.id === contractId ? updated : c)))
     return updated
   }, [])

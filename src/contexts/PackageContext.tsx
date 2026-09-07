@@ -56,7 +56,27 @@ export interface PackageContextValue {
   }
 }
 
-const PackageContext = createContext<PackageContextValue>(null as never)
+const PackageContext = createContext<PackageContextValue>({
+  admins: [],
+  packages: [],
+  admin: () => undefined,
+  packagesForAdmin: () => [],
+  pkg: (id: string) => undefined,
+  packagesForPlatform: () => [],
+  refresh: async () => {},
+  addPackage: async () => { throw new Error("PackageProvider is required") },
+  updatePackage: async () => { throw new Error("PackageProvider is required") },
+  deletePackage: async () => {},
+  submitOffer: async () => { throw new Error("PackageProvider is required") },
+  offers: [],
+  comparison: {
+    selected: new Set(),
+    toggle: () => {},
+    clear: () => {},
+    add: () => {},
+    has: () => false,
+  },
+})
 
 export function usePackages() {
   return useContext(PackageContext)

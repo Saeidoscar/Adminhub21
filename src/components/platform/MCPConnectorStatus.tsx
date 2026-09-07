@@ -12,7 +12,6 @@ export function MCPConnectorStatus({
 }: MCPConnectorStatusProps) {
   const { theme } = useTheme()
   const t = theme === "dark" ? darkTokens : lightTokens
-  const isFa = false
 
   return (
     <div className="flex items-center gap-2">
@@ -22,17 +21,11 @@ export function MCPConnectorStatus({
         }`}
       />
       <span className="text-xs text-muted">
-        {connected
-          ? isFa
-            ? "متصل به MCP"
-            : "MCP Connected"
-          : isFa
-            ? "قطع ارتباط"
-            : "Disconnected"}
+        {connected ? "MCP Connected" : "Disconnected"}
       </span>
       {lastSync && (
         <span className="text-xs text-muted/60">
-          {isFa ? `هماهنگ‌سازی: ${lastSync}` : `Synced: ${lastSync}`}
+          Synced: {lastSync}
         </span>
       )}
     </div>

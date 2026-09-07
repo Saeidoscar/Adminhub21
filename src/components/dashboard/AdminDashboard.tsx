@@ -12,6 +12,7 @@ import {
   type AdminProfile,
   type ContractPackage,
 } from "../../lib/api"
+import { TOMAN_PER_MILLION, TOMANS_PER_USD } from "../../lib/constants"
 
 const PLATFORM_LABELS: Record<string, string> = {
   instagram: "Instagram",
@@ -65,8 +66,8 @@ export default function AdminDashboard({
 
   const fmt = (val: string) =>
     lang === "fa"
-      ? `${(parseInt(val) / 1000000).toFixed(1)}M ${tr.common.toman}`
-      : `$${Math.round(parseInt(val) / 42000)}`
+      ? `${(parseInt(val, 10) / TOMAN_PER_MILLION).toFixed(1)}M ${tr.common.toman}`
+      : `$${Math.round(parseInt(val, 10) / TOMANS_PER_USD)}`
 
   useEffect(() => {
     let cancelled = false
@@ -135,7 +136,7 @@ export default function AdminDashboard({
         bioEn: lang === "en" ? bio : profile.bioEn,
         bioFa: lang === "fa" ? bio : profile.bioFa,
         platforms: selectedPlatforms,
-        monthlyToman: parseInt(prices.basic) || profile.monthlyToman,
+        monthlyToman: Number.isNaN(parseInt(prices.basic, 10)) ? profile.monthlyToman : parseInt(prices.basic, 10),
         monthlyUSD: profile.monthlyUSD,
       })
       setProfile(updated)
@@ -435,7 +436,7 @@ export default function AdminDashboard({
                     onSave={(val) =>
                       handleSavePackage({
                         ...pkg,
-                        priceToman: parseInt(val) || 0,
+                        priceToman: parseInt(val, 10) || 0,
                         priceUSD: pkg.priceUSD,
                       })
                     }

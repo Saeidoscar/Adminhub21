@@ -4,6 +4,7 @@ import { Icon } from "../components/layout/Icon"
 import { Stars } from "../components/platform/Stars"
 import { listVibeCoders, type VibeCoder } from "../lib/api"
 import { ListSkeleton } from "../components/ui/Skeleton"
+import { TOMAN_PER_MILLION } from "../lib/constants"
 
 type Stack = "webApp" | "automation" | "bots" | "landing" | "frontend"
 
@@ -154,7 +155,7 @@ export default function VibeCodersPage({
                   </div>
                   <div className="text-base font-bold text-[#1e3a5f]">
                     {isFa
-                      ? `${(coder.rateToman / 1000000).toFixed(1)}M ${tr.common.toman}`
+                      ? `${(coder.rateToman / TOMAN_PER_MILLION).toFixed(1)}M ${tr.common.toman}`
                       : `$${coder.rateUSD}`}
                     <span className="text-xs font-normal text-[#94a3b8]">
                       /{isFa ? "پروژه" : "project"}

@@ -20,7 +20,7 @@ The frontend talks to the backend through a typed `apiFetch` wrapper in `src/lib
 ### Data flow
 
 1. AuthContext manages session state, token storage, and OTP/password login flows.
-2. Pages consume translation objects from `src/i18n.ts` and switch direction (`ltr`/`rtl`) based on the selected language.
+2. Pages consume translation objects from `src/i18n/` and switch direction (`ltr`/`rtl`) based on the selected language.
 3. Protected routes enforce role-based access (`employer`, `admin`, `super_admin`).
 4. The backend returns normalized payloads; the frontend unwraps lists and items before rendering.
 
@@ -154,7 +154,7 @@ src/
   design-system/    — ThemeProvider, tokens
   lib/              — api.ts, mockPackages, types
   pages/            — Marketplace, Contracts, Tickets, AI, Admin pages, etc.
-  i18n.ts           — English and Persian translations
+  i18n/             — English and Persian translations
   App.tsx           — Routes, layout shell, role-based nav
   main.tsx          — React entrypoint
 
@@ -171,7 +171,7 @@ apps/server/
 
 1. Keep modules small and domain-focused.
 2. Add Zod schemas for every new input and response shape.
-3. Use `src/i18n.ts` for all user-facing strings; do not hardcode English or Persian text in components.
+3. Use `src/i18n/` for all user-facing strings; do not hardcode English or Persian text in components.
 4. Run `pnpm format` before opening a pull request.
 5. If you touch the backend, update or add E2E coverage for the affected flow.
 

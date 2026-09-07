@@ -32,8 +32,8 @@ services:
 
   api:
     build:
-      context: .
-      dockerfile: apps/api/Dockerfile
+      context: ./apps/api
+      dockerfile: Dockerfile
     container_name: adminhub-api
     depends_on:
       postgres:
@@ -65,8 +65,8 @@ services:
 
   nginx:
     build:
-      context: .
-      dockerfile: apps/api/Dockerfile.nginx
+      context: ./apps/api
+      dockerfile: Dockerfile.nginx
     container_name: adminhub-nginx
     depends_on:
       - api
@@ -76,8 +76,8 @@ services:
 
   horizon:
     build:
-      context: .
-      dockerfile: apps/api/Dockerfile
+      context: ./apps/api
+      dockerfile: Dockerfile
     container_name: adminhub-horizon
     command: ["php", "/var/www/html/artisan", "horizon"]
     depends_on:

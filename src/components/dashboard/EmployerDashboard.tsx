@@ -12,6 +12,7 @@ import {
   type WalletRow,
 } from "../../lib/api"
 import { useAuth } from "../../contexts/AuthContext"
+import { TOMAN_PER_MILLION } from "../../lib/constants"
 
 const PLATFORM_LABELS: Record<string, string> = {
   instagram: "Instagram",
@@ -42,7 +43,7 @@ export default function EmployerDashboard({
 
   const fmt = (toman: number, usd: number) =>
     lang === "fa"
-      ? `${(toman / 1000000).toFixed(1)}M ${tr.common.toman}`
+      ? `${(toman / TOMAN_PER_MILLION).toFixed(1)}M ${tr.common.toman}`
       : `$${usd}`
 
   const userName = lang === "fa" ? (user?.nameFa || "علی") : (user?.nameEn || "Ali")

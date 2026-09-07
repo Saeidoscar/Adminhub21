@@ -14,6 +14,7 @@ import type {
   ContractPackage,
   PlatformKey,
 } from "@adminhub/shared"
+import { TOMAN_PER_MILLION } from "../lib/constants"
 
 const PLATFORM_COLORS: Record<string, string> = {
   instagram: "badge-instagram",
@@ -188,7 +189,7 @@ export default function AdminPackagesPage() {
                 <div className="flex items-center justify-between pt-3 border-t border-[#f2f5fa]">
                   <div>
                     <span className="text-lg font-bold text-[#1e3a5f]">
-                      {(pkg.priceToman / 1000000).toFixed(1)}M
+                       {(pkg.priceToman / TOMAN_PER_MILLION).toFixed(1)}M
                     </span>
                     <span className="text-xs text-[#94a3b8] mr-1">
                       {tr.common.perMonth}

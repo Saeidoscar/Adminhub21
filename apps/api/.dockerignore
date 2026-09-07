@@ -47,8 +47,8 @@ coverage
 /storage/app/public/*
 !/storage/app/public/.gitignore
 
-# Vendor (installed via composer in Docker)
-/vendor
+# Vendor is mounted from host during development
+# /vendor
 
 # Bootstrap cache (rebuilt in Docker)
 /bootstrap/cache/*.php

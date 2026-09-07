@@ -42,7 +42,23 @@ export interface AiContextValue {
   clearError: () => void
 }
 
-const AiContext = createContext<AiContextValue>(null as never)
+const AiContext = createContext<AiContextValue>({
+  conversations: [],
+  activeConversation: null,
+  messages: [],
+  models: [],
+  isLoading: true,
+  isSending: false,
+  error: null,
+  createConversation: async () => { throw new Error("AiProvider is required") },
+  selectConversation: async () => {},
+  sendMessage: async () => { throw new Error("AiProvider is required") },
+  switchModel: async () => { throw new Error("AiProvider is required") },
+  renameConversation: async () => { throw new Error("AiProvider is required") },
+  deleteConversation: async () => {},
+  refreshConversations: async () => {},
+  clearError: () => {},
+})
 
 export function useAi() {
   return useContext(AiContext)

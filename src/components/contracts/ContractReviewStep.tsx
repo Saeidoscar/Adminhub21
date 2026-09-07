@@ -8,7 +8,7 @@ interface ContractReviewStepProps {
   form: ContractFormValues
   admins: AdminProfile[]
   lang: Lang
-  tr: typeof import("../../i18n").t["en"]
+  tr: typeof import("../../i18n").t["en"] & typeof import("../../i18n").t["fa"]
   error: string | null
   onDownloadPdf: () => void
   onSubmit: () => void
@@ -147,3 +147,4 @@ export function ContractReviewStep({
     </div>
   )
 }
+

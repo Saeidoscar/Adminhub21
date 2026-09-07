@@ -30,8 +30,8 @@ services:
 
   api:
     build:
-      context: .
-      dockerfile: apps/api/Dockerfile
+      context: ./apps/api
+      dockerfile: Dockerfile
     container_name: adminhub-api
     restart: unless-stopped
     depends_on:
@@ -68,8 +68,8 @@ services:
 
   nginx:
     build:
-      context: .
-      dockerfile: apps/api/Dockerfile.nginx
+      context: ./apps/api
+      dockerfile: Dockerfile.nginx
     container_name: adminhub-nginx
     restart: unless-stopped
     depends_on:
@@ -80,8 +80,8 @@ services:
 
   horizon:
     build:
-      context: .
-      dockerfile: apps/api/Dockerfile
+      context: ./apps/api
+      dockerfile: Dockerfile
     container_name: adminhub-horizon
     restart: unless-stopped
     command: ["php", "/var/www/html/artisan", "horizon"]

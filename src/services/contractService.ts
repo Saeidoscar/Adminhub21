@@ -6,6 +6,7 @@ import {
   createContract,
   listAdminProfiles,
 } from "../lib/api"
+import { TOMAN_PER_MILLION } from "../lib/constants"
 
 export async function fetchContracts(): Promise<ContractRow[]> {
   return listContracts()
@@ -51,7 +52,7 @@ export function contractAmountDisplay(
   lang: "en" | "fa",
 ): string {
   if (lang === "fa") {
-    return `${(contract.amountToman / 1000000).toFixed(1)}M تومان`
+    return `${(contract.amountToman / TOMAN_PER_MILLION).toFixed(1)}M تومان`
   }
   return `$${contract.amountUSD}`
 }

@@ -37,6 +37,7 @@ export default function AdminPortfolioPage({
     tags: "",
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [error, setError] = useState<string | null>(null)
 
   const isFa = lang === "fa"
 
@@ -102,8 +103,8 @@ export default function AdminPortfolioPage({
         setItems((prev) => [created, ...prev])
       }
       resetForm()
-    } catch {
-      // handle error
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to save portfolio item")
     } finally {
       setSaving(false)
     }
@@ -134,8 +135,9 @@ export default function AdminPortfolioPage({
         } else {
           setItems([])
         }
-      } catch {
+      } catch (err) {
         if (!cancelled) {
+          console.error("Failed to load portfolio", err)
           setItems([])
         }
       } finally {
@@ -178,6 +180,16 @@ export default function AdminPortfolioPage({
     return (
       <div className="p-6 lg:p-8 max-w-5xl mx-auto fade-in">
         <ListSkeleton count={3} />
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="p-6 lg:p-8 max-w-5xl mx-auto fade-in">
+        <div className="bg-rose-50 border border-rose-200 rounded-2xl p-4 mb-6 text-sm text-rose-700">
+          {error}
+        </div>
       </div>
     )
   }

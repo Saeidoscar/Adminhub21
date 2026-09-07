@@ -59,7 +59,10 @@ const paths: Record<string, string> = {
 
 export function Icon({ name, size = 18, className = "" }: IconProps) {
   const d = paths[name]
-  if (!d) return null
+  if (!d) {
+    console.warn(`Unknown icon: "${name}"`)
+    return null
+  }
   return (
     <svg
       width={size}

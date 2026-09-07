@@ -4,6 +4,7 @@ import { Icon } from "../components/layout/Icon"
 import { Stars } from "../components/platform/Stars"
 import { listEditors, type Editor } from "../lib/api"
 import { ListSkeleton } from "../components/ui/Skeleton"
+import { TOMAN_PER_MILLION } from "../lib/constants"
 
 type Specialty = "video" | "photo" | "motion" | "thumbnail"
 
@@ -153,7 +154,7 @@ export default function EditorsPage({
                   </div>
                   <div className="text-base font-bold text-[#1e3a5f]">
                     {isFa
-                      ? `${(editor.rateToman / 1000000).toFixed(1)}M ${tr.common.toman}`
+                      ? `${(editor.rateToman / TOMAN_PER_MILLION).toFixed(1)}M ${tr.common.toman}`
                       : `$${editor.rateUSD}`}
                     <span className="text-xs font-normal text-[#94a3b8]">
                       /{isFa ? "پروژه" : "project"}

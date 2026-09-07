@@ -7,6 +7,7 @@ import { contractFormSchema, createDefaultContractForm, validateContractForm } f
 import { computeContractAmounts } from "../domain/package"
 import { ContractStepIndicator } from "../components/contracts/ContractStepIndicator"
 import { ContractReviewStep } from "../components/contracts/ContractReviewStep"
+import { TOMAN_PER_MILLION } from "../lib/constants"
 
 const PLATFORMS = [
   { value: "instagram", label: "Instagram" },
@@ -22,7 +23,7 @@ export default function ContractGenerator({
   lang,
   initialContract,
 }: {
-  tr: typeof t["en"]
+  tr: typeof t["en"] & typeof t["fa"]
   lang: Lang
   initialContract?: {
     id: string
@@ -106,7 +107,7 @@ export default function ContractGenerator({
               <div className="text-xs text-[#64748b] mb-1">Amount</div>
               <div className="text-sm font-semibold text-[#0f172a]">
                 {lang === "fa"
-                  ? `${(initialContract.amountToman / 1000000).toFixed(1)}M ${tr.common.toman}`
+                  ? `${(initialContract.amountToman / TOMAN_PER_MILLION).toFixed(1)}M ${tr.common.toman}`
                   : `$${initialContract.amountUSD}`}
               </div>
             </div>
@@ -203,9 +204,10 @@ export default function ContractGenerator({
             setForm((f) => ({ ...f, adminId: data[0].id }))
           }
         }
-      } catch {
+      } catch (err) {
         if (!cancelled) {
           setAdmins([])
+          console.error("Failed to load admins", err)
         }
       } finally {
         if (!cancelled) {
@@ -217,7 +219,7 @@ export default function ContractGenerator({
     return () => {
       cancelled = true
     }
-  }, [form.adminId])
+  }, [])
 
   const setF = (k: string, v: string | boolean) => setForm((f) => ({ ...f, [k]: v }))
   const steps = [
@@ -626,3 +628,4 @@ export default function ContractGenerator({
     </div>
   )
 }
+

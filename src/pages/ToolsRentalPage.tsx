@@ -4,6 +4,7 @@ import { Icon } from "../components/layout/Icon"
 import { Stars } from "../components/platform/Stars"
 import { listTools, type Tool } from "../lib/api"
 import { ListSkeleton } from "../components/ui/Skeleton"
+import { TOMAN_PER_MILLION } from "../lib/constants"
 
 type Category = "scheduling" | "design" | "analytics" | "automation" | "ecommerce"
 
@@ -150,7 +151,7 @@ export default function ToolsRentalPage({
                   </div>
                   <div className="text-base font-bold text-[#1e3a5f]">
                     {isFa
-                      ? `${(tool.priceToman / 1000000).toFixed(1)}M ${tr.common.toman}`
+                      ? `${(tool.priceToman / TOMAN_PER_MILLION).toFixed(1)}M ${tr.common.toman}`
                       : `$${tool.priceUSD}`}
                     <span className="text-xs font-normal text-[#94a3b8]">
                       {tr.tools.perMonth}

@@ -1,4 +1,5 @@
 import type { ContractPackage, PlatformKey, PlatformConfig, AdminProfile } from "@adminhub/shared"
+import { TOMAN_PER_MILLION } from "../lib/constants"
 
 export function filterPackagesForAdmin(
   packages: ContractPackage[],
@@ -37,7 +38,7 @@ export function searchPackages(
 
 export function formatPrice(pkg: ContractPackage, lang: "en" | "fa"): string {
   if (lang === "fa") {
-    return `${(pkg.priceToman / 1000000).toFixed(1)}M تومان`
+    return `${(pkg.priceToman / TOMAN_PER_MILLION).toFixed(1)}M تومان`
   }
   return `$${pkg.priceUSD}`
 }
@@ -68,12 +69,6 @@ export function getPlatformConfig(
 ): PlatformConfig | undefined {
   return configs.find((c) => c.platform === platform)
 }
-
-export function isPackageInComparison(selected: Set<string>, packageId: string): boolean {
-  return selected.has(packageId)
-}
-
-
 
 export function computeContractAmounts(
   amount: string,

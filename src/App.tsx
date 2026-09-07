@@ -50,7 +50,15 @@ interface AppCtx {
   dir: "ltr" | "rtl"
 }
 
-const Ctx = createContext<AppCtx>(null as never)
+const Ctx = createContext<AppCtx>({
+  lang: "en",
+  setLang: () => {},
+  role: "employer",
+  page: "dashboard",
+  setPage: () => {},
+  tr: t.en,
+  dir: "ltr",
+})
 export const useApp = () => useContext(Ctx)
 
 // ─── Route metadata ──────────────────────────────────────────────────────────

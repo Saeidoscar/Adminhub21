@@ -138,7 +138,7 @@ export default function ContractsPage({
                       {contract.platform}
                     </td>
                     <td className="px-4 py-3 text-[#0f172a]">
-                      {contractAmountDisplay(contract.amountToman, contract.amountUSD, lang)}
+                      {contractAmountDisplay(contract, lang)}
                     </td>
                     <td className="px-4 py-3">
                       <select

@@ -11,14 +11,16 @@ export function MessageInput({
 }) {
   const [content, setContent] = useState("")
 
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault()
-
+  const submit = () => {
     const trimmed = content.trim()
     if (!trimmed) return
-
     onSend(trimmed)
     setContent("")
+  }
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault()
+    submit()
   }
 
   return (
@@ -36,7 +38,7 @@ export function MessageInput({
         onKeyDown={(e) => {
           if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault()
-            handleSubmit(e)
+            submit()
           }
         }}
       />

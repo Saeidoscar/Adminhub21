@@ -58,7 +58,7 @@ export default function ContractDetailView({
               {isFa ? "مبلغ" : "Amount"}
             </div>
             <div className="text-base font-bold text-[#1e3a5f]">
-              {contractAmountDisplay(contract.amountToman, contract.amountUSD, lang)}
+              {contractAmountDisplay(contract, lang)}
             </div>
           </div>
         </div>
