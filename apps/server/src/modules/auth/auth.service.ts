@@ -69,7 +69,7 @@ export async function register(input: RegisterInput): Promise<AuthResult> {
     .values({
       email,
       passwordHash,
-      role: input.role,
+      role: "employer",
       nameEn: input.nameEn,
       nameFa: input.nameFa,
       phone: input.phone ?? null,

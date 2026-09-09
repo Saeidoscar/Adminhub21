@@ -130,6 +130,19 @@ export async function createTransaction(
     throw new Error("Failed to create transaction")
   }
 
+  const updates: Record<string, unknown> = {}
+  if (data.amountUSD) {
+    const delta = data.type === "deposit" ? data.amountUSD : -data.amountUSD
+    updates.balanceUSD = sql`${wallets.balanceUSD} + ${delta}`
+  }
+  if (data.amountToman) {
+    const delta = data.type === "deposit" ? data.amountToman : -data.amountToman
+    updates.balanceToman = sql`${wallets.balanceToman} + ${delta}`
+  }
+  if (Object.keys(updates).length > 0) {
+    await db.update(wallets).set(updates as any).where(eq(wallets.id, wallet.id))
+  }
+
   return toSafeTransaction(row)
 }
 

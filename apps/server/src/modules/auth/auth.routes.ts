@@ -6,6 +6,7 @@ import { env } from "../../env"
 import { REFRESH_TTL_SECONDS, verifyToken } from "../../lib/tokens"
 import { revokeApiToken } from "../../lib/sanctum"
 import { requireAuth } from "../../middleware/auth"
+import { rateLimit } from "../../middleware/rate-limit"
 import { loginSchema, registerSchema } from "./schemas"
 import * as service from "./auth.service"
 import { sendOtpSchema, verifyOtpSchema } from "./otp.schemas"
@@ -24,21 +25,33 @@ function setRefreshCookie(c: Parameters<typeof setCookie>[0], token: string) {
   })
 }
 
-authRoutes.post("/register", zValidator("json", registerSchema), async (c) => {
+authRoutes.post(
+  "/register",
+  rateLimit({ windowMs: 60_000, max: 5 }),
+  zValidator("json", registerSchema),
+  async (c) => {
   const body = c.req.valid("json")
   const result = await service.register(body)
   setRefreshCookie(c, result.refreshToken)
   return c.json({ user: result.user, accessToken: result.accessToken }, 201)
 })
 
-authRoutes.post("/login", zValidator("json", loginSchema), async (c) => {
+authRoutes.post(
+  "/login",
+  rateLimit({ windowMs: 60_000, max: 10 }),
+  zValidator("json", loginSchema),
+  async (c) => {
   const body = c.req.valid("json")
   const result = await service.login(body)
   setRefreshCookie(c, result.refreshToken)
   return c.json({ user: result.user, accessToken: result.accessToken })
 })
 
-authRoutes.post("/otp/send", zValidator("json", sendOtpSchema), async (c) => {
+authRoutes.post(
+  "/otp/send",
+  rateLimit({ windowMs: 60_000, max: 5 }),
+  zValidator("json", sendOtpSchema),
+  async (c) => {
   const body = c.req.valid("json")
   const result = await otpService.sendOtp(body)
   return c.json(result)

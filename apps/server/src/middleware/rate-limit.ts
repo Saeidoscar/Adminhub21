@@ -24,7 +24,16 @@ export function rateLimit(options: { windowMs: number; max: number }) {
 
   return createMiddleware(async (c, next) => {
     const authUser = c.get("authUser")
-    const key = `${authUser.id}:${c.req.path}`
+    let key: string
+    if (authUser) {
+      key = `user:${authUser.id}:${c.req.path}`
+    } else {
+      const forwarded = c.req.header("x-forwarded-for")
+      const ip = forwarded
+        ? forwarded.split(",")[0].trim()
+        : c.req.header("x-real-ip") || "unknown"
+      key = `ip:${ip}:${c.req.path}`
+    }
 
     const now = Date.now()
     const entry = store.get(key)

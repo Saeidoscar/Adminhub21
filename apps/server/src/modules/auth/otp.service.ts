@@ -23,7 +23,9 @@ export type AuthResult = {
 }
 
 export async function sendOtp(input: SendOtpInput): Promise<{ ok: true }> {
-  const code = String(Math.floor(100000 + Math.random() * 900000))
+  const randomBytes = new Uint32Array(1)
+  crypto.getRandomValues(randomBytes)
+  const code = String(100000 + (randomBytes[0] % 900000))
   const otpExpiresAt = new Date(Date.now() + 10 * 60 * 1000)
 
   const [existing] = await db
@@ -50,7 +52,9 @@ export async function verifyOtp(input: VerifyOtpInput): Promise<AuthResult> {
     .limit(1)
 
   if (!user) {
-    const passwordHash = await hashPassword(Math.random().toString(36))
+    const randomBytes = new Uint32Array(1)
+    crypto.getRandomValues(randomBytes)
+    const passwordHash = await hashPassword(randomBytes[0].toString(36) + randomBytes[0].toString(36))
     const [newUser] = await db
       .insert(users)
       .values({

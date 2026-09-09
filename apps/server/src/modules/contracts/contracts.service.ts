@@ -133,6 +133,16 @@ export async function createContract(
         throw new Error("Forbidden")
       }
     }
+    if (requesterRole === "super_admin") {
+      const [user] = await db
+        .select({ role: users.role })
+        .from(users)
+        .where(eq(users.id, requesterId))
+        .limit(1)
+      if (!user || user.role !== "super_admin") {
+        throw new Error("Forbidden")
+      }
+    }
 
     employerId = offer.employerId
     adminId = offer.adminId
