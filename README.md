@@ -1,180 +1,185 @@
 # AdminHub21
 
-A bilingual (English / Persian) freelance marketplace connecting employers with verified social media and e-commerce professionals. The platform supports the full hiring lifecycle: discovery, comparison, contracting, and ongoing management.
+Multi-role admin and employer platform for a digital-services marketplace: curated packages and
+custom offers, a contract workflow, tickets, wallet/payouts, reviews, catalogue and content
+moderation, plus AI helpers. English and Persian (RTL) UI.
 
-## What it does
+Built from a Figma Make export (`figma-site-import-4cacb345`, project `1551273418911820825`) and
+restructured into a real app with its own API and database layer.
 
-Employers find specialists across Instagram, Telegram, WhatsApp, Torob, Digikala, and LinkedIn. Admins publish packages, receive custom offers, and manage contracts. The platform also includes an MCP-powered AI assistant for hiring intelligence, a contract generator with legally styled clauses, and a full admin panel for user, content, ticket, and workspace management.
+## Repository layout
 
-The product ships as a responsive web app and an Android build via Capacitor.
+```
+.
+├── src/                     React SPA (Vite, react-router 7, Tailwind v4)
+│   ├── App.tsx              one <Page> union + route table; all routing lives here
+│   ├── pages/               28 route components (admin, employer, public)
+│   ├── components/          ai · auth · contracts · dashboard · layout · packages · platform · ui
+│   ├── lib/api/             typed fetch client, one file per domain (+ admin/ clients)
+│   ├── lib/                 validation.ts, media.ts, constants.ts, mcp-client.ts
+│   ├── domain/              contract/ package/ profile/ ticket/ business rules
+│   ├── services/            contractService · marketplaceService · packageService
+│   ├── hooks/               useTickets · useReviews · useMarketplace · usePackageForm · ...
+│   ├── design-system/       ThemeProvider + tokens (the only place theme is defined)
+│   ├── contexts/            PackageContext (package + offer state shared across pages)
+│   └── i18n/                en.ts, fa.ts, types.ts (`Tr`)
+├── packages/shared/         `@adminhub/shared` — domain types, pricing utils, shared by SPA and API
+├── apps/server/             Node/Hono API — the backend the SPA actually talks to
+│   ├── src/index.ts         route mounting
+│   ├── src/modules/         one folder per feature (auth, packages, contracts, tickets, ...)
+│   ├── src/middleware/      JWT auth, role checks, error handler
+│   ├── src/db/              schema.ts (drizzle-orm) + seed.ts
+│   ├── drizzle/             SQL migrations + snapshots
+│   └── tests/               vitest unit tests (auth, packages, contracts, ...)
+├── apps/api/                Laravel 13 bootstrap — only `GET /api/v1/health` so far (see Known issues)
+├── android/                 Capacitor Android project (`capacitor.config.ts` in the root)
+├── e2e/                     Playwright specs (API-level auth/package/ticket flows)
+├── docker/nginx.conf        nginx config baked into the web image
+├── scripts/                 smoke tests for the Laravel API (bash + PowerShell)
+├── .figma/make/             Figma Make site/project config, imported by vite.config.ts
+└── docker-compose*.yml      dev / demo / prod stacks (postgres, redis, Laravel api+nginx, web)
+```
 
-## Architecture
+## Requirements
 
-The repository is a monorepo with two main surfaces:
+- Node.js `>= 22`
+- pnpm `>= 10` (`corepack enable`)
+- PostgreSQL 16 (simplest: `docker compose up -d postgres`)
 
-- **Frontend** — `src/` is a React 19 single-page application built with Vite 8, React Router 7, and Tailwind CSS v4. It uses React Context for auth and package state, and a custom design system for theming, typography, and icons.
-- **Backend** — `apps/server/` is a Hono-based HTTP API. Each domain (auth, contracts, packages, AI, wallets, etc.) lives in its own module with routes, schemas, and services. Zod validates requests; JWT handles authentication; CORS and rate limiting are applied at the edge.
+`.mise.toml` pins the toolchain (node 22.19.0, pnpm 10.34.3, postgres 17.7) if you use [mise](https://mise.jdx.dev).
 
-The frontend talks to the backend through a typed `apiFetch` wrapper in `src/lib/api.ts`. Shared types are imported from `@adminhub/shared`.
-
-### Data flow
-
-1. AuthContext manages session state, token storage, and OTP/password login flows.
-2. Pages consume translation objects from `src/i18n/` and switch direction (`ltr`/`rtl`) based on the selected language.
-3. Protected routes enforce role-based access (`employer`, `admin`, `super_admin`).
-4. The backend returns normalized payloads; the frontend unwraps lists and items before rendering.
-
-## Tech stack
-
-| Layer | Technology |
-|-------|-----------|
-| Frontend | React 19, React Router 7, TypeScript 5.7 |
-| Styling | Tailwind CSS v4 (`@tailwindcss/vite`) |
-| Backend | Hono, Zod, JWT |
-| Database | PostgreSQL (via schema in `apps/server/src/db/`) |
-| AI | OpenRouter / OpenAI / Anthropic providers |
-| Mobile | Capacitor (Android) |
-| Testing | Playwright (E2E) |
-| Formatting | `oxfmt` |
-
-## User roles
-
-**Employer** — browses the marketplace, compares packages, sends custom offers, generates and signs contracts, manages favorites, reviews, and support tickets.
-
-**Admin / Specialist** — publishes packages, manages profile and portfolio, responds to offers, views contracts and payouts, and uses the workspace for cases, tasks, events, and time logs.
-
-**Super Admin** — accesses the admin panel to manage users, moderate content, handle support tickets, and oversee platform health.
-
-## Key features
-
-### Marketplace
-Browse verified professionals by platform, rating, and price. Each admin profile exposes skills, pricing packages, verification status, and insurance eligibility. Employers can save favorites and request custom offers.
-
-### Packages & comparison
-Admins create platform-specific or multi-platform bundles. Employers can select up to three packages and compare them side-by-side on features, billing cycle, and price.
-
-### Contract generator
-A five-step wizard (Parties → Scope → Payment → Terms → Review) produces a styled service agreement. It supports termination clauses, substitution and insurance terms, payment schedules, and downloadable contract files.
-
-### AI assistant
-An MCP-connected chat interface provides hiring intelligence for employers and career guidance for admins. It supports multiple model providers and conversation management.
-
-### Admin panel
-Super admins manage users, moderate stories/blogs/comments, triage support tickets, and oversee workspace cases, tasks, events, and time logs. Admins manage their own portfolios and packages.
-
-### Mobile
-The web shell is wrapped with Capacitor for Android. The UI is responsive by default, with a dedicated mobile topbar and collapsible sidebar.
-
-## Prerequisites
-
-- Node.js (see `.mise.toml` for pinned version)
-- pnpm
-- PostgreSQL (for the backend)
-- Optional: Android SDK (for mobile builds)
-
-## Setup
+## Quick start
 
 ```bash
-# Install dependencies
-pnpm install
+pnpm install                       # root + packages/shared + apps/server
+docker compose up -d postgres      # postgres:16-alpine, db/user/password = adminhub/postgres/postgres
 
-# Start the backend API (port 8787 by default)
-pnpm dev:api
+cp apps/server/.env.example apps/server/.env    # optional: everything has dev defaults
+pnpm --filter @adminhub/server db:push         # apply src/db/schema.ts to the database
+pnpm --filter @adminhub/server db:seed         # demo users, packages, offers, contracts, wallet...
 
-# Start the frontend dev server (port 8443 by default)
-pnpm dev
+pnpm dev:api      # Hono API on http://localhost:8787
+pnpm dev          # SPA on http://localhost:8443 — Vite proxies /api to the API
 ```
 
-Open `http://localhost:8443` in your browser.
+Seeded logins (`apps/server/src/db/seed.ts`):
 
-### Environment variables
+| Role        | Email                  | Password      |
+| ----------- | ---------------------- | ------------- |
+| super_admin | superadmin@adminhub.ir | `password123` |
+| admin       | admin@adminhub.ir      | `password123` |
+| employer    | employer@example.com   | `password123` |
 
-Create a `.env` file in the project root for frontend variables:
+> The seed also contains a personal `s.saeid.sr@gmail.com` super-admin entry — remove it before
+> the repository is shared anywhere public.
 
-```
-VITE_API_BASE_URL=http://localhost:8787
-VITE_AUTH_TOKEN=  # optional; used for demo / CI login
-```
+## Scripts
 
-Backend variables are defined in `apps/server/src/env.ts` and can be overridden in `apps/server/.env`:
+Root (`package.json`):
 
-```
-NODE_ENV=development
-PORT=8787
-DATABASE_URL=postgres://postgres:postgres@localhost:5432/adminhub
-JWT_ACCESS_SECRET=dev-only-access-secret-change-me
-JWT_REFRESH_SECRET=dev-only-refresh-secret-change-me
-CORS_ORIGINS=http://localhost:8443,http://localhost:5173
-OPENAI_API_KEY=
-ANTHROPIC_API_KEY=
-OPENROUTER_API_KEY=
-```
+| Command                | What it does                                                    |
+| ---------------------- | --------------------------------------------------------------- |
+| `pnpm dev`             | Vite dev server (port `$PORT` or 8443)                           |
+| `pnpm dev:api`         | Hono API via `tsx watch` (port 8787)                             |
+| `pnpm build`           | Type-aware Vite production build into `dist/`                     |
+| `pnpm preview`         | Serve the built SPA                                              |
+| `pnpm test:e2e`        | Playwright specs (expects the API on `$API_URL`, default 8787)   |
+| `pnpm test:e2e:ui`     | Playwright UI mode                                              |
+| `pnpm format`          | `oxfmt .` — see Known issues before running it                   |
 
-> **Security note:** The default JWT secrets are for development only. Rotate them before any production deployment.
+API (`apps/server`, run with `pnpm --filter @adminhub/server <script>` or from that folder):
 
-## Development workflow
+| Script          | What it does                                   |
+| --------------- | ---------------------------------------------- |
+| `dev`           | `tsx watch src/index.ts`                       |
+| `start`         | `tsx src/index.ts`                             |
+| `typecheck`     | `tsc --noEmit`                                 |
+| `test` / `test:watch` | vitest (`tests/**`)                    |
+| `db:generate`   | drizzle-kit diff → SQL migration                |
+| `db:migrate`    | apply `drizzle/*.sql`                           |
+| `db:push`       | push `src/db/schema.ts` straight to the database |
+| `db:seed`       | truncate + reseed demo data                     |
 
-- Run `pnpm dev` for the frontend and `pnpm dev:api` for the backend in parallel.
-- The frontend reloads on file changes via Vite HMR.
-- Use `pnpm format` to format code with `oxfmt`.
-- Routes are declared in `src/App.tsx`. Add new pages under `src/pages/` and register them there.
-- Backend modules follow the pattern `modules/<name>/<name>.routes.ts`, `<name>.service.ts`, and `<name>.schemas.ts`.
+## Environment
 
-## Testing
+Frontend (build-time, `import.meta.env`):
 
-End-to-end tests use Playwright:
+| Variable              | Purpose                                                                   |
+| --------------------- | ------------------------------------------------------------------------- |
+| `VITE_API_BASE_URL`   | API origin for `/api/*` clients. Unset → relative paths (Vite proxy in dev). |
+| `VITE_DEV_API_PROXY`  | Dev-only proxy target used by `vite.config.ts` (default `http://localhost:8787`). |
+| `VITE_AUTH_TOKEN`     | Dev-only fallback bearer token when nothing is in `localStorage`.          |
+
+API (`apps/server/src/env.ts`, all optional with dev defaults):
+
+`NODE_ENV`, `PORT`, `DATABASE_URL`, `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET`, `CORS_ORIGINS`,
+and the optional provider keys `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `OPENROUTER_API_KEY` (without
+a key the AI module answers in mock mode).
+
+## API surface
+
+Hono, versionless `/api/*`, JWT bearer access tokens plus refresh:
+
+`auth` · `admin-profiles` · `packages` · `offers` · `contracts` · `public/contracts` · `favorites` ·
+`tickets` · `stories` · `blogs` · `comments` · `ai` · `cases` · `tasks` · `events` · `time-logs` ·
+`portfolio` · `reviews` · `wallets` · `payouts` · catalogue (`tools`, `editors`, `vibe-coders`) ·
+`affiliate` · `admin/dashboard` · `admin/users` · `admin/tickets` · `admin/content`
+
+Roles are `employer`, `admin`, `super_admin` (see `apps/server/src/modules/policies/` and
+`packages/shared`). Most list endpoints return `{ <key>: rows }`; `admin-profiles`, `cases` and
+`tasks` return bare arrays — `src/lib/api/core.ts#unwrapList` accepts both, so keep the server
+response shape and the matching client parser in sync when adding a module.
+
+## Mobile
+
+`capacitor.config.ts` + `android/` wrap the built SPA:
 
 ```bash
-pnpm test:e2e
-pnpm test:e2e:ui
+pnpm build && npx cap sync android
 ```
 
-Test specs live alongside the scenarios they cover. The backend does not yet have a dedicated unit-test suite, but each module is small and schema-validated, which keeps behavior predictable.
+## Docker
 
-## Deployment notes
+| File                      | Build context | Result                                                        |
+| ------------------------- | ------------- | ------------------------------------------------------------- |
+| `Dockerfile`              | `.`           | SPA bundle served by nginx (`docker/nginx.conf`), used by the `web` service |
+| `apps/server/Dockerfile`  | `.`           | Hono API on tsx, port 8787 (not part of the compose stack)    |
+| `apps/api/Dockerfile[.nginx]` | `apps/api` | Laravel php-fpm + nginx (`api`, `nginx` services, port 8080) |
+| `docker-compose.yml`      |               | dev: postgres, redis, api, nginx, web, mailpit                |
+| `docker-compose.demo.yml` / `.prod.yml` |   | trimmed variants without mailpit / with prod settings          |
 
-- Build the frontend with `pnpm build`. Output goes to `dist/`.
-- The backend is a standard Node.js server. Deploy it behind a reverse proxy with TLS.
-- Set production `CORS_ORIGINS` to your actual frontend domain.
-- Set strong `JWT_ACCESS_SECRET` and `JWT_REFRESH_SECRET` values.
-- For mobile, run `pnpm build` then `npx cap sync android` before building the APK.
+`scripts/smoke-test.sh` and `scripts/smoke-test.ps1` hit `${BASE_URL}/api/v1/*`, i.e. the Laravel
+service — point `BASE_URL` at `http://localhost:8080`. They cover `/api/v1/health` plus whatever
+`apps/api/routes/api.php` grows.
 
-## Project structure
+## Conventions
 
-```
-src/
-  components/
-    ai/             — Chat UI, model selector, conversation sidebar
-    auth/           — ProtectedRoute
-    dashboard/      — EmployerDashboard, AdminDashboard
-    layout/         — Sidebar, Topbar, Icon
-    platform/       — Stars, MCPConnectorStatus
-    ui/             — Badge, Button, Card, Input, Tabs, CommandPalette, ErrorBoundary
-  contexts/         — AuthContext, PackageContext, AiContext
-  design-system/    — ThemeProvider, tokens
-  lib/              — api.ts, mockPackages, types
-  pages/            — Marketplace, Contracts, Tickets, AI, Admin pages, etc.
-  i18n/             — English and Persian translations
-  App.tsx           — Routes, layout shell, role-based nav
-  main.tsx          — React entrypoint
+- Routing and the page union are centralised in `src/App.tsx`; pages do not reach for the API client directly when a hook or service already covers it.
+- Shared types come from `@adminhub/shared` (aliased to source, so no build step is required).
+- Theme, spacing and type scale come from `src/design-system` only; components must not re-tune them.
+- `src/i18n/en.ts` is the key dictionary — Persian lives in `fa.ts`; both are typed by `src/i18n/types.ts`.
+- Figma Make leftovers (`.figma/make/*`, `src/index.css` palette, the `@figma-figma` script in `index.html`) are kept on purpose; see `AGENTS.md`.
 
-apps/server/
-  src/
-    modules/        — auth, contracts, packages, ai, wallets, tickets, etc.
-    middleware/     — auth, rate-limit
-    lib/            — tokens, sanctum, password, AI providers
-    db/             — schema, seed, index
-    index.ts        — Hono app bootstrap
-```
+## Known issues
 
-## Contributing
+- **Migrations lag the schema.** `apps/server/src/db/schema.ts` and `drizzle/meta/0001_snapshot.json`
+  declare 29 tables, but the committed SQL (`0000_*`, `0001_*`) creates only 10. On a fresh database
+  every endpoint touching tickets, reviews, wallets, tasks, cases, events, portfolio, ai\*, ...
+  fails until you `db:push` (or hand-write the missing migration — `db:generate` currently stops on
+  an interactive column-conflict prompt).
+- **`pnpm format` is destructive.** `oxfmt@0.2.0` rewrites `type` imports and the generated
+  `src/i18n/fa.ts` into invalid syntax, so `pnpm format --check` fails in CI. Format selectively and
+  re-run `npx tsc --noEmit` afterwards.
+- **No `/api/mcp` server module.** `src/lib/mcp-client.ts` and `CommandPalette`/`MCPConnectorStatus`
+  call it and silently fall back to local mocks; the components are also not mounted in any page.
+- **`apps/api` (Laravel) is a stub.** It carries its own CI (pint/phpstan/phpunit) and the compose
+  stack, but exposes only `GET /api/v1/health`, so the containerised `web` service
+  (`VITE_API_BASE_URL=http://localhost:8080`) has no backend to talk to. `apps/server` is the real API.
+- **CI**: `.github/workflows/ci.yml` uses `pnpm/action-setup@v4` without a `packageManager` field in
+  `package.json`, which makes the setup step fail until one is pinned.
 
-1. Keep modules small and domain-focused.
-2. Add Zod schemas for every new input and response shape.
-3. Use `src/i18n/` for all user-facing strings; do not hardcode English or Persian text in components.
-4. Run `pnpm format` before opening a pull request.
-5. If you touch the backend, update or add E2E coverage for the affected flow.
+## Related docs
 
-## License
-
-AdminHub21
+- `AGENTS.md` — Figma Make handoff notes (styling, routing, layout rules)
+- `apps/api/README.md`, `apps/api/AGENTS.md` — Laravel bootstrap notes (upstream framework defaults)
+- `apps/server/src/modules/<name>/` — one self-contained folder per feature: `<name>.routes.ts`, `<name>.service.ts`, `<name>.schema.ts`

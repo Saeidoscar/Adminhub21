@@ -1,15 +1,25 @@
+# AdminHub21 web shell — builds the SPA and serves it through nginx.
+# `docker-compose.yml`, `docker-compose.demo.yml` and `docker-compose.prod.yml`
+# build this file with the repository root as the context.
+
 FROM node:22-alpine AS builder
 
 WORKDIR /app
 
-COPY package.json package-lock.json* ./
-RUN npm ci --no-audit --no-fund
+# pnpm workspace manifests first, so dependency install is cached.
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY packages/shared/package.json ./packages/shared/
+COPY apps/server/package.json ./apps/server/
+
+RUN corepack enable \
+  && pnpm install --frozen-lockfile --prefer-offline
 
 COPY . .
+
 ARG VITE_API_BASE_URL=http://localhost:8787
 ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
 
-RUN npm run build
+RUN pnpm build
 
 FROM nginx:alpine AS runner
 

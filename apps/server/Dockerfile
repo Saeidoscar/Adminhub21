@@ -1,14 +1,6 @@
-FROM node:22-alpine AS builder
-
-WORKDIR /app
-
-COPY package.json pnpm-lock.yaml* ./
-COPY packages/shared ./packages/shared
-RUN npm install -g pnpm@9 && pnpm install --frozen-lockfile --prefer-offline
-
-COPY . .
-
-RUN pnpm --filter @adminhub/server exec drizzle-kit generate 2>/dev/null || true
+# AdminHub21 API — Hono + drizzle-orm, run with tsx (no build step).
+# Build with the repository root as the context:
+#   docker build -f apps/server/Dockerfile .
 
 FROM node:22-alpine AS runner
 
@@ -17,14 +9,19 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=8787
 
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/apps/server/node_modules ./apps/server/node_modules
-COPY --from=builder /app/apps/server/package.json ./apps/server/package.json
-COPY --from=builder /app/apps/server/drizzle ./apps/server/drizzle
-COPY --from=builder /app/apps/server/src ./apps/server/src
-COPY --from=builder /app/packages ./packages
-COPY --from=builder /app/tsconfig.json ./tsconfig.json
-COPY --from=builder /app/apps/server/tsconfig.json ./apps/server/tsconfig.json
+# Install workspace dependencies from the lockfile.
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY packages/shared/package.json ./packages/shared/
+COPY apps/server/package.json ./apps/server/
+
+RUN corepack enable \
+  && pnpm install --frozen-lockfile --prefer-offline --prod=false
+
+COPY packages ./packages
+COPY apps/server ./apps/server
+
+# Committed migrations live in apps/server/drizzle; apply them with
+# `pnpm --filter @adminhub/server db:migrate` against DATABASE_URL.
 
 WORKDIR /app/apps/server
 

@@ -40,12 +40,6 @@ export function getApiBaseUrl() {
   ).replace(/\/+$/, "")
 }
 
-export function getApiBaseUrlLaravel() {
-  return (
-    import.meta.env.VITE_API_BASE_URL_LARAVEL?.trim() || getApiBaseUrl()
-  ).replace(/\/+$/, "")
-}
-
 export function getAuthToken() {
   if (typeof window !== "undefined") {
     const stored = window.localStorage.getItem(TOKEN_STORAGE_KEY)
