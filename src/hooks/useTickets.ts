@@ -16,7 +16,10 @@ export interface UseTicketsOptions {
   onError?: (message: string) => void
 }
 
-export function useTickets({ onTicketCreated, onError }: UseTicketsOptions = {}) {
+export function useTickets({
+  onTicketCreated,
+  onError,
+}: UseTicketsOptions = {}) {
   const [tickets, setTickets] = useState<Ticket[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -31,7 +34,8 @@ export function useTickets({ onTicketCreated, onError }: UseTicketsOptions = {})
       const data = await listTickets()
       setTickets(data)
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Failed to load tickets"
+      const message =
+        err instanceof Error ? err.message : "Failed to load tickets"
       setError(message)
       onError?.(message)
     } finally {
@@ -39,93 +43,123 @@ export function useTickets({ onTicketCreated, onError }: UseTicketsOptions = {})
     }
   }, [onError])
 
-  const loadTicketDetail = useCallback(async (id: string) => {
-    setLoading(true)
-    setError(null)
-    try {
-      const [ticketData, messagesData] = await Promise.all([
-        getTicket(id),
-        listTicketMessages(id),
-      ])
-      if (ticketData) {
-        setCurrentTicket(ticketData)
-        setMessages(messagesData)
-      } else {
-        const message = "Ticket not found"
+  const loadTicketDetail = useCallback(
+    async (id: string) => {
+      setLoading(true)
+      setError(null)
+      try {
+        const [ticketData, messagesData] = await Promise.all([
+          getTicket(id),
+          listTicketMessages(id),
+        ])
+        if (ticketData) {
+          setCurrentTicket(ticketData)
+          setMessages(messagesData)
+        } else {
+          const message = "Ticket not found"
+          setError(message)
+          onError?.(message)
+        }
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "Failed to load ticket"
         setError(message)
         onError?.(message)
+      } finally {
+        setLoading(false)
       }
-    } catch (err) {
-      const message = err instanceof Error ? err.message : "Failed to load ticket"
-      setError(message)
-      onError?.(message)
-    } finally {
-      setLoading(false)
-    }
-  }, [onError])
+    },
+    [onError],
+  )
 
   useEffect(() => {
     loadTickets()
   }, [loadTickets])
 
-  const createNewTicket = useCallback(async (input: TicketInput) => {
-    const result = ticketSchema.safeParse(input)
-    if (!result.success) {
-      const fieldErrors: Record<string, string> = {}
-      result.error.errors.forEach((err) => {
-        const key = err.path[0] as string
-        if (key) fieldErrors[key] = err.message
-      })
-      return { success: false as const, errors: fieldErrors }
-    }
-
-    try {
-      const ticket = await createTicket(result.data)
-      setTickets((prev) => [ticket, ...prev])
-      onTicketCreated?.(ticket)
-      return { success: true as const, ticket }
-    } catch (err) {
-      const message = err instanceof Error ? err.message : "Failed to create ticket"
-      setError(message)
-      onError?.(message)
-      return { success: false as const, errors: {}, message }
-    }
-  }, [onTicketCreated, onError])
-
-  const sendMessage = useCallback(async (ticketId: string, body: string) => {
-    if (!ticketId || !body.trim()) return null
-    setSending(true)
-    try {
-      const message = await createTicketMessage(ticketId, { body: body.trim() })
-      setMessages((prev) => [...prev, message])
-      return message
-    } catch (err) {
-      const message = err instanceof Error ? err.message : "Failed to send message"
-      setError(message)
-      onError?.(message)
-      return null
-    } finally {
-      setSending(false)
-    }
-  }, [onError])
-
-  const changeStatus = useCallback(async (ticketId: string, status: string) => {
-    const validStatuses = ["open", "in_progress", "resolved", "closed"] as const
-    const safeStatus = validStatuses.includes(status as (typeof validStatuses)[number]) ? (status as (typeof validStatuses)[number]) : undefined
-    try {
-      const updated = await updateTicket(ticketId, { status: safeStatus })
-      setTickets((prev) => prev.map((t) => (t.id === ticketId ? updated : t)))
-      if (currentTicket?.id === ticketId) {
-        setCurrentTicket(updated)
+  const createNewTicket = useCallback(
+    async (input: TicketInput) => {
+      const result = ticketSchema.safeParse(input)
+      if (!result.success) {
+        const fieldErrors: Record<string, string> = {}
+        result.error.errors.forEach((err) => {
+          const key = err.path[0] as string
+          if (key) fieldErrors[key] = err.message
+        })
+        return { success: false as const, errors: fieldErrors }
       }
-      return updated
-    } catch (err) {
-      const message = err instanceof Error ? err.message : "Failed to update ticket"
-      setError(message)
-      onError?.(message)
-      return null
-    }
-  }, [currentTicket?.id, onError])
+
+      try {
+        const ticket = await createTicket(result.data)
+        setTickets((prev) => [ticket, ...prev])
+        onTicketCreated?.(ticket)
+        return { success: true as const, ticket }
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "Failed to create ticket"
+        setError(message)
+        onError?.(message)
+        return { success: false as const, errors: {}, message }
+      }
+    },
+    [onTicketCreated, onError],
+  )
+
+  const sendMessage = useCallback(
+    async (ticketId: string, body: string) => {
+      if (!ticketId || !body.trim()) return null
+      setSending(true)
+      try {
+        const message = await createTicketMessage(ticketId, {
+          body: body.trim(),
+        })
+        setMessages((prev) => [...prev, message])
+        return message
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "Failed to send message"
+        setError(message)
+        onError?.(message)
+        return null
+      } finally {
+        setSending(false)
+      }
+    },
+    [onError],
+  )
+
+  const changeStatus = useCallback(
+    async (ticketId: string, status: string) => {
+      const validStatuses = [
+        "open",
+        "in_progress",
+        "resolved",
+        "closed",
+      ] as const
+      if (!validStatuses.includes(status as typeof validStatuses[number])) {
+        const message = `Invalid ticket status: ${status}`
+        setError(message)
+        onError?.(message)
+        return null
+      }
+      try {
+        const updated = await updateTicket(ticketId, {
+          status: status as typeof validStatuses[number],
+        })
+        setTickets((prev) => prev.map((t) => (t.id === ticketId ? updated : t)))
+        if (currentTicket?.id === ticketId) {
+          setCurrentTicket(updated)
+        }
+        return updated
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "Failed to update ticket"
+        setError(message)
+        onError?.(message)
+        return null
+      }
+    },
+    [currentTicket?.id, onError],
+  )
 
   const clearSelection = useCallback(() => {
     setCurrentTicket(null)

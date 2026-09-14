@@ -29,10 +29,13 @@ export interface OtpVerifyInput {
 export async function register(
   input: RegisterInput,
 ): Promise<{ user: SafeUser; accessToken: string }> {
-  const payload = await apiFetch<Record<string, unknown>>("/api/auth/register", {
-    method: "POST",
-    body: JSON.stringify(input),
-  })
+  const payload = await apiFetch<Record<string, unknown>>(
+    "/api/auth/register",
+    {
+      method: "POST",
+      body: JSON.stringify(input),
+    },
+  )
 
   const user = unwrapItem<SafeUser>(payload, "user")
   const accessToken = unwrapItem<string>(payload, "accessToken")
@@ -65,10 +68,13 @@ export async function login(
 export async function sendOtp(
   input: OtpSendInput,
 ): Promise<{ message: string; phone: string }> {
-  const payload = await apiFetch<Record<string, unknown>>("/api/auth/otp/request", {
-    method: "POST",
-    body: JSON.stringify(input),
-  })
+  const payload = await apiFetch<Record<string, unknown>>(
+    "/api/auth/otp/send",
+    {
+      method: "POST",
+      body: JSON.stringify(input),
+    },
+  )
 
   const message = unwrapItem<string>(payload, "message")
   const phone = unwrapItem<string>(payload, "phone")
@@ -83,10 +89,13 @@ export async function sendOtp(
 export async function verifyOtp(
   input: OtpVerifyInput,
 ): Promise<{ user: SafeUser; accessToken: string }> {
-  const payload = await apiFetch<Record<string, unknown>>("/api/auth/otp/verify", {
-    method: "POST",
-    body: JSON.stringify(input),
-  })
+  const payload = await apiFetch<Record<string, unknown>>(
+    "/api/auth/otp/verify",
+    {
+      method: "POST",
+      body: JSON.stringify(input),
+    },
+  )
 
   const user = unwrapItem<SafeUser>(payload, "user")
   const accessToken = unwrapItem<string>(payload, "accessToken")

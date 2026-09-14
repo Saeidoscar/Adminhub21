@@ -1,14 +1,15 @@
 import { useState, useEffect } from "react"
-import { t, type Lang } from "../i18n"
+import { t, type Lang, type Tr } from "../i18n"
 import { Icon } from "../components/layout/Icon"
 import { Stars } from "../components/platform/Stars"
 import { listVibeCoders, type VibeCoder } from "../lib/api"
 import { ListSkeleton } from "../components/ui/Skeleton"
 import { TOMAN_PER_MILLION } from "../lib/constants"
+import { resolvePhotoUrl } from "../lib/media"
 
 type Stack = "webApp" | "automation" | "bots" | "landing" | "frontend"
 
-const STACK_LABELS: Record<Stack, { en: string fa: string }> = {
+const STACK_LABELS: Record<Stack, { en: string; fa: string }> = {
   webApp: { en: "Web Apps", fa: "وب‌اپلیکیشن" },
   automation: { en: "Automation", fa: "اتوماسیون" },
   bots: { en: "Bots & Integrations", fa: "بات و اتصالات" },
@@ -16,13 +17,7 @@ const STACK_LABELS: Record<Stack, { en: string fa: string }> = {
   frontend: { en: "Frontend", fa: "فرانت‌اند" },
 }
 
-export default function VibeCodersPage({
-  tr,
-  lang,
-}: {
-  tr: typeof t["en"]
-  lang: Lang
-}) {
+export default function VibeCodersPage({ tr, lang }: { tr: Tr; lang: Lang }) {
   const [coders, setCoders] = useState<VibeCoder[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState("")
@@ -61,8 +56,12 @@ export default function VibeCodersPage({
     return matchSearch && matchStack
   })
 
-  const stackKey = (key: Stack) =>
-    isFa ? STACK_LABELS[key].fa : STACK_LABELS[key].en
+  const stackKey = (key: string) =>
+    !(key in STACK_LABELS)
+      ? key
+      : isFa
+        ? STACK_LABELS[(key as Stack)].fa
+        : STACK_LABELS[(key as Stack)].en
 
   return (
     <div className="p-6 lg:p-8 max-w-6xl mx-auto fade-in">
@@ -110,7 +109,7 @@ export default function VibeCodersPage({
             >
               <div className="flex items-start gap-3 mb-4">
                 <img
-                  src={`https://images.unsplash.com/${coder.photo}?w=64&h=64&fit=crop&auto=format`}
+                  src={resolvePhotoUrl(coder.photo, { width: 64, height: 64 })}
                   alt={isFa ? coder.nameFa : coder.nameEn}
                   className="w-14 h-14 rounded-2xl object-cover bg-[#f2f5fa] flex-shrink-0"
                 />

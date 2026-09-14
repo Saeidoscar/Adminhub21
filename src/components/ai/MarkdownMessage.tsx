@@ -12,7 +12,8 @@ export function MarkdownMessage({ content }: { content: string }) {
         rehypePlugins={[rehypeSanitize, rehypeHighlight]}
         components={{
           pre: ({ children }) => <>{children}</>,
-          code: CodeBlock,
+          // CodeBlock expects the react-markdown renderer props
+          code: CodeBlock as never,
         }}
       >
         {content}

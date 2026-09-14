@@ -1,10 +1,22 @@
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
-import { t, type Lang } from "../i18n"
+import { t, type Lang, type Tr } from "../i18n"
 import { Icon } from "../components/layout/Icon"
-import { createContract, listAdminProfiles, type AdminProfile } from "../lib/api"
-import { contractFormSchema, createDefaultContractForm, validateContractForm } from "../domain/contract/contractFormSchema"
+import {
+  createContract,
+  listAdminProfiles,
+  type AdminProfile,
+} from "../lib/api"
+import {
+  contractFormSchema,
+  createDefaultContractForm,
+  validateContractForm,
+} from "../domain/contract/contractFormSchema"
 import { computeContractAmounts } from "../domain/package"
+import {
+  buildContractPdfLines,
+  downloadContractPdf,
+} from "../domain/contract/generateContractPdf"
 import { ContractStepIndicator } from "../components/contracts/ContractStepIndicator"
 import { ContractReviewStep } from "../components/contracts/ContractReviewStep"
 import { TOMAN_PER_MILLION } from "../lib/constants"
@@ -23,7 +35,7 @@ export default function ContractGenerator({
   lang,
   initialContract,
 }: {
-  tr: typeof t["en"] & typeof t["fa"]
+  tr: Tr
   lang: Lang
   initialContract?: {
     id: string
@@ -50,6 +62,92 @@ export default function ContractGenerator({
   const [admins, setAdmins] = useState<AdminProfile[]>([])
   const [loadingAdmins, setLoadingAdmins] = useState(true)
   const [errors, setErrors] = useState<Record<string, string>>({})
+
+  const [step, setStep] = useState(1)
+  const totalSteps = 5
+  const [form, setForm] = useState(() =>
+    createDefaultContractForm(
+      lang,
+      tr.contract.termDefault,
+      tr.contract.subDefault,
+    ),
+  )
+
+  useEffect(() => {
+    let cancelled = false
+    async function loadAdmins() {
+      setLoadingAdmins(true)
+      try {
+        const data = await listAdminProfiles()
+        if (!cancelled) {
+          setAdmins(data)
+          if (data.length > 0 && !form.adminId) {
+            setForm((f) => ({ ...f, adminId: data[0].id }))
+          }
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setAdmins([])
+          console.error("Failed to load admins", err)
+        }
+      } finally {
+        if (!cancelled) {
+          setLoadingAdmins(false)
+        }
+      }
+    }
+    void loadAdmins()
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  const setF = (k: string, v: string | boolean) =>
+    setForm((f) => ({ ...f, [k]: v }))
+  const steps = [
+    tr.contract.step1,
+    tr.contract.step2,
+    tr.contract.step3,
+    tr.contract.step4,
+    tr.contract.step5,
+  ]
+
+  const handleSubmit = async () => {
+    setSubmitting(true)
+    setError(null)
+    setErrors({})
+    const fieldErrors = validateContractForm(form)
+    if (Object.keys(fieldErrors).length > 0) {
+      setErrors(fieldErrors)
+      setSubmitting(false)
+      return
+    }
+
+    try {
+      const { amountToman, amountUSD } = computeContractAmounts(
+        form.amount,
+        form.currency as "toman" | "usd",
+      )
+      await createContract({
+        adminId: form.adminId,
+        platform: form.platform,
+        amountToman,
+        amountUSD,
+        hasInsurance: form.hasInsurance,
+        hasSubstitute: form.hasSubstitute,
+        termClause: form.termClause,
+        substituteClause: form.subClause,
+        startDate: form.startDate || undefined,
+        endDate: form.endDate || undefined,
+      })
+      setSuccess(true)
+      setTimeout(() => navigate("/contracts"), 1500)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to create contract")
+    } finally {
+      setSubmitting(false)
+    }
+  }
 
   if (initialContract) {
     return (
@@ -115,16 +213,24 @@ export default function ContractGenerator({
               <div className="text-xs text-[#64748b] mb-1">Insurance</div>
               <div className="text-sm font-semibold text-[#0f172a]">
                 {initialContract.hasInsurance
-                  ? lang === "fa" ? "بله" : "Yes"
-                  : lang === "fa" ? "خیر" : "No"}
+                  ? lang === "fa"
+                    ? "بله"
+                    : "Yes"
+                  : lang === "fa"
+                    ? "خیر"
+                    : "No"}
               </div>
             </div>
             <div>
               <div className="text-xs text-[#64748b] mb-1">Substitute</div>
               <div className="text-sm font-semibold text-[#0f172a]">
                 {initialContract.hasSubstitute
-                  ? lang === "fa" ? "بله" : "Yes"
-                  : lang === "fa" ? "خیر" : "No"}
+                  ? lang === "fa"
+                    ? "بله"
+                    : "Yes"
+                  : lang === "fa"
+                    ? "خیر"
+                    : "No"}
               </div>
             </div>
             {initialContract.startDate && (
@@ -169,7 +275,7 @@ export default function ContractGenerator({
 
           <div className="flex gap-3 mt-6">
             <button
-              onClick={() => navigate("/contracts/history")}
+              onClick={() => navigate("/contracts")}
               className="px-5 py-2.5 rounded-xl bg-[#1e3a5f] text-white text-sm font-bold hover:bg-[#122435] transition-colors btn-press"
             >
               {lang === "fa" ? "مشاهده همه قراردادها" : "View All Contracts"}
@@ -186,84 +292,6 @@ export default function ContractGenerator({
     )
   }
 
-  const [step, setStep] = useState(1)
-  const totalSteps = 5
-  const [form, setForm] = useState(() =>
-    createDefaultContractForm(lang, tr.contract.termDefault, tr.contract.subDefault),
-  )
-
-  useEffect(() => {
-    let cancelled = false
-    async function loadAdmins() {
-      setLoadingAdmins(true)
-      try {
-        const data = await listAdminProfiles()
-        if (!cancelled) {
-          setAdmins(data)
-          if (data.length > 0 && !form.adminId) {
-            setForm((f) => ({ ...f, adminId: data[0].id }))
-          }
-        }
-      } catch (err) {
-        if (!cancelled) {
-          setAdmins([])
-          console.error("Failed to load admins", err)
-        }
-      } finally {
-        if (!cancelled) {
-          setLoadingAdmins(false)
-        }
-      }
-    }
-    void loadAdmins()
-    return () => {
-      cancelled = true
-    }
-  }, [])
-
-  const setF = (k: string, v: string | boolean) => setForm((f) => ({ ...f, [k]: v }))
-  const steps = [
-    tr.contract.step1,
-    tr.contract.step2,
-    tr.contract.step3,
-    tr.contract.step4,
-    tr.contract.step5,
-  ]
-
-  const handleSubmit = async () => {
-    setSubmitting(true)
-    setError(null)
-    setErrors({})
-    const fieldErrors = validateContractForm(form)
-    if (Object.keys(fieldErrors).length > 0) {
-      setErrors(fieldErrors)
-      setSubmitting(false)
-      return
-    }
-
-    try {
-      const { amountToman, amountUSD } = computeContractAmounts(form.amount, form.currency as "toman" | "usd")
-      await createContract({
-        adminId: form.adminId,
-        platform: form.platform,
-        amountToman,
-        amountUSD,
-        hasInsurance: form.hasInsurance,
-        hasSubstitute: form.hasSubstitute,
-        termClause: form.termClause,
-        substituteClause: form.subClause,
-        startDate: form.startDate || undefined,
-        endDate: form.endDate || undefined,
-      })
-      setSuccess(true)
-      setTimeout(() => navigate("/contracts/history"), 1500)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to create contract")
-    } finally {
-      setSubmitting(false)
-    }
-  }
-
   if (success) {
     return (
       <div className="p-6 lg:p-8 max-w-3xl mx-auto fade-in">
@@ -273,7 +301,9 @@ export default function ContractGenerator({
             {lang === "fa" ? "قرارداد با موفقیت ایجاد شد" : "Contract Created"}
           </div>
           <div className="text-sm text-[#64748b]">
-            {lang === "fa" ? "در حال انتقال به لیست قراردادها..." : "Redirecting to contracts..."}
+            {lang === "fa"
+              ? "در حال انتقال به لیست قراردادها..."
+              : "Redirecting to contracts..."}
           </div>
         </div>
       </div>
@@ -289,7 +319,11 @@ export default function ContractGenerator({
         <p className="text-[#64748b] mt-1">{tr.contract.sub}</p>
       </div>
 
-      <ContractStepIndicator step={step} totalSteps={totalSteps} steps={steps} />
+      <ContractStepIndicator
+        step={step}
+        totalSteps={totalSteps}
+        steps={steps}
+      />
 
       <div className="bg-white rounded-2xl border border-[#e2e8f0] p-6 mb-6">
         {step === 1 && (
@@ -308,7 +342,9 @@ export default function ContractGenerator({
                   className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all"
                 />
                 {errors.employerName && (
-                  <p className="text-xs text-rose-600 mt-1">{errors.employerName}</p>
+                  <p className="text-xs text-rose-600 mt-1">
+                    {errors.employerName}
+                  </p>
                 )}
               </div>
               <div>
@@ -372,7 +408,9 @@ export default function ContractGenerator({
                 className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all"
               />
               {errors.projectTitle && (
-                <p className="text-xs text-rose-600 mt-1">{errors.projectTitle}</p>
+                <p className="text-xs text-rose-600 mt-1">
+                  {errors.projectTitle}
+                </p>
               )}
             </div>
             <div className="grid sm:grid-cols-2 gap-4">
@@ -413,7 +451,9 @@ export default function ContractGenerator({
                 className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all resize-none"
               />
               {errors.description && (
-                <p className="text-xs text-rose-600 mt-1">{errors.description}</p>
+                <p className="text-xs text-rose-600 mt-1">
+                  {errors.description}
+                </p>
               )}
             </div>
             <div>
@@ -581,19 +621,19 @@ export default function ContractGenerator({
               const admin = admins.find((a) => a.id === form.adminId)
               const lines = buildContractPdfLines({
                 employerName: form.employerName,
-                employerCo: form.employerCo,
+                employerCo: form.employerCo ?? "",
                 adminNameEn: admin?.nameEn || form.adminId,
                 platform: form.platform,
                 projectTitle: form.projectTitle,
-                startDate: form.startDate,
-                endDate: form.endDate,
+                startDate: form.startDate ?? "",
+                endDate: form.endDate ?? "",
                 amount: form.amount,
                 currency: form.currency,
                 paySchedule: form.paySchedule,
                 description: form.description,
                 deliverables: form.deliverables,
-                termClause: form.termClause,
-                subClause: form.subClause,
+                termClause: form.termClause ?? "",
+                subClause: form.subClause ?? "",
                 hasInsurance: form.hasInsurance,
                 hasSubstitute: form.hasSubstitute,
               })
@@ -601,7 +641,7 @@ export default function ContractGenerator({
             }}
             onSubmit={handleSubmit}
             submitting={submitting}
-            onViewContracts={() => navigate("/contracts/history")}
+            onViewContracts={() => navigate("/contracts")}
           />
         )}
       </div>
@@ -628,4 +668,3 @@ export default function ContractGenerator({
     </div>
   )
 }
-

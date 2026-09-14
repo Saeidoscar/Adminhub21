@@ -30,7 +30,7 @@ export async function listAdminProfiles(
   const queryString = params.toString()
 
   const payload = await apiFetch<Record<string, unknown>>(
-    `/api/profiles${queryString ? `?${queryString}` : ""}`,
+    `/api/admin-profiles${queryString ? `?${queryString}` : ""}`,
   )
 
   return unwrapList<AdminProfile>(payload, "profiles")
@@ -40,10 +40,14 @@ export async function getAdminProfile(
   id: string,
 ): Promise<AdminProfile | null> {
   const payload = await apiFetch<Record<string, unknown>>(
-    `/api/profiles/${id}`,
+    `/api/admin-profiles/${id}`,
   )
 
-  return unwrapItem<AdminProfile>(payload, "profile")
+  const profile = unwrapItem<AdminProfile>(payload, "profile")
+  if (!profile) {
+    throw new Error("Update profile response was empty")
+  }
+  return profile
 }
 
 export interface UpdateAdminProfileInput {
@@ -61,12 +65,16 @@ export async function updateAdminProfile(
   data: UpdateAdminProfileInput,
 ): Promise<AdminProfile> {
   const payload = await apiFetch<Record<string, unknown>>(
-    `/api/profile/me`,
+    `/api/admin-profiles/me`,
     {
       method: "PUT",
       body: JSON.stringify(data),
     },
   )
 
-  return unwrapItem<AdminProfile>(payload, "profile")
+  const profile = unwrapItem<AdminProfile>(payload, "profile")
+  if (!profile) {
+    throw new Error("Update profile response was empty")
+  }
+  return profile
 }

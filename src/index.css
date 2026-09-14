@@ -17,8 +17,8 @@
   --color-border: #e2e8f0;
   --color-text: #0f172a;
   --color-muted: #64748b;
-  --font-en: 'Plus Jakarta Sans', system-ui, sans-serif;
-  --font-fa: 'Vazirmatn', system-ui, sans-serif;
+  --font-en: 'Plus Jakarta Sans', 'Segoe UI', system-ui, sans-serif;
+  --font-fa: 'Vazirmatn', 'Tahoma', 'Segoe UI', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 }
 
@@ -88,7 +88,8 @@ input, textarea, select {
 }
 
 input:focus, textarea:focus, select:focus {
-  ring-color: #1e3a5f;
+  outline: 2px solid var(--color-navy);
+  outline-offset: 1px;
 }
 
 .nav-item {
@@ -123,7 +124,7 @@ input:focus, textarea:focus, select:focus {
   background: #1e3a5f;
 }
 
-.verified-glow {
+.verified-glow, [class~="verified-glow"] {
   box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25);
 }
 
@@ -140,3 +141,89 @@ input:focus, textarea:focus, select:focus {
 
 .max-w-full { max-width: 100%; }
 .overflow-x-auto { overflow-x: auto; }
+
+/* ── Dark theme ─────────────────────────────────────────────────────────────
+   Most pages were authored with hard-coded hex utilities (bg-white, text-[#0f172a],
+   border-[#e2e8f0], …). These overrides remap that fixed palette when the app
+   switches to dark, so no per-component `dark:` variants are needed. */
+[data-theme='dark'] {
+  color-scheme: dark;
+  background: #0b1020;
+}
+
+[data-theme='dark'] body { background: #0b1020; color: #eef2ff; }
+
+[data-theme='dark'] .bg-white,
+[data-theme='dark'] .bg-\[\#ffffff\],
+[data-theme='dark'] .bg-\[\#f8fafc\],
+[data-theme='dark'] .bg-\[\#f2f5fa\],
+[data-theme='dark'] .bg-gray-50,
+[data-theme='dark'] .bg-slate-50,
+[data-theme='dark'] .bg-sky-50,
+[data-theme='dark'] .bg-emerald-50,
+[data-theme='dark'] .bg-amber-50,
+[data-theme='dark'] .bg-rose-50,
+[data-theme='dark'] .bg-red-50,
+[data-theme='dark'] .bg-orange-50,
+[data-theme='dark'] .bg-purple-50,
+[data-theme='dark'] .bg-indigo-50,
+[data-theme='dark'] .bg-blue-50,
+[data-theme='dark'] .bg-teal-50,
+[data-theme='dark'] .bg-gray-100,
+[data-theme='dark'] .bg-slate-100 {
+  background-color: #11182b !important;
+}
+
+[data-theme='dark'] .hover\:bg-\[\#f2f5fa\]:hover,
+[data-theme='dark'] .hover\:bg-\[\#f8fafc\]:hover,
+[data-theme='dark'] .hover\:bg-gray-50:hover,
+[data-theme='dark'] .hover\:bg-white\/10:hover {
+  background-color: #1a2438 !important;
+}
+
+[data-theme='dark'] .border-\[\#e2e8f0\],
+[data-theme='dark'] .border-gray-200,
+[data-theme='dark'] .border-slate-200,
+[data-theme='dark'] .border-gray-100,
+[data-theme='dark'] .border-white\/10 {
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+[data-theme='dark'] .divide-\[\#e2e8f0\] > * + *,
+[data-theme='dark'] .divide-gray-100 > * + *,
+[data-theme='dark'] .divide-gray-200 > * + * {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-theme='dark'] .text-\[\#0f172a\],
+[data-theme='dark'] .text-\[\#1e3a5f\],
+[data-theme='dark'] .text-\[\#334155\],
+[data-theme='dark'] .text-\[\#475569\],
+[data-theme='dark'] .text-slate-900,
+[data-theme='dark'] .text-gray-900,
+[data-theme='dark'] .text-gray-800,
+[data-theme='dark'] .text-gray-700 {
+  color: #eef2ff !important;
+}
+
+[data-theme='dark'] .text-\[\#64748b\],
+[data-theme='dark'] .text-\[\#94a3b8\],
+[data-theme='dark'] .text-slate-500,
+[data-theme='dark'] .text-gray-500,
+[data-theme='dark'] .text-gray-400 {
+  color: #9aa6c4 !important;
+}
+
+[data-theme='dark'] input,
+[data-theme='dark'] textarea,
+[data-theme='dark'] select {
+  background-color: #0f1626 !important;
+  color: #eef2ff !important;
+}
+
+[data-theme='dark'] input::placeholder,
+[data-theme='dark'] textarea::placeholder {
+  color: #64748b !important;
+}
+
+[data-theme='dark'] ::-webkit-scrollbar-thumb { background: #334155; }

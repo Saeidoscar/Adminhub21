@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react"
-import { t, type Lang } from "../i18n"
+import { useDebouncedValue } from "../hooks/useDebouncedValue"
+import { t, type Lang, type Tr } from "../i18n"
 import { Icon } from "../components/layout/Icon"
 import { Button } from "../components/ui/Button"
 import { Input } from "../components/ui/Input"
@@ -10,7 +11,11 @@ import {
   deleteAdminUser,
   type AdminUserRow,
 } from "../lib/api"
-import { Skeleton, UserCardSkeleton, ListSkeleton } from "../components/ui/Skeleton"
+import {
+  Skeleton,
+  UserCardSkeleton,
+  ListSkeleton,
+} from "../components/ui/Skeleton"
 import { adminUserSchema, type AdminUserInput } from "../lib/validation"
 
 const ROLE_COLORS: Record<string, string> = {
@@ -19,13 +24,7 @@ const ROLE_COLORS: Record<string, string> = {
   super_admin: "bg-purple-100 text-purple-700",
 }
 
-export default function AdminUsersPage({
-  tr,
-  lang,
-}: {
-  tr: typeof t["en"] & typeof t["fa"]
-  lang: Lang
-}) {
+export default function AdminUsersPage({ tr, lang }: { tr: Tr; lang: Lang }) {
   const isFa = lang === "fa"
   const [users, setUsers] = useState<AdminUserRow[]>([])
   const [loading, setLoading] = useState(true)
@@ -42,12 +41,14 @@ export default function AdminUsersPage({
   const [error, setError] = useState<string | null>(null)
   const [errors, setErrors] = useState<Record<string, string>>({})
 
+  const debouncedSearch = useDebouncedValue(search)
+
   const loadUsers = useCallback(async () => {
     setLoading(true)
     setError(null)
     try {
       const data = await listAdminUsers({
-        search: search.trim() || undefined,
+        search: debouncedSearch.trim() || undefined,
         role: roleFilter || undefined,
       })
       setUsers(data)
@@ -56,7 +57,7 @@ export default function AdminUsersPage({
     } finally {
       setLoading(false)
     }
-  }, [search, roleFilter])
+  }, [debouncedSearch, roleFilter])
 
   useEffect(() => {
     void loadUsers()

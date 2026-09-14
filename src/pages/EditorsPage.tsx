@@ -1,27 +1,22 @@
 import { useState, useEffect } from "react"
-import { t, type Lang } from "../i18n"
+import { t, type Lang, type Tr } from "../i18n"
 import { Icon } from "../components/layout/Icon"
 import { Stars } from "../components/platform/Stars"
 import { listEditors, type Editor } from "../lib/api"
 import { ListSkeleton } from "../components/ui/Skeleton"
 import { TOMAN_PER_MILLION } from "../lib/constants"
+import { resolvePhotoUrl } from "../lib/media"
 
 type Specialty = "video" | "photo" | "motion" | "thumbnail"
 
-const SPECIALTY_LABELS: Record<Specialty, { en: string fa: string }> = {
+const SPECIALTY_LABELS: Record<Specialty, { en: string; fa: string }> = {
   video: { en: "Video Editing", fa: "ادیت ویدئو" },
   photo: { en: "Photo Editing", fa: "ادیت عکس" },
   motion: { en: "Motion Graphics", fa: "موشن گرافیک" },
   thumbnail: { en: "Thumbnails", fa: "تامبنیل" },
 }
 
-export default function EditorsPage({
-  tr,
-  lang,
-}: {
-  tr: typeof t["en"]
-  lang: Lang
-}) {
+export default function EditorsPage({ tr, lang }: { tr: Tr; lang: Lang }) {
   const [editors, setEditors] = useState<Editor[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState("")
@@ -60,8 +55,12 @@ export default function EditorsPage({
     return matchSearch && matchSpecialty
   })
 
-  const specialtyKey = (key: Specialty) =>
-    isFa ? SPECIALTY_LABELS[key].fa : SPECIALTY_LABELS[key].en
+  const specialtyKey = (key: string) =>
+    !(key in SPECIALTY_LABELS)
+      ? key
+      : isFa
+        ? SPECIALTY_LABELS[(key as Specialty)].fa
+        : SPECIALTY_LABELS[(key as Specialty)].en
 
   return (
     <div className="p-6 lg:p-8 max-w-6xl mx-auto fade-in">
@@ -109,7 +108,7 @@ export default function EditorsPage({
             >
               <div className="flex items-start gap-3 mb-4">
                 <img
-                  src={`https://images.unsplash.com/${editor.photo}?w=64&h=64&fit=crop&auto=format`}
+                  src={resolvePhotoUrl(editor.photo, { width: 64, height: 64 })}
                   alt={isFa ? editor.nameFa : editor.nameEn}
                   className="w-14 h-14 rounded-2xl object-cover bg-[#f2f5fa] flex-shrink-0"
                 />

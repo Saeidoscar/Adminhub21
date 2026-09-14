@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { t, type Lang } from "../i18n"
+import { t, type Lang, type Tr } from "../i18n"
 import { Icon } from "../components/layout/Icon"
 import { Button } from "../components/ui/Button"
 import { Input, Textarea, Select } from "../components/ui/Input"
@@ -16,7 +16,7 @@ import { PortfolioCardSkeleton, ListSkeleton } from "../components/ui/Skeleton"
 import { portfolioSchema, type PortfolioInput } from "../lib/validation"
 
 interface AdminPortfolioPageProps {
-  tr: typeof t["en"] & typeof t["fa"]
+  tr: Tr
   lang: Lang
 }
 
@@ -61,7 +61,7 @@ export default function AdminPortfolioPage({
       title: item.title,
       description: item.description,
       mediaUrl: item.mediaUrl,
-      mediaType: item.mediaType,
+      mediaType: item.mediaType as "image" | "video" | "link",
       tags: item.tags.join(", "),
     })
     setActiveTab("edit")
@@ -104,7 +104,9 @@ export default function AdminPortfolioPage({
       }
       resetForm()
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to save portfolio item")
+      setError(
+        err instanceof Error ? err.message : "Failed to save portfolio item",
+      )
     } finally {
       setSaving(false)
     }

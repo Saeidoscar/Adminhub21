@@ -6,10 +6,12 @@ interface NavItem {
   id: string
   icon: string
   label: string
+  /** Absolute route; falls back to "/<id>" when omitted. */
+  path?: string
 }
 
 interface SidebarProps {
-  role: "employer" | "admin"
+  role: "employer" | "admin" | "super_admin"
   onLogout: () => void
   mobile?: boolean
   onClose?: () => void
@@ -28,7 +30,7 @@ export function Sidebar({
   const location = useLocation()
   const currentPath = location.pathname
 
-  const defaultNavItems = [
+  const defaultNavItems: NavItem[] = [
     { id: "dashboard", icon: "dashboard", label: "Dashboard" },
     { id: "marketplace", icon: "marketplace", label: "Marketplace" },
     { id: "tools-rental", icon: "camera", label: "Tools Rental" },
@@ -72,16 +74,22 @@ export function Sidebar({
             name={role === "employer" ? "marketplace" : "profile"}
             size={11}
           />
-          {role === "employer" ? "Employer" : "Admin"}
+          {role === "employer"
+            ? "Employer"
+            : role === "super_admin"
+              ? "Super Admin"
+              : "Admin"}
         </span>
       </div>
 
       <nav className="flex-1 px-3 py-4 space-y-1">
         {items.map((item) => {
-          const to = `/${item.id === "dashboard" ? "" : item.id}`
+          const to = item.path ?? `/${item.id === "dashboard" ? "" : item.id}`
           const isActive =
             currentPath === to ||
-            (item.id === "dashboard" && currentPath === "/")
+            (item.id === "dashboard" &&
+              (currentPath === "/" || currentPath === "/dashboard")) ||
+            (to !== "/" && currentPath.startsWith(`${to}/`))
           return (
             <Link
               key={item.id}
@@ -116,7 +124,12 @@ export function Sidebar({
           className="nav-item w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium text-blue-300 hover:bg-white/10 hover:text-white transition-all"
         >
           <Icon name="logout" size={18} />
-          <span>Log Out</span>
+          <span>
+            {typeof document !== "undefined" &&
+            document.documentElement.lang === "fa"
+              ? "خروج"
+              : "Log Out"}
+          </span>
         </button>
       </div>
     </div>

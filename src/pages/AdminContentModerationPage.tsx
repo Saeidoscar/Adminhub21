@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react"
-import { t, type Lang } from "../i18n"
+import { useDebouncedValue } from "../hooks/useDebouncedValue"
+import { t, type Lang, type Tr } from "../i18n"
 import { Button } from "../components/ui/Button"
 import { Input, Select } from "../components/ui/Input"
 import {
@@ -36,9 +37,9 @@ const POST_TYPE_OPTIONS = [
 
 export default function AdminContentModerationPage({
   tr,
-  lang = "fa",
+  lang,
 }: {
-  tr: typeof t["en"] & typeof t["fa"]
+  tr: Tr
   lang: Lang
 }) {
   const isFa = lang === "fa"
@@ -51,6 +52,7 @@ export default function AdminContentModerationPage({
   const [statusFilter, setStatusFilter] = useState("")
   const [postTypeFilter, setPostTypeFilter] = useState("")
   const [error, setError] = useState("")
+  const debouncedSearch = useDebouncedValue(search)
 
   useEffect(() => {
     let cancelled = false
@@ -63,12 +65,12 @@ export default function AdminContentModerationPage({
         if (activeTab === "stories") {
           data = await listAdminStories({
             status: statusFilter || undefined,
-            search: search || undefined,
+            search: debouncedSearch || undefined,
           })
         } else if (activeTab === "blogs") {
           data = await listAdminBlogs({
             status: statusFilter || undefined,
-            search: search || undefined,
+            search: debouncedSearch || undefined,
           })
         } else {
           data = await listAdminComments({
@@ -94,31 +96,22 @@ export default function AdminContentModerationPage({
     return () => {
       cancelled = true
     }
-  }, [activeTab, search, statusFilter, postTypeFilter])
+  }, [activeTab, debouncedSearch, statusFilter, postTypeFilter])
 
   const handleModerate = async (
     id: string,
     action: "approve" | "reject" | "archive",
   ) => {
     try {
+      let updated: StoryRow | BlogRow
       if (activeTab === "stories") {
-        await moderateStoryAdmin(id, action)
+        updated = await moderateStoryAdmin(id, action)
       } else if (activeTab === "blogs") {
-        await moderateBlogAdmin(id, action)
+        updated = await moderateBlogAdmin(id, action)
+      } else {
+        return
       }
-      if (activeTab === "stories") {
-        const refreshed = await listAdminStories({
-          status: statusFilter || undefined,
-          search: search || undefined,
-        })
-        setItems(refreshed)
-      } else if (activeTab === "blogs") {
-        const refreshed = await listAdminBlogs({
-          status: statusFilter || undefined,
-          search: search || undefined,
-        })
-        setItems(refreshed)
-      }
+      setItems((prev) => prev.map((item) => (item.id === id ? updated : item)))
     } catch {
       setError(isFa ? "خطا در اعمال تغییرات" : "Error applying changes")
     }
@@ -339,9 +332,7 @@ export default function AdminContentModerationPage({
                   <div className="flex gap-2 flex-shrink-0">
                     <Button
                       size="sm"
-                      onClick={() =>
-                        handleModerate(storyBlog.id, "approve")
-                      }
+                      onClick={() => handleModerate(storyBlog.id, "approve")}
                     >
                       {tr.adminContent.approve}
                     </Button>
@@ -349,9 +340,7 @@ export default function AdminContentModerationPage({
                       <Button
                         variant="danger"
                         size="sm"
-                        onClick={() =>
-                          handleModerate(storyBlog.id, "reject")
-                        }
+                        onClick={() => handleModerate(storyBlog.id, "reject")}
                       >
                         {tr.adminContent.reject}
                       </Button>
@@ -360,9 +349,7 @@ export default function AdminContentModerationPage({
                       <Button
                         variant="secondary"
                         size="sm"
-                        onClick={() =>
-                          handleModerate(storyBlog.id, "archive")
-                        }
+                        onClick={() => handleModerate(storyBlog.id, "archive")}
                       >
                         {tr.adminContent.archive}
                       </Button>

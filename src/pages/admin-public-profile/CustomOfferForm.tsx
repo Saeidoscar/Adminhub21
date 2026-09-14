@@ -1,7 +1,14 @@
 import { useState } from "react"
-import { type AdminProfile, type Lang, type PlatformKey, type PlatformConfig, type CustomOffer } from "@adminhub/shared"
-import { t } from "../../i18n"
+import {
+  type AdminProfile,
+  type PlatformKey,
+  type PlatformConfig,
+  type CustomOffer,
+} from "@adminhub/shared"
+import { type Lang } from "../../i18n"
+import { t, type Tr } from "../../i18n"
 import { Icon } from "../../components/layout/Icon"
+import { platformLabel } from "../../components/packages/platformSpecs"
 import { Input, Textarea, Select } from "../../components/ui/Input"
 import { Button } from "../../components/ui/Button"
 import {
@@ -19,7 +26,7 @@ export function CustomOfferForm({
 }: {
   admin: AdminProfile
   lang: Lang
-  tr: typeof t["en"] & typeof t["fa"]
+  tr: Tr
   onSubmit: (offer: Omit<CustomOffer, "id" | "createdAt">) => Promise<void>
   offerSent: boolean
 }) {

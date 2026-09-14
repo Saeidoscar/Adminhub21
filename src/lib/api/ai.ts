@@ -1,4 +1,8 @@
-import type { AiConversationRow, AiMessageRow, AiModelRow } from "@adminhub/shared"
+import type {
+  AiConversationRow,
+  AiMessageRow,
+  AiModelRow,
+} from "@adminhub/shared"
 import { apiFetch, unwrapList, unwrapItem } from "./core"
 
 export type { AiConversationRow, AiMessageRow, AiModelRow }
@@ -9,13 +13,15 @@ export interface CreateConversationInput {
 }
 
 export async function listModels(): Promise<AiModelRow[]> {
-  const payload = await apiFetch<Record<string, unknown>>("/ai/models")
+  const payload = await apiFetch<Record<string, unknown>>("/api/ai/models")
 
   return unwrapList<AiModelRow>(payload, "models")
 }
 
 export async function listConversations(): Promise<AiConversationRow[]> {
-  const payload = await apiFetch<Record<string, unknown>>("/ai/conversations")
+  const payload = await apiFetch<Record<string, unknown>>(
+    "/api/ai/conversations",
+  )
 
   return unwrapList<AiConversationRow>(payload, "conversations")
 }
@@ -24,7 +30,7 @@ export async function getConversation(
   id: string,
 ): Promise<AiConversationRow | null> {
   const payload = await apiFetch<Record<string, unknown>>(
-    `/ai/conversations/${id}`,
+    `/api/ai/conversations/${id}`,
   )
 
   return unwrapItem<AiConversationRow>(payload, "conversation")
@@ -33,11 +39,14 @@ export async function getConversation(
 export async function createConversation(
   input: CreateConversationInput,
 ): Promise<AiConversationRow> {
-  const payload = await apiFetch<Record<string, unknown>>("/ai/conversations", {
-    method: "POST",
+  const payload = await apiFetch<Record<string, unknown>>(
+    "/api/ai/conversations",
+    {
+      method: "POST",
 
-    body: JSON.stringify(input),
-  })
+      body: JSON.stringify(input),
+    },
+  )
 
   const conversation = unwrapItem<AiConversationRow>(payload, "conversation")
 
@@ -52,7 +61,7 @@ export async function listMessages(
   conversationId: string,
 ): Promise<AiMessageRow[]> {
   const payload = await apiFetch<Record<string, unknown>>(
-    `/ai/conversations/${conversationId}/messages`,
+    `/api/ai/conversations/${conversationId}/messages`,
   )
 
   return unwrapList<AiMessageRow>(payload, "messages")
@@ -63,7 +72,7 @@ export async function sendMessage(
   content: string,
 ): Promise<AiMessageRow> {
   const payload = await apiFetch<Record<string, unknown>>(
-    `/ai/conversations/${conversationId}/messages`,
+    `/api/ai/conversations/${conversationId}/messages`,
     {
       method: "POST",
 
@@ -85,7 +94,7 @@ export async function switchModel(
   modelId: string,
 ): Promise<AiConversationRow> {
   const payload = await apiFetch<Record<string, unknown>>(
-    `/ai/conversations/${conversationId}/model`,
+    `/api/ai/conversations/${conversationId}/model`,
     {
       method: "PATCH",
 
@@ -107,7 +116,7 @@ export async function renameConversation(
   title: string,
 ): Promise<AiConversationRow> {
   const payload = await apiFetch<Record<string, unknown>>(
-    `/ai/conversations/${id}`,
+    `/api/ai/conversations/${id}`,
     {
       method: "PATCH",
       body: JSON.stringify({ title }),
@@ -124,7 +133,7 @@ export async function renameConversation(
 }
 
 export async function deleteConversation(id: string): Promise<void> {
-  await apiFetch<Record<string, unknown>>(`/ai/conversations/${id}`, {
+  await apiFetch<Record<string, unknown>>(`/api/ai/conversations/${id}`, {
     method: "DELETE",
   })
 }

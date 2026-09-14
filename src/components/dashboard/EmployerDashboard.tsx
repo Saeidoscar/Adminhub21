@@ -1,9 +1,13 @@
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
-import { t, type Lang } from "../../i18n"
+import { t, type Lang, type Tr } from "../../i18n"
 import { Icon } from "../../components/layout/Icon"
 import { Badge } from "../../components/ui/Badge"
-import { StatCardSkeleton, TableRowSkeleton, Skeleton } from "../../components/ui/Skeleton"
+import {
+  StatCardSkeleton,
+  TableRowSkeleton,
+  Skeleton,
+} from "../../components/ui/Skeleton"
 import {
   listContracts,
   getWallet,
@@ -25,8 +29,8 @@ const PLATFORM_LABELS: Record<string, string> = {
 
 interface EmployerDashboardProps {
   lang: Lang
-  tr: typeof t["en"] & typeof t["fa"]
-  role: "employer" | "admin"
+  tr: Tr
+  role: "employer" | "admin" | "super_admin"
 }
 
 export default function EmployerDashboard({
@@ -46,7 +50,7 @@ export default function EmployerDashboard({
       ? `${(toman / TOMAN_PER_MILLION).toFixed(1)}M ${tr.common.toman}`
       : `$${usd}`
 
-  const userName = lang === "fa" ? (user?.nameFa || "علی") : (user?.nameEn || "Ali")
+  const userName = lang === "fa" ? user?.nameFa || "علی" : user?.nameEn || "Ali"
 
   useEffect(() => {
     let cancelled = false
@@ -235,7 +239,11 @@ export default function EmployerDashboard({
                                 : "bg-red-100 text-red-700"
                         }`}
                       >
-                        {tr.dash.status[(c.status as keyof typeof tr.dash.status)]}
+                        {
+                          tr.dash.status[
+                            (c.status as keyof typeof tr.dash.status)
+                          ]
+                        }
                       </span>
                     </div>
                   </div>
@@ -295,9 +303,21 @@ export default function EmployerDashboard({
               </h3>
               <div className="space-y-2">
                 {[
-                  { label: tr.dash.findAdmin, icon: "search", action: () => navigate("/marketplace") },
-                  { label: tr.dash.newContract, icon: "contracts", action: () => navigate("/contracts") },
-                  { label: tr.dash.manageInsurance, icon: "shield", action: () => {} },
+                  {
+                    label: tr.dash.findAdmin,
+                    icon: "search",
+                    action: () => navigate("/marketplace"),
+                  },
+                  {
+                    label: tr.dash.newContract,
+                    icon: "contracts",
+                    action: () => navigate("/contracts"),
+                  },
+                  {
+                    label: tr.dash.manageInsurance,
+                    icon: "shield",
+                    action: () => {},
+                  },
                 ].map((a) => (
                   <button
                     key={a.label}

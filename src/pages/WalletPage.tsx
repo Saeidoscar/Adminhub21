@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
-import { t, type Lang } from "../i18n"
+import { type Lang, type Tr } from "../i18n"
 import { Icon } from "../components/layout/Icon"
 import { Button } from "../components/ui/Button"
 import { Input } from "../components/ui/Input"
@@ -8,6 +8,8 @@ import {
   getWallet,
   listTransactions,
   createTransaction,
+  type WalletRow,
+  type WalletTransactionRow,
 } from "../lib/api"
 import { TOMAN_PER_MILLION } from "../lib/constants"
 
@@ -35,9 +37,8 @@ const TRANSACTION_STATUS_CLASSES: Record<string, string> = {
   cancelled: "bg-gray-100 text-gray-600",
 }
 
-export default function WalletPage() {
+export default function WalletPage({ tr, lang }: { tr: Tr; lang: Lang }) {
   const navigate = useNavigate()
-  const [lang, setLang] = useState<Lang>("fa")
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [wallet, setWallet] = useState<WalletRow | null>(null)
@@ -52,7 +53,6 @@ export default function WalletPage() {
   const [success, setSuccess] = useState<string | null>(null)
 
   const isFa = lang === "fa"
-  const tr = t[lang]
 
   const fetchData = async () => {
     setLoading(true)
@@ -62,7 +62,9 @@ export default function WalletPage() {
       setWallet(w)
       setTransactions(txs)
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load wallet data")
+      setError(
+        err instanceof Error ? err.message : "Failed to load wallet data",
+      )
     } finally {
       setLoading(false)
     }
@@ -132,7 +134,9 @@ export default function WalletPage() {
       )}
 
       {loading ? (
-        <div className="text-center py-12 text-[#64748b]">{tr.common.loading}</div>
+        <div className="text-center py-12 text-[#64748b]">
+          {tr.common.loading}
+        </div>
       ) : (
         <>
           {/* Balance Cards */}
@@ -142,7 +146,10 @@ export default function WalletPage() {
                 {tr.common.toman} {tr.dash.balance}
               </div>
               <div className="text-3xl font-bold">
-                {wallet ? (wallet.balanceToman / TOMAN_PER_MILLION).toFixed(1) : "0"}M
+                {wallet
+                  ? (wallet.balanceToman / TOMAN_PER_MILLION).toFixed(1)
+                  : "0"}
+                M
               </div>
             </div>
             <div className="bg-gradient-to-br from-emerald-600 to-emerald-800 rounded-2xl p-6 text-white">
@@ -157,12 +164,20 @@ export default function WalletPage() {
 
           {/* Actions */}
           <div className="flex gap-3 mb-6">
-            <Button onClick={() => { setTxType("deposit"); setShowForm(true) }}>
+            <Button
+              onClick={() => {
+                setTxType("deposit")
+                setShowForm(true)
+              }}
+            >
               <Icon name="plus" size={14} /> {tr.dash.deposit}
             </Button>
             <Button
               variant="secondary"
-              onClick={() => { setTxType("withdraw"); setShowForm(true) }}
+              onClick={() => {
+                setTxType("withdraw")
+                setShowForm(true)
+              }}
             >
               <Icon name="arrowUp" size={14} /> {tr.dash.withdraw}
             </Button>
@@ -172,7 +187,9 @@ export default function WalletPage() {
           {showForm && (
             <div className="bg-white rounded-2xl border border-[#e2e8f0] p-6 mb-6 fade-in">
               <h2 className="font-bold text-[#0f172a] text-lg mb-4">
-                {txType === "deposit" ? tr.dash.makeDeposit : tr.dash.makeWithdrawal}
+                {txType === "deposit"
+                  ? tr.dash.makeDeposit
+                  : tr.dash.makeWithdrawal}
               </h2>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid sm:grid-cols-2 gap-4">
@@ -223,8 +240,15 @@ export default function WalletPage() {
                   />
                 </div>
                 <div className="flex gap-3 pt-2">
-                  <Button type="submit" disabled={submitting || (!amountToman && !amountUSD)}>
-                    {submitting ? tr.common.loading : (isFa ? "ثبت تراکنش" : "Submit Transaction")}
+                  <Button
+                    type="submit"
+                    disabled={submitting || (!amountToman && !amountUSD)}
+                  >
+                    {submitting
+                      ? tr.common.loading
+                      : isFa
+                        ? "ثبت تراکنش"
+                        : "Submit Transaction"}
                   </Button>
                   <Button
                     type="button"
@@ -283,10 +307,13 @@ export default function WalletPage() {
                         </span>
                         <span
                           className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
-                            TRANSACTION_STATUS_CLASSES[tx.status] || "bg-gray-100 text-gray-600"
+                            TRANSACTION_STATUS_CLASSES[tx.status] ||
+                            "bg-gray-100 text-gray-600"
                           }`}
                         >
-                          {tr.dash.status[tx.status as keyof typeof tr.dash.status] || tx.status}
+                          {tr.dash.status[
+                            (tx.status as keyof typeof tr.dash.status)
+                          ] || tx.status}
                         </span>
                       </div>
                       {tx.note && (
@@ -311,7 +338,9 @@ export default function WalletPage() {
                           : `$${tx.amountUSD}`}
                       </div>
                       <div className="text-xs text-[#94a3b8]">
-                        {new Date(tx.createdAt).toLocaleDateString(isFa ? "fa-IR" : "en-US")}
+                        {new Date(tx.createdAt).toLocaleDateString(
+                          isFa ? "fa-IR" : "en-US",
+                        )}
                       </div>
                     </div>
                   </div>

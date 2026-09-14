@@ -1,57 +1,15 @@
+import type { CaseRow, EventRow, TaskRow, TimeLogRow } from "@adminhub/shared"
 import { apiFetch, unwrapList, unwrapItem } from "./core"
 
-export interface CaseRow {
-  id: string
-  employerId: string
-  title: string
-  description: string
-  priority: string
-  status: string
-  tags: string[]
-  createdAt: string
-  updatedAt: string
-}
+export type { CaseRow, EventRow, TaskRow, TimeLogRow }
 
-export interface TaskRow {
-  id: string
-  caseId: string
-  title: string
-  description: string
-  assignedTo: string | null
-  status: string
-  priority: string
-  dueDate: string | null
-  createdAt: string
-  updatedAt: string
-}
-
-export interface EventRow {
-  id: string
-  title: string
-  description: string
-  startAt: string
-  endAt: string
-  allDay: boolean
-  color: string
-  createdAt: string
-  updatedAt: string
-}
-
-export interface TimeLogRow {
-  id: string
-  caseId: string | null
-  taskId: string | null
-  description: string
-  startedAt: string
-  endedAt: string
-  createdAt: string
-}
-
-export async function listAdminCases(query: {
-  status?: string
-  priority?: string
-  search?: string
-}): Promise<CaseRow[]> {
+export async function listAdminCases(
+  query: {
+    status?: string
+    priority?: string
+    search?: string
+  } = {},
+): Promise<CaseRow[]> {
   const params = new URLSearchParams()
   if (query.status) params.set("status", query.status)
   if (query.priority) params.set("priority", query.priority)
@@ -109,13 +67,13 @@ export async function updateAdminCase(
 
 export async function listAdminTasks(caseId: string): Promise<TaskRow[]> {
   const payload = await apiFetch<Record<string, unknown>>(
-    `/api/schedule/tasks?caseId=${encodeURIComponent(caseId)}`,
+    `/api/tasks/case/${encodeURIComponent(caseId)}`,
   )
   return unwrapList<TaskRow>(payload, "tasks")
 }
 
 export async function getAdminTask(id: string): Promise<TaskRow | null> {
-  const payload = await apiFetch<Record<string, unknown>>(`/api/schedule/tasks/${id}`)
+  const payload = await apiFetch<Record<string, unknown>>(`/api/tasks/${id}`)
   return unwrapItem<TaskRow>(payload, "task")
 }
 
@@ -128,7 +86,7 @@ export async function createAdminTask(data: {
   priority?: string
   dueDate?: string
 }): Promise<TaskRow> {
-  const payload = await apiFetch<Record<string, unknown>>("/api/schedule/tasks", {
+  const payload = await apiFetch<Record<string, unknown>>("/api/tasks", {
     method: "POST",
     body: JSON.stringify(data),
   })
@@ -150,7 +108,7 @@ export async function updateAdminTask(
     dueDate: string
   }>,
 ): Promise<TaskRow> {
-  const payload = await apiFetch<Record<string, unknown>>(`/api/schedule/tasks/${id}`, {
+  const payload = await apiFetch<Record<string, unknown>>(`/api/tasks/${id}`, {
     method: "PATCH",
     body: JSON.stringify(data),
   })
@@ -161,22 +119,24 @@ export async function updateAdminTask(
   return task
 }
 
-export async function listAdminEvents(query: {
-  from?: string
-  to?: string
-}): Promise<EventRow[]> {
+export async function listAdminEvents(
+  query: {
+    from?: string
+    to?: string
+  } = {},
+): Promise<EventRow[]> {
   const params = new URLSearchParams()
   if (query.from) params.set("from", query.from)
   if (query.to) params.set("to", query.to)
   const qs = params.toString()
   const payload = await apiFetch<Record<string, unknown>>(
-    `/api/schedule/events${qs ? `?${qs}` : ""}`,
+    `/api/events${qs ? `?${qs}` : ""}`,
   )
   return unwrapList<EventRow>(payload, "events")
 }
 
 export async function getAdminEvent(id: string): Promise<EventRow | null> {
-  const payload = await apiFetch<Record<string, unknown>>(`/api/schedule/events/${id}`)
+  const payload = await apiFetch<Record<string, unknown>>(`/api/events/${id}`)
   return unwrapItem<EventRow>(payload, "event")
 }
 
@@ -188,7 +148,7 @@ export async function createAdminEvent(data: {
   allDay?: boolean
   color?: string
 }): Promise<EventRow> {
-  const payload = await apiFetch<Record<string, unknown>>("/api/schedule/events", {
+  const payload = await apiFetch<Record<string, unknown>>("/api/events", {
     method: "POST",
     body: JSON.stringify(data),
   })
@@ -210,7 +170,7 @@ export async function updateAdminEvent(
     color: string
   }>,
 ): Promise<EventRow> {
-  const payload = await apiFetch<Record<string, unknown>>(`/api/schedule/events/${id}`, {
+  const payload = await apiFetch<Record<string, unknown>>(`/api/events/${id}`, {
     method: "PATCH",
     body: JSON.stringify(data),
   })
@@ -222,27 +182,31 @@ export async function updateAdminEvent(
 }
 
 export async function deleteAdminEvent(id: string): Promise<void> {
-  await apiFetch<Record<string, unknown>>(`/api/schedule/events/${id}`, {
+  await apiFetch<Record<string, unknown>>(`/api/events/${id}`, {
     method: "DELETE",
   })
 }
 
-export async function listAdminTimeLogs(query: {
-  caseId?: string
-  taskId?: string
-}): Promise<TimeLogRow[]> {
+export async function listAdminTimeLogs(
+  query: {
+    caseId?: string
+    taskId?: string
+  } = {},
+): Promise<TimeLogRow[]> {
   const params = new URLSearchParams()
   if (query.caseId) params.set("caseId", query.caseId)
   if (query.taskId) params.set("taskId", query.taskId)
   const qs = params.toString()
   const payload = await apiFetch<Record<string, unknown>>(
-    `/api/schedule/timelogs${qs ? `?${qs}` : ""}`,
+    `/api/time-logs${qs ? `?${qs}` : ""}`,
   )
   return unwrapList<TimeLogRow>(payload, "timeLogs")
 }
 
 export async function getAdminTimeLog(id: string): Promise<TimeLogRow | null> {
-  const payload = await apiFetch<Record<string, unknown>>(`/api/schedule/timelogs/${id}`)
+  const payload = await apiFetch<Record<string, unknown>>(
+    `/api/time-logs/${id}`,
+  )
   return unwrapItem<TimeLogRow>(payload, "timeLog")
 }
 
@@ -253,7 +217,7 @@ export async function createAdminTimeLog(data: {
   startedAt: string
   endedAt: string
 }): Promise<TimeLogRow> {
-  const payload = await apiFetch<Record<string, unknown>>("/api/schedule/timelogs", {
+  const payload = await apiFetch<Record<string, unknown>>("/api/time-logs", {
     method: "POST",
     body: JSON.stringify(data),
   })
@@ -262,4 +226,40 @@ export async function createAdminTimeLog(data: {
     throw new Error("Create time log response was empty")
   }
   return timeLog
+}
+
+export async function updateAdminTimeLog(
+  id: string,
+  data: Partial<{
+    caseId: string | null
+    taskId: string | null
+    description: string
+    startedAt: string
+    endedAt: string
+  }>,
+): Promise<TimeLogRow> {
+  const payload = await apiFetch<Record<string, unknown>>(
+    `/api/time-logs/${id}`,
+    {
+      method: "PATCH",
+      body: JSON.stringify(data),
+    },
+  )
+  const timeLog = unwrapItem<TimeLogRow>(payload, "timeLog")
+  if (!timeLog) {
+    throw new Error("Update time log response was empty")
+  }
+  return timeLog
+}
+
+export async function deleteAdminTimeLog(id: string): Promise<void> {
+  await apiFetch<Record<string, unknown>>(`/api/time-logs/${id}`, {
+    method: "DELETE",
+  })
+}
+
+export async function deleteAdminTask(id: string): Promise<void> {
+  await apiFetch<Record<string, unknown>>(`/api/tasks/${id}`, {
+    method: "DELETE",
+  })
 }

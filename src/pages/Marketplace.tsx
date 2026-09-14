@@ -1,11 +1,13 @@
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { t, type Lang } from "../i18n"
+import { t, type Lang, type Tr } from "../i18n"
 import { Icon } from "../components/layout/Icon"
 import { Badge } from "../components/ui/Badge"
 import { ListSkeleton } from "../components/ui/Skeleton"
+import { Stars } from "../components/platform/Stars"
 import { useMarketplace } from "../hooks/useMarketplace"
 import { formatAdminPrice } from "../domain/profile"
+import { resolvePhotoUrl } from "../lib/media"
 
 const PLATFORM_LABELS: Record<string, string> = {
   instagram: "Instagram",
@@ -18,14 +20,14 @@ const PLATFORM_LABELS: Record<string, string> = {
 
 interface MarketplaceProps {
   lang: Lang
-  tr: typeof t["en"] & typeof t["fa"]
+  tr: Tr
 }
 
 export default function Marketplace({ lang, tr }: MarketplaceProps) {
   const navigate = useNavigate()
   const [search, setSearch] = useState("")
   const [platform, setPlatform] = useState("all")
-  const [sortBy, setSortBy] = useState("rating")
+  const [sortBy, setSortBy] = useState<"rating" | "price">("rating")
   const [verifiedOnly, setVerifiedOnly] = useState(false)
   const isFa = lang === "fa"
 
@@ -40,7 +42,15 @@ export default function Marketplace({ lang, tr }: MarketplaceProps) {
     [search, platform, sortBy, verifiedOnly, lang],
   )
 
-  const { admins, filtered, loading, favorites, favLoading, toggleFavorite, isFavorite } = useMarketplace(filters)
+  const {
+    admins,
+    filtered,
+    loading,
+    favorites,
+    favLoading,
+    toggleFavorite,
+    isFavorite,
+  } = useMarketplace(filters)
 
   return (
     <div className="p-6 lg:p-8 max-w-6xl mx-auto fade-in">
@@ -83,7 +93,7 @@ export default function Marketplace({ lang, tr }: MarketplaceProps) {
         </select>
         <select
           value={sortBy}
-          onChange={(e) => setSortBy(e.target.value)}
+          onChange={(e) => setSortBy(e.target.value as "rating" | "price")}
           className="px-3 py-2.5 rounded-xl border border-[#e2e8f0] bg-white text-sm text-[#0f172a] focus:border-[#1e3a5f] transition-all"
         >
           <option value="rating">{tr.market.sortRating}</option>
@@ -117,7 +127,10 @@ export default function Marketplace({ lang, tr }: MarketplaceProps) {
                 {/* Header */}
                 <div className="flex items-start gap-3 mb-4">
                   <img
-                    src={`https://images.unsplash.com/${admin.photo}?w=64&h=64&fit=crop&auto=format`}
+                    src={resolvePhotoUrl(admin.photo, {
+                      width: 64,
+                      height: 64,
+                    })}
                     alt={admin.nameEn}
                     className="w-14 h-14 rounded-2xl object-cover bg-[#f2f5fa] flex-shrink-0"
                   />
@@ -135,7 +148,11 @@ export default function Marketplace({ lang, tr }: MarketplaceProps) {
                               ? "bg-rose-100 text-rose-500"
                               : "bg-[#f2f5fa] text-[#94a3b8] hover:text-rose-500"
                           }`}
-                          title={isFav ? tr.dash.removeFromFavorites : tr.dash.addToFavorites}
+                          title={
+                            isFav
+                              ? tr.dash.removeFromFavorites
+                              : tr.dash.addToFavorites
+                          }
                         >
                           <Icon
                             name="heart"

@@ -1,6 +1,6 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
-import { t, type Lang } from "../i18n"
+import { t, type Lang, type Tr } from "../i18n"
 import { Icon } from "../components/layout/Icon"
 import { Badge } from "../components/ui/Badge"
 import { ListSkeleton } from "../components/ui/Skeleton"
@@ -42,13 +42,7 @@ const STATUS_LABELS: Record<string, { en: string; fa: string }> = {
   closed: { en: "Closed", fa: "بسته شده" },
 }
 
-export default function TicketsPage({
-  tr,
-  lang,
-}: {
-  tr: typeof t["en"]
-  lang: Lang
-}) {
+export default function TicketsPage({ tr, lang }: { tr: Tr; lang: Lang }) {
   const { ticketId } = useParams()
   const navigate = useNavigate()
   const isFa = lang === "fa"
@@ -74,9 +68,11 @@ export default function TicketsPage({
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [newMessage, setNewMessage] = useState("")
 
-  if (ticketId && !currentTicket) {
+  useEffect(() => {
+    if (!ticketId || currentTicket?.id === ticketId) return
     void loadTicketDetail(ticketId)
-  }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ticketId])
 
   if (ticketId && currentTicket) {
     return (
@@ -105,7 +101,8 @@ export default function TicketsPage({
               <span
                 className={`px-2.5 py-1 rounded-full text-xs font-semibold ${PRIORITY_COLORS[currentTicket.priority] || "bg-gray-100 text-gray-700"}`}
               >
-                {PRIORITY_LABELS[currentTicket.priority]?.en || currentTicket.priority}
+                {PRIORITY_LABELS[currentTicket.priority]?.en ||
+                  currentTicket.priority}
               </span>
               <select
                 value={currentTicket.status}
@@ -129,7 +126,8 @@ export default function TicketsPage({
                 {isFa ? "دسته‌بندی" : "Category"}
               </div>
               <span className="inline-flex px-2.5 py-1 rounded-full bg-[#1e3a5f]/10 text-[#1e3a5f] text-xs font-semibold">
-                {CATEGORY_LABELS[currentTicket.category]?.en || currentTicket.category}
+                {CATEGORY_LABELS[currentTicket.category]?.en ||
+                  currentTicket.category}
               </span>
             </div>
             <div>
@@ -140,8 +138,10 @@ export default function TicketsPage({
                 className={`inline-flex px-2.5 py-1 rounded-full text-xs font-semibold ${PRIORITY_COLORS[currentTicket.priority] || "bg-gray-100 text-gray-700"}`}
               >
                 {isFa
-                  ? PRIORITY_LABELS[currentTicket.priority]?.fa || currentTicket.priority
-                  : PRIORITY_LABELS[currentTicket.priority]?.en || currentTicket.priority}
+                  ? PRIORITY_LABELS[currentTicket.priority]?.fa ||
+                    currentTicket.priority
+                  : PRIORITY_LABELS[currentTicket.priority]?.en ||
+                    currentTicket.priority}
               </span>
             </div>
             <div>
@@ -152,8 +152,10 @@ export default function TicketsPage({
                 className={`inline-flex px-2.5 py-1 rounded-full text-xs font-semibold ${STATUS_COLORS[currentTicket.status] || "bg-gray-100 text-gray-700"}`}
               >
                 {isFa
-                  ? STATUS_LABELS[currentTicket.status]?.fa || currentTicket.status
-                  : STATUS_LABELS[currentTicket.status]?.en || currentTicket.status}
+                  ? STATUS_LABELS[currentTicket.status]?.fa ||
+                    currentTicket.status
+                  : STATUS_LABELS[currentTicket.status]?.en ||
+                    currentTicket.status}
               </span>
             </div>
             <div>
@@ -179,7 +181,11 @@ export default function TicketsPage({
             messages.map((msg) => (
               <div
                 key={msg.id}
-                className={`flex ${msg.senderId === currentTicket.userId ? "justify-start" : "justify-end"}`}
+                className={`flex ${
+                  msg.senderId === currentTicket.userId
+                    ? "justify-start"
+                    : "justify-end"
+                }`}
               >
                 <div
                   className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm ${
@@ -194,7 +200,9 @@ export default function TicketsPage({
                   <div>{msg.body}</div>
                   <div
                     className={`text-xs mt-1 opacity-60 ${
-                      msg.senderId === currentTicket.userId ? "text-right" : "text-left"
+                      msg.senderId === currentTicket.userId
+                        ? "text-right"
+                        : "text-left"
                     }`}
                   >
                     {new Date(msg.createdAt).toLocaleString()}
@@ -219,9 +227,7 @@ export default function TicketsPage({
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               placeholder={
-                isFa
-                  ? "پیام خود را بنویسید..."
-                  : "Write your message..."
+                isFa ? "پیام خود را بنویسید..." : "Write your message..."
               }
               rows={2}
               className="flex-1 px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all resize-none"
@@ -276,8 +282,12 @@ export default function TicketsPage({
           className="px-4 py-2 rounded-xl bg-[#1e3a5f] text-white text-sm font-bold hover:bg-[#122435] transition-colors btn-press"
         >
           {showCreateForm
-            ? (isFa ? "لغو" : "Cancel")
-            : (isFa ? "تیکت جدید" : "New Ticket")}
+            ? isFa
+              ? "لغو"
+              : "Cancel"
+            : isFa
+              ? "تیکت جدید"
+              : "New Ticket"}
         </button>
       </div>
 
@@ -300,7 +310,9 @@ export default function TicketsPage({
               <input
                 value={newSubject}
                 onChange={(e) => setNewSubject(e.target.value)}
-                placeholder={isFa ? "موضوع تیکت را وارد کنید" : "Enter ticket subject"}
+                placeholder={
+                  isFa ? "موضوع تیکت را وارد کنید" : "Enter ticket subject"
+                }
                 maxLength={200}
                 required
                 className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all"
@@ -384,8 +396,10 @@ export default function TicketsPage({
                       className={`px-2 py-0.5 rounded-full text-xs font-semibold flex-shrink-0 ${PRIORITY_COLORS[ticket.priority] || "bg-gray-100 text-gray-700"}`}
                     >
                       {isFa
-                        ? PRIORITY_LABELS[ticket.priority]?.fa || ticket.priority
-                        : PRIORITY_LABELS[ticket.priority]?.en || ticket.priority}
+                        ? PRIORITY_LABELS[ticket.priority]?.fa ||
+                          ticket.priority
+                        : PRIORITY_LABELS[ticket.priority]?.en ||
+                          ticket.priority}
                     </span>
                     <span
                       className={`px-2 py-0.5 rounded-full text-xs font-semibold flex-shrink-0 ${STATUS_COLORS[ticket.status] || "bg-gray-100 text-gray-700"}`}

@@ -1,4 +1,4 @@
-import { type Lang, t } from "../../i18n"
+import { type Lang, t, Tr } from "../../i18n"
 import { Stars } from "../../components/platform/Stars"
 import { Button } from "../../components/ui/Button"
 import { type ReviewRow } from "../../lib/api"
@@ -20,7 +20,7 @@ export function ReviewsTab({
   submitting: boolean
   onSubmit: () => Promise<void>
   lang: Lang
-  tr: typeof t["en"] & typeof t["fa"]
+  tr: Tr
 }) {
   const isFa = lang === "fa"
 
@@ -68,7 +68,11 @@ export function ReviewsTab({
               onChange={(e) =>
                 setReviewForm({ ...reviewForm, comment: e.target.value })
               }
-              placeholder={isFa ? "تجربه خود را با دیگران به اشتراک بگذارید..." : "Share your experience..."}
+              placeholder={
+                isFa
+                  ? "تجربه خود را با دیگران به اشتراک بگذارید..."
+                  : "Share your experience..."
+              }
               rows={3}
               className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] bg-[#f8fafc] text-sm text-[#0f172a] placeholder-[#94a3b8] focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all resize-none"
             />
@@ -77,7 +81,11 @@ export function ReviewsTab({
             onClick={onSubmit}
             disabled={submitting || !reviewForm.comment.trim()}
           >
-            {submitting ? tr.common.loading : isFa ? "ثبت نظر" : "Submit Review"}
+            {submitting
+              ? tr.common.loading
+              : isFa
+                ? "ثبت نظر"
+                : "Submit Review"}
           </Button>
         </div>
       </div>

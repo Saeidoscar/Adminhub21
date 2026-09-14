@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
-import { t, type Lang } from "../i18n"
+import { t, type Lang, type Tr } from "../i18n"
 import { Icon } from "../components/layout/Icon"
 import {
   listAdminTickets,
@@ -13,7 +13,7 @@ import {
 } from "../lib/api"
 import { TicketCardSkeleton, ListSkeleton } from "../components/ui/Skeleton"
 
-const CATEGORY_LABELS: Record<string, { en: string fa: string }> = {
+const CATEGORY_LABELS: Record<string, { en: string; fa: string }> = {
   billing: { en: "Billing", fa: "مالی" },
   technical: { en: "Technical", fa: "فنی" },
   account: { en: "Account", fa: "حساب کاربری" },
@@ -27,7 +27,7 @@ const PRIORITY_COLORS: Record<string, string> = {
   urgent: "bg-red-100 text-red-700",
 }
 
-const PRIORITY_LABELS: Record<string, { en: string fa: string }> = {
+const PRIORITY_LABELS: Record<string, { en: string; fa: string }> = {
   low: { en: "Low", fa: "پایین" },
   medium: { en: "Medium", fa: "متوسط" },
   high: { en: "High", fa: "بالا" },
@@ -41,20 +41,14 @@ const STATUS_COLORS: Record<string, string> = {
   closed: "bg-gray-100 text-gray-700",
 }
 
-const STATUS_LABELS: Record<string, { en: string fa: string }> = {
+const STATUS_LABELS: Record<string, { en: string; fa: string }> = {
   open: { en: "Open", fa: "باز" },
   in_progress: { en: "In Progress", fa: "در حال بررسی" },
   resolved: { en: "Resolved", fa: "حل شده" },
   closed: { en: "Closed", fa: "بسته شده" },
 }
 
-export default function AdminTicketsPage({
-  tr,
-  lang,
-}: {
-  tr: typeof t["en"] & typeof t["fa"]
-  lang: Lang
-}) {
+export default function AdminTicketsPage({ tr, lang }: { tr: Tr; lang: Lang }) {
   const navigate = useNavigate()
   const isFa = lang === "fa"
 
@@ -143,7 +137,9 @@ export default function AdminTicketsPage({
   const handleStatusChange = async (status: string) => {
     if (!currentTicket) return
     try {
-      const updated = await updateAdminTicket(currentTicket.id, { status: status as TicketRow["status"] })
+      const updated = await updateAdminTicket(currentTicket.id, {
+        status: status as "open" | "in_progress" | "resolved" | "closed",
+      })
       setCurrentTicket(updated)
       await loadTickets()
     } catch (err) {
@@ -154,7 +150,9 @@ export default function AdminTicketsPage({
   const handlePriorityChange = async (priority: string) => {
     if (!currentTicket) return
     try {
-      const updated = await updateAdminTicket(currentTicket.id, { priority: priority as TicketRow["priority"] })
+      const updated = await updateAdminTicket(currentTicket.id, {
+        priority: priority as "low" | "medium" | "high" | "urgent",
+      })
       setCurrentTicket(updated)
       await loadTickets()
     } catch (err) {
@@ -186,7 +184,8 @@ export default function AdminTicketsPage({
               <span
                 className={`px-2.5 py-1 rounded-full text-xs font-semibold ${PRIORITY_COLORS[currentTicket.priority] || "bg-gray-100 text-gray-700"}`}
               >
-                {PRIORITY_LABELS[currentTicket.priority]?.en || currentTicket.priority}
+                {PRIORITY_LABELS[currentTicket.priority]?.en ||
+                  currentTicket.priority}
               </span>
               <select
                 value={currentTicket.status}
@@ -210,7 +209,8 @@ export default function AdminTicketsPage({
                 {tr.adminTickets.category}
               </div>
               <span className="inline-flex px-2.5 py-1 rounded-full bg-[#1e3a5f]/10 text-[#1e3a5f] text-xs font-semibold">
-                {CATEGORY_LABELS[currentTicket.category]?.en || currentTicket.category}
+                {CATEGORY_LABELS[currentTicket.category]?.en ||
+                  currentTicket.category}
               </span>
             </div>
             <div>
@@ -255,8 +255,10 @@ export default function AdminTicketsPage({
                 className={`inline-flex px-2.5 py-1 rounded-full text-xs font-semibold ${STATUS_COLORS[currentTicket.status] || "bg-gray-100 text-gray-700"}`}
               >
                 {isFa
-                  ? STATUS_LABELS[currentTicket.status]?.fa || currentTicket.status
-                  : STATUS_LABELS[currentTicket.status]?.en || currentTicket.status}
+                  ? STATUS_LABELS[currentTicket.status]?.fa ||
+                    currentTicket.status
+                  : STATUS_LABELS[currentTicket.status]?.en ||
+                    currentTicket.status}
               </span>
             </div>
             <div>
@@ -267,8 +269,10 @@ export default function AdminTicketsPage({
                 className={`inline-flex px-2.5 py-1 rounded-full text-xs font-semibold ${PRIORITY_COLORS[currentTicket.priority] || "bg-gray-100 text-gray-700"}`}
               >
                 {isFa
-                  ? PRIORITY_LABELS[currentTicket.priority]?.fa || currentTicket.priority
-                  : PRIORITY_LABELS[currentTicket.priority]?.en || currentTicket.priority}
+                  ? PRIORITY_LABELS[currentTicket.priority]?.fa ||
+                    currentTicket.priority
+                  : PRIORITY_LABELS[currentTicket.priority]?.en ||
+                    currentTicket.priority}
               </span>
             </div>
             <div>
@@ -303,7 +307,11 @@ export default function AdminTicketsPage({
               {messages.map((msg) => (
                 <div
                   key={msg.id}
-                  className={`flex ${msg.senderId === currentTicket.userId ? "justify-start" : "justify-end"}`}
+                  className={`flex ${
+                    msg.senderId === currentTicket.userId
+                      ? "justify-start"
+                      : "justify-end"
+                  }`}
                 >
                   <div
                     className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm ${
@@ -318,7 +326,9 @@ export default function AdminTicketsPage({
                     <div>{msg.body}</div>
                     <div
                       className={`text-xs mt-1 opacity-60 ${
-                        msg.senderId === currentTicket.userId ? "text-right" : "text-left"
+                        msg.senderId === currentTicket.userId
+                          ? "text-right"
+                          : "text-left"
                       }`}
                     >
                       {new Date(msg.createdAt).toLocaleString()}
@@ -453,8 +463,10 @@ export default function AdminTicketsPage({
                         className={`px-2 py-0.5 rounded-full text-xs font-semibold flex-shrink-0 ${PRIORITY_COLORS[ticket.priority] || "bg-gray-100 text-gray-700"}`}
                       >
                         {isFa
-                          ? PRIORITY_LABELS[ticket.priority]?.fa || ticket.priority
-                          : PRIORITY_LABELS[ticket.priority]?.en || ticket.priority}
+                          ? PRIORITY_LABELS[ticket.priority]?.fa ||
+                            ticket.priority
+                          : PRIORITY_LABELS[ticket.priority]?.en ||
+                            ticket.priority}
                       </span>
                       <span
                         className={`px-2 py-0.5 rounded-full text-xs font-semibold flex-shrink-0 ${STATUS_COLORS[ticket.status] || "bg-gray-100 text-gray-700"}`}
@@ -466,10 +478,13 @@ export default function AdminTicketsPage({
                     </div>
                     <div className="flex items-center gap-3 text-xs text-[#64748b]">
                       <span className="inline-flex px-2.5 py-0.5 rounded-full bg-[#1e3a5f]/10 text-[#1e3a5f] font-semibold">
-                        {CATEGORY_LABELS[ticket.category]?.en || ticket.category}
+                        {CATEGORY_LABELS[ticket.category]?.en ||
+                          ticket.category}
                       </span>
                       <span>{ticket.userName}</span>
-                      <span className="hidden sm:inline">{ticket.userEmail}</span>
+                      <span className="hidden sm:inline">
+                        {ticket.userEmail}
+                      </span>
                       <span>
                         {new Date(ticket.createdAt).toLocaleDateString()}
                       </span>

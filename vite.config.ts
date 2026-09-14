@@ -40,6 +40,14 @@ export default defineConfig(({ mode }) => {
       port: parseInt(process.env.PORT || "8443"),
       strictPort: true,
       watch: { ignored: ["**/.figma/**"] },
+      proxy: {
+        // Keeps dev same-origin: the browser calls /api/* on this port and
+        // Vite forwards it to the Hono server (apps/server, default 8787).
+        "/api": {
+          target: process.env.VITE_DEV_API_PROXY || "http://localhost:8787",
+          changeOrigin: true,
+        },
+      },
     },
     preview: {
       host: "0.0.0.0",

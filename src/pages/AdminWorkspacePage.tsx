@@ -33,7 +33,7 @@ export default function AdminWorkspacePage({
   tr,
   lang,
 }: {
-  tr: typeof t["en"] & typeof t["fa"]
+  tr: Tr
   lang: Lang
 }) {
   const isFa = lang === "fa"
@@ -71,15 +71,9 @@ export default function AdminWorkspacePage({
         ))}
       </div>
 
-      {activeTab === "cases" && (
-        <CasesTab tr={tr} lang={lang} isFa={isFa} />
-      )}
-      {activeTab === "tasks" && (
-        <TasksTab tr={tr} lang={lang} isFa={isFa} />
-      )}
-      {activeTab === "events" && (
-        <EventsTab tr={tr} lang={lang} isFa={isFa} />
-      )}
+      {activeTab === "cases" && <CasesTab tr={tr} lang={lang} isFa={isFa} />}
+      {activeTab === "tasks" && <TasksTab tr={tr} lang={lang} isFa={isFa} />}
+      {activeTab === "events" && <EventsTab tr={tr} lang={lang} isFa={isFa} />}
       {activeTab === "timeLogs" && (
         <TimeLogsTab tr={tr} lang={lang} isFa={isFa} />
       )}

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { t, type Lang } from "../i18n"
+import { t, type Lang, type Tr } from "../i18n"
 import { Icon } from "../components/layout/Icon"
 import { Stars } from "../components/platform/Stars"
 import { listTools, type Tool } from "../lib/api"
@@ -8,7 +8,7 @@ import { TOMAN_PER_MILLION } from "../lib/constants"
 
 type Category = "scheduling" | "design" | "analytics" | "automation" | "ecommerce"
 
-const CATEGORY_LABELS: Record<Category, { en: string fa: string }> = {
+const CATEGORY_LABELS: Record<Category, { en: string; fa: string }> = {
   scheduling: { en: "Scheduling", fa: "زمان‌بندی" },
   design: { en: "Design", fa: "طراحی" },
   analytics: { en: "Analytics", fa: "آنالیتیکس" },
@@ -16,13 +16,7 @@ const CATEGORY_LABELS: Record<Category, { en: string fa: string }> = {
   ecommerce: { en: "E-commerce", fa: "فروشگاه آنلاین" },
 }
 
-export default function ToolsRentalPage({
-  tr,
-  lang,
-}: {
-  tr: typeof t["en"]
-  lang: Lang
-}) {
+export default function ToolsRentalPage({ tr, lang }: { tr: Tr; lang: Lang }) {
   const [tools, setTools] = useState<Tool[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState("")

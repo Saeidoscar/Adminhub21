@@ -1,4 +1,8 @@
-import type { DashboardStats, WalletRow, WalletTransactionRow } from "@adminhub/shared"
+import type {
+  DashboardStats,
+  WalletRow,
+  WalletTransactionRow,
+} from "@adminhub/shared"
 import { apiFetch, unwrapItem, unwrapList } from "./core"
 
 export type { DashboardStats, WalletRow, WalletTransactionRow }
@@ -18,7 +22,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
 }
 
 export async function getWallet(): Promise<WalletRow> {
-  const payload = await apiFetch<Record<string, unknown>>("/api/wallet/balance")
+  const payload = await apiFetch<Record<string, unknown>>("/api/wallets/me")
 
   const wallet = unwrapItem<WalletRow>(payload, "wallet")
 
@@ -68,10 +72,6 @@ export async function listTransactions(
 ): Promise<WalletTransactionRow[]> {
   const params = new URLSearchParams()
 
-  if (query.walletId) {
-    params.set("walletId", query.walletId)
-  }
-
   if (query.type) {
     params.set("type", query.type)
   }
@@ -82,7 +82,7 @@ export async function listTransactions(
 
   const queryString = params.toString()
   const payload = await apiFetch<Record<string, unknown>>(
-    `/api/wallet/transactions${queryString ? `?${queryString}` : ""}`,
+    `/api/wallets/me/transactions${queryString ? `?${queryString}` : ""}`,
   )
 
   return unwrapList<WalletTransactionRow>(payload, "transactions")

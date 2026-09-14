@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom"
-import { type Lang, t } from "../../i18n"
+import { type Lang, t, Tr } from "../../i18n"
 import { Icon } from "../../components/layout/Icon"
 import { type ContractPackage } from "@adminhub/shared"
 import { PackageCard } from "./PackageCard"
@@ -18,7 +18,7 @@ export function PackagesTab({
   platformPackages: ContractPackage[]
   bundlePackages: ContractPackage[]
   lang: Lang
-  tr: typeof t["en"] & typeof t["fa"]
+  tr: Tr
   comparison: {
     selected: Set<string>
     has: (id: string) => boolean

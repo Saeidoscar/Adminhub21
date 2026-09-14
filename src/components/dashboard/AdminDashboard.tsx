@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { t, type Lang } from "../../i18n"
+import { t, type Lang, type Tr } from "../../i18n"
 import { Icon } from "../../components/layout/Icon"
 import { Button } from "../../components/ui/Button"
 import { Input, Textarea, Select } from "../../components/ui/Input"
@@ -13,6 +13,8 @@ import {
   type ContractPackage,
 } from "../../lib/api"
 import { TOMAN_PER_MILLION, TOMANS_PER_USD } from "../../lib/constants"
+import type { PlatformKey } from "@adminhub/shared"
+import { resolvePhotoUrl } from "../../lib/media"
 
 const PLATFORM_LABELS: Record<string, string> = {
   instagram: "Instagram",
@@ -23,10 +25,25 @@ const PLATFORM_LABELS: Record<string, string> = {
   linkedin: "LinkedIn",
 }
 
+/** Prices are stored in Toman. USD values are derived from the fixed rate. */
+export function formatPrice(
+  val: string | number,
+  lang: Lang,
+  tomanLabel: string,
+): string {
+  const toman = Number.parseInt(String(val), 10)
+  if (!Number.isFinite(toman)) return "—"
+  if (lang === "fa") {
+    return `${(toman / TOMAN_PER_MILLION).toFixed(1)}M ${tomanLabel}`
+  }
+  return `$${Math.round(toman / TOMANS_PER_USD)}`
+}
+
 interface AdminDashboardProps {
   lang: Lang
-  tr: typeof t["en"] & typeof t["fa"]
+  tr: Tr
   adminId?: string
+  role?: "employer" | "admin" | "super_admin"
 }
 
 export default function AdminDashboard({
@@ -40,7 +57,7 @@ export default function AdminDashboard({
   const [activeTab, setActiveTab] =
     useState<"profile" | "pricing" | "verification">("profile")
   const [bio, setBio] = useState("")
-  const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([])
+  const [selectedPlatforms, setSelectedPlatforms] = useState<PlatformKey[]>([])
   const [prices, setPrices] = useState({
     basic: "2500000",
     premium: "4000000",
@@ -49,7 +66,7 @@ export default function AdminDashboard({
   const [saving, setSaving] = useState(false)
   const [saveMsg, setSaveMsg] = useState<string | null>(null)
 
-  const allPlatforms = [
+  const allPlatforms: PlatformKey[] = [
     "instagram",
     "telegram",
     "whatsapp",
@@ -58,16 +75,13 @@ export default function AdminDashboard({
     "linkedin",
   ]
 
-  const togglePlatform = (p: string) => {
+  const togglePlatform = (p: PlatformKey) => {
     setSelectedPlatforms((prev) =>
       prev.includes(p) ? prev.filter((x) => x !== p) : [...prev, p],
     )
   }
 
-  const fmt = (val: string) =>
-    lang === "fa"
-      ? `${(parseInt(val, 10) / TOMAN_PER_MILLION).toFixed(1)}M ${tr.common.toman}`
-      : `$${Math.round(parseInt(val, 10) / TOMANS_PER_USD)}`
+  const fmt = (val: string) => formatPrice(val, lang, tr.common.toman)
 
   useEffect(() => {
     let cancelled = false
@@ -89,7 +103,7 @@ export default function AdminDashboard({
         if (currentProfile) {
           setProfile(currentProfile)
           setBio(lang === "fa" ? currentProfile.bioFa : currentProfile.bioEn)
-          setSelectedPlatforms(currentProfile.platforms)
+          setSelectedPlatforms([...currentProfile.platforms])
         }
 
         const adminPkgs = pkgs.filter(
@@ -98,9 +112,21 @@ export default function AdminDashboard({
         setPackages(adminPkgs)
 
         if (adminPkgs.length > 0) {
-          const basic = adminPkgs.find((p) => p.name.toLowerCase().includes("basic") || p.name.toLowerCase().includes("پایه"))
-          const premium = adminPkgs.find((p) => p.name.toLowerCase().includes("premium") || p.name.toLowerCase().includes("ویژه"))
-          const hourly = adminPkgs.find((p) => p.name.toLowerCase().includes("hourly") || p.name.toLowerCase().includes("ساعتی"))
+          const basic = adminPkgs.find(
+            (p) =>
+              p.name.toLowerCase().includes("basic") ||
+              p.name.toLowerCase().includes("پایه"),
+          )
+          const premium = adminPkgs.find(
+            (p) =>
+              p.name.toLowerCase().includes("premium") ||
+              p.name.toLowerCase().includes("ویژه"),
+          )
+          const hourly = adminPkgs.find(
+            (p) =>
+              p.name.toLowerCase().includes("hourly") ||
+              p.name.toLowerCase().includes("ساعتی"),
+          )
 
           setPrices({
             basic: basic ? String(basic.priceToman) : "2500000",
@@ -136,7 +162,9 @@ export default function AdminDashboard({
         bioEn: lang === "en" ? bio : profile.bioEn,
         bioFa: lang === "fa" ? bio : profile.bioFa,
         platforms: selectedPlatforms,
-        monthlyToman: Number.isNaN(parseInt(prices.basic, 10)) ? profile.monthlyToman : parseInt(prices.basic, 10),
+        monthlyToman: Number.isNaN(parseInt(prices.basic, 10))
+          ? profile.monthlyToman
+          : parseInt(prices.basic, 10),
         monthlyUSD: profile.monthlyUSD,
       })
       setProfile(updated)
@@ -152,10 +180,8 @@ export default function AdminDashboard({
   const handleSavePackage = async (pkg: ContractPackage) => {
     setSaving(true)
     try {
-      await updatePackage(pkg)
-      setPackages((prev) =>
-        prev.map((p) => (p.id === pkg.id ? pkg : p)),
-      )
+      await updatePackage(pkg.id, pkg)
+      setPackages((prev) => prev.map((p) => (p.id === pkg.id ? pkg : p)))
       setSaveMsg(lang === "fa" ? "پکیج ذخیره شد" : "Package saved")
       setTimeout(() => setSaveMsg(null), 3000)
     } catch {
@@ -191,7 +217,9 @@ export default function AdminDashboard({
         <div className="text-center py-12">
           <div className="text-4xl mb-3">👤</div>
           <div className="font-bold text-[#0f172a] mb-1">
-            {lang === "fa" ? "پروفایل ادمین یافت نشد" : "Admin profile not found"}
+            {lang === "fa"
+              ? "پروفایل ادمین یافت نشد"
+              : "Admin profile not found"}
           </div>
           <div className="text-sm text-[#64748b]">
             {lang === "fa"
@@ -231,7 +259,7 @@ export default function AdminDashboard({
             }`}
           >
             {tab === "profile"
-              ? tr.adminProfile.bio.split(" ")[0]
+              ? tr.nav.profile
               : tab === "pricing"
                 ? tr.adminProfile.pricing
                 : lang === "fa"
@@ -249,7 +277,10 @@ export default function AdminDashboard({
               <div className="flex items-center gap-4 mb-5">
                 <div className="relative">
                   <img
-                    src={`https://images.unsplash.com/${profile.photo}?w=80&h=80&fit=crop&auto=format`}
+                    src={resolvePhotoUrl(profile.photo, {
+                      width: 80,
+                      height: 80,
+                    })}
                     alt="Profile"
                     className="w-16 h-16 rounded-2xl object-cover"
                   />
@@ -523,7 +554,7 @@ function PricingCard({
   price: string
   onSave: (val: string) => void
   lang: Lang
-  tr: typeof t["en"] & typeof t["fa"]
+  tr: Tr
 }) {
   const [editing, setEditing] = useState(false)
   const [draft, setDraft] = useState(price)
@@ -585,7 +616,7 @@ function PricingCard({
             onClick={() => setEditing(true)}
           >
             <div className="text-base font-bold text-[#1e3a5f]">
-              {fmt(price)}
+              {formatPrice(price, lang, tr.common.toman)}
             </div>
             <Icon name="edit" size={14} className="text-[#94a3b8]" />
           </div>

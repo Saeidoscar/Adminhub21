@@ -7,3 +7,5 @@ export const t = {
   en,
   fa,
 }
+
+export type { Tr } from "./types"

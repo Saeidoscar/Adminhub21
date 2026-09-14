@@ -17,8 +17,6 @@ export interface CreateContractInput {
   endDate?: string
 }
 
-export type Contract = ContractRow
-
 export async function createContract(
   input: CreateContractInput,
 ): Promise<ContractRow> {
@@ -34,7 +32,9 @@ export async function createContract(
 }
 
 export async function getContract(id: string): Promise<ContractRow | null> {
-  const payload = await apiFetch<Record<string, unknown>>(`/api/contracts/${id}`)
+  const payload = await apiFetch<Record<string, unknown>>(
+    `/api/contracts/${id}`,
+  )
   return unwrapItem<ContractRow>(payload, "contract")
 }
 
@@ -43,9 +43,9 @@ export async function updateContractStatus(
   input: { status: ContractRow["status"] },
 ): Promise<ContractRow> {
   const payload = await apiFetch<Record<string, unknown>>(
-    `/api/contracts/${id}`,
+    `/api/contracts/${id}/status`,
     {
-      method: "PUT",
+      method: "PATCH",
       body: JSON.stringify(input),
     },
   )

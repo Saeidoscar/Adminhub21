@@ -8,7 +8,13 @@ import { useAi } from "../contexts/AiContext"
 import { Icon } from "../components/layout/Icon"
 import { Button } from "../components/ui/Button"
 
-function ErrorBanner({ message, onDismiss }: { message: string; onDismiss: () => void }) {
+function ErrorBanner({
+  message,
+  onDismiss,
+}: {
+  message: string
+  onDismiss: () => void
+}) {
   if (!message) return null
 
   return (
@@ -146,7 +152,13 @@ export default function AiPage() {
         }
       }
     },
-    [deleteConversation, refreshConversations, activeConversation, conversations, navigate],
+    [
+      deleteConversation,
+      refreshConversations,
+      activeConversation,
+      conversations,
+      navigate,
+    ],
   )
 
   const selectedModel = models.find((m) => m.id === activeConversation?.modelId)
@@ -169,7 +181,9 @@ export default function AiPage() {
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-muted">
             <Icon name="bot" size={24} className="text-muted" />
           </div>
-          <h2 className="text-lg font-bold text-foreground">No models available</h2>
+          <h2 className="text-lg font-bold text-foreground">
+            No models available
+          </h2>
           <p className="mt-2 text-sm text-muted">
             There are no AI models configured. Please contact an administrator.
           </p>
@@ -201,13 +215,13 @@ export default function AiPage() {
           </div>
         ) : hasActiveConversation ? (
           <>
-            <ErrorBanner message={error} onDismiss={clearError} />
+            <ErrorBanner message={error ?? ""} onDismiss={clearError} />
 
             {/* Header */}
             <div className="flex shrink-0 items-center justify-between gap-2 border-b border-border bg-surface px-4 py-3">
               <div className="flex items-center gap-2">
                 <h3 className="truncate text-sm font-semibold text-foreground">
-                  {activeConversation.title}
+                  {activeConversation.title ?? "New conversation"}
                 </h3>
               </div>
 
@@ -238,7 +252,10 @@ export default function AiPage() {
             )}
 
             {/* Input */}
-            <MessageInput onSend={handleSend} disabled={isSending || !hasModels} />
+            <MessageInput
+              onSend={handleSend}
+              disabled={isSending || !hasModels}
+            />
           </>
         ) : (
           <div className="flex flex-1 flex-col items-center justify-center gap-4 p-6 text-center">

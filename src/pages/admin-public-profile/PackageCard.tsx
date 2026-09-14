@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { type Lang, t } from "../../i18n"
+import { type Lang, t, Tr } from "../../i18n"
 import { Icon } from "../../components/layout/Icon"
 import { Button } from "../../components/ui/Button"
 import { type ContractPackage } from "@adminhub/shared"
@@ -19,7 +19,7 @@ export function PackageCard({
 }: {
   pkg: ContractPackage
   lang: Lang
-  tr: typeof t["en"] & typeof t["fa"]
+  tr: Tr
   inCompare: boolean
   onToggleCompare: () => void
 }) {

@@ -6,7 +6,7 @@ import {
   Routes,
   Route,
 } from "react-router-dom"
-import { t, type Lang } from "./i18n"
+import { t, type Lang, type Tr } from "./i18n"
 import { Icon } from "./components/layout/Icon"
 import { Sidebar } from "./components/layout/Sidebar"
 import { Topbar, MobileTopbar } from "./components/layout/Topbar"
@@ -17,6 +17,7 @@ import { useAuth } from "./contexts/AuthContext"
 import { ProtectedRoute } from "./components/auth/ProtectedRoute"
 import AdminPackagesPage from "./pages/AdminPackagesPage"
 import AdminPublicProfilePage from "./pages/AdminPublicProfilePage"
+import WalletPage from "./pages/WalletPage"
 import AdminUsersPage from "./pages/AdminUsersPage"
 import AdminContentModerationPage from "./pages/AdminContentModerationPage"
 import AdminTicketsPage from "./pages/AdminTicketsPage"
@@ -38,7 +39,7 @@ import Marketplace from "./pages/Marketplace"
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 type Role = "employer" | "admin" | "super_admin"
-type Page = "dashboard" | "marketplace" | "toolsRental" | "editors" | "vibeCoders" | "skills" | "contracts" | "contractsHistory" | "tickets" | "ai" | "profile" | "packages" | "compare" | "adminUsers" | "adminContent" | "adminTickets" | "adminWorkspace" | "adminPortfolio"
+type Page = "dashboard" | "marketplace" | "toolsRental" | "editors" | "vibeCoders" | "skills" | "contracts" | "contractsHistory" | "tickets" | "ai" | "profile" | "packages" | "compare" | "adminUsers" | "adminContent" | "adminTickets" | "adminWorkspace" | "adminPortfolio" | "wallet"
 
 interface AppCtx {
   lang: Lang
@@ -46,7 +47,7 @@ interface AppCtx {
   role: Role
   page: Page
   setPage: (p: Page) => void
-  tr: typeof t["en"]
+  tr: Tr
   dir: "ltr" | "rtl"
 }
 
@@ -63,6 +64,29 @@ export const useApp = () => useContext(Ctx)
 
 // ─── Route metadata ──────────────────────────────────────────────────────────
 
+/** Canonical route for each page id (kebab-case paths, matching <Routes>). */
+export const PAGE_ROUTES: Record<Page, string> = {
+  dashboard: "/",
+  marketplace: "/marketplace",
+  toolsRental: "/tools-rental",
+  editors: "/editors",
+  vibeCoders: "/vibe-coders",
+  skills: "/skills",
+  contracts: "/contracts",
+  contractsHistory: "/contracts/history",
+  tickets: "/tickets",
+  ai: "/ai",
+  profile: "/profile",
+  packages: "/packages",
+  compare: "/compare",
+  adminUsers: "/admin-users",
+  adminContent: "/admin-content",
+  adminTickets: "/admin-tickets",
+  adminWorkspace: "/admin-workspace",
+  adminPortfolio: "/admin-portfolio",
+  wallet: "/wallet",
+}
+
 const ROUTE_META: Record<string, { page: Page; titleKey?: string }> = {
   "/marketplace": { page: "marketplace", titleKey: "marketplace" },
   "/tools-rental": { page: "toolsRental", titleKey: "toolsRental" },
@@ -70,7 +94,10 @@ const ROUTE_META: Record<string, { page: Page; titleKey?: string }> = {
   "/vibe-coders": { page: "vibeCoders", titleKey: "vibeCoders" },
   "/skills": { page: "skills", titleKey: "skills" },
   "/contracts": { page: "contracts", titleKey: "contracts" },
-  "/contracts/history": { page: "contractsHistory", titleKey: "contractsHistory" },
+  "/contracts/history": {
+    page: "contractsHistory",
+    titleKey: "contractsHistory",
+  },
   "/tickets": { page: "tickets", titleKey: "tickets" },
   "/packages": { page: "packages", titleKey: "packages" },
   "/admin-users": { page: "adminUsers", titleKey: "adminUsers" },
@@ -81,18 +108,27 @@ const ROUTE_META: Record<string, { page: Page; titleKey?: string }> = {
   "/compare": { page: "compare", titleKey: "compare" },
   "/ai": { page: "ai", titleKey: "ai" },
   "/profile": { page: "profile", titleKey: "profile" },
+  "/wallet": { page: "wallet", titleKey: "wallet" },
+  "/dashboard": { page: "dashboard", titleKey: "dashboard" },
+  "/admin/users": { page: "adminUsers", titleKey: "adminUsers" },
+  "/admin/content": { page: "adminContent", titleKey: "adminContent" },
+  "/admin/tickets": { page: "adminTickets", titleKey: "adminTickets" },
+  "/admin/workspace": { page: "adminWorkspace", titleKey: "adminWorkspace" },
+  "/admin/portfolio": { page: "adminPortfolio", titleKey: "adminPortfolio" },
   "/": { page: "dashboard", titleKey: "dashboard" },
 }
 
 function getPageMeta(
   pathname: string,
   lang: Lang,
-  tr: typeof t["en"],
+  tr: Tr,
 ): { page: Page; title: string } {
   const exactMatch = ROUTE_META[pathname]
   if (exactMatch) {
     const meta = exactMatch
-    const title = meta.titleKey ? tr.nav[meta.titleKey as keyof typeof tr.nav] || tr.nav.dashboard : tr.nav.dashboard
+    const title = meta.titleKey
+      ? tr.nav[(meta.titleKey as keyof typeof tr.nav)] || tr.nav.dashboard
+      : tr.nav.dashboard
     return { page: meta.page, title }
   }
 
@@ -131,9 +167,7 @@ function PlaceholderPage({
       <div className="bg-white rounded-2xl border border-[#e2e8f0] p-12 text-center">
         <div className="text-4xl mb-4">🚧</div>
         <div className="font-bold text-[#0f172a] mb-1">{comingSoon}</div>
-        <div className="text-sm text-[#64748b]">
-          {underConstruction}
-        </div>
+        <div className="text-sm text-[#64748b]">{underConstruction}</div>
       </div>
     </div>
   )
@@ -144,16 +178,27 @@ function PlaceholderPage({
 import { ErrorBoundary } from "./components/ui/ErrorBoundary"
 
 export default function App() {
-  const { theme, toggleTheme, fontSize, setFontSize } = useTheme()
+  const { theme, toggleTheme, fontSize, setFontSize, lang, setLang } =
+    useTheme()
   const { user, isLoading, logout } = useAuth()
   const { pathname } = useLocation()
   const navigate = useNavigate()
-  const [lang, setLang] = useState<Lang>("fa")
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
+  // A 401 from any request clears the session; send the user back to sign-in.
+  useEffect(() => {
+    const onUnauthorized = () => {
+      void logout()
+      navigate("/auth", { replace: true })
+    }
+    window.addEventListener("adminhub:unauthorized", onUnauthorized)
+    return () =>
+      window.removeEventListener("adminhub:unauthorized", onUnauthorized)
+  }, [logout, navigate])
 
   const dir = lang === "fa" ? "rtl" : "ltr"
   const tr = t[lang]
-  const role = (user?.role as Role) || "employer"
+  const role = user?.role as Role || "employer"
 
   const { page, title: pageTitle } = getPageMeta(pathname, lang, tr)
 
@@ -161,29 +206,113 @@ export default function App() {
     id: Page
     icon: string
     label: string
+    path: string
   }[] = [
-    { id: "dashboard", icon: "dashboard", label: tr.nav.dashboard },
-    { id: "marketplace", icon: "marketplace", label: tr.nav.marketplace },
-    { id: "toolsRental", icon: "camera", label: tr.nav.toolsRental },
-    { id: "editors", icon: "edit", label: tr.nav.editors },
-    { id: "vibeCoders", icon: "bot", label: tr.nav.vibeCoders },
-    { id: "skills", icon: "chart", label: tr.nav.skills },
-    { id: "contracts", icon: "contracts", label: tr.nav.contracts },
+    {
+      id: "dashboard",
+      icon: "dashboard",
+      label: tr.nav.dashboard,
+      path: PAGE_ROUTES.dashboard,
+    },
+    {
+      id: "marketplace",
+      icon: "marketplace",
+      label: tr.nav.marketplace,
+      path: PAGE_ROUTES.marketplace,
+    },
+    {
+      id: "toolsRental",
+      icon: "camera",
+      label: tr.nav.toolsRental,
+      path: PAGE_ROUTES.toolsRental,
+    },
+    {
+      id: "editors",
+      icon: "edit",
+      label: tr.nav.editors,
+      path: PAGE_ROUTES.editors,
+    },
+    {
+      id: "vibeCoders",
+      icon: "bot",
+      label: tr.nav.vibeCoders,
+      path: PAGE_ROUTES.vibeCoders,
+    },
+    {
+      id: "skills",
+      icon: "chart",
+      label: tr.nav.skills,
+      path: PAGE_ROUTES.skills,
+    },
+    {
+      id: "contracts",
+      icon: "contracts",
+      label: tr.nav.contracts,
+      path: PAGE_ROUTES.contracts,
+    },
     ...(role === "admin"
       ? [
-          { id: "packages" as Page, icon: "package", label: tr.nav.packages },
-          { id: "adminUsers" as Page, icon: "users", label: tr.adminUsers.title },
-          { id: "adminContent" as Page, icon: "edit", label: tr.adminContent.title },
-          { id: "adminTickets" as Page, icon: "tickets", label: tr.adminTickets.title },
-          { id: "adminWorkspace" as Page, icon: "dashboard", label: tr.adminWorkspace.title },
-          { id: "adminPortfolio" as Page, icon: "image", label: tr.adminPortfolio.title },
+          {
+            id: "packages" as Page,
+            icon: "package",
+            label: tr.nav.packages,
+            path: PAGE_ROUTES.packages,
+          },
+          {
+            id: "adminUsers" as Page,
+            icon: "users",
+            label: tr.adminUsers.title,
+            path: PAGE_ROUTES.adminUsers,
+          },
+          {
+            id: "adminContent" as Page,
+            icon: "edit",
+            label: tr.adminContent.title,
+            path: PAGE_ROUTES.adminContent,
+          },
+          {
+            id: "adminTickets" as Page,
+            icon: "tickets",
+            label: tr.adminTickets.title,
+            path: PAGE_ROUTES.adminTickets,
+          },
+          {
+            id: "adminWorkspace" as Page,
+            icon: "layers",
+            label: tr.adminWorkspace.title,
+            path: PAGE_ROUTES.adminWorkspace,
+          },
+          {
+            id: "adminPortfolio" as Page,
+            icon: "camera",
+            label: tr.adminPortfolio.title,
+            path: PAGE_ROUTES.adminPortfolio,
+          },
         ]
       : []),
     ...(role === "employer"
-      ? [{ id: "compare" as Page, icon: "compare", label: tr.nav.compare }]
+      ? [
+          {
+            id: "compare" as Page,
+            icon: "compare",
+            label: tr.nav.compare,
+            path: PAGE_ROUTES.compare,
+          },
+        ]
       : []),
-    { id: "ai", icon: "ai", label: tr.nav.ai },
-    { id: "profile", icon: "profile", label: tr.nav.profile },
+    { id: "ai", icon: "ai", label: tr.nav.ai, path: PAGE_ROUTES.ai },
+    {
+      id: "wallet",
+      icon: "wallet",
+      label: tr.nav.wallet,
+      path: PAGE_ROUTES.wallet,
+    },
+    {
+      id: "profile",
+      icon: "profile",
+      label: tr.nav.profile,
+      path: PAGE_ROUTES.profile,
+    },
   ]
 
   const ctx: AppCtx = {
@@ -191,30 +320,29 @@ export default function App() {
     setLang,
     role,
     page,
-    setPage: (p: Page) => navigate(`/${p === "dashboard" ? "" : p}`),
+    setPage: (p: Page) => navigate(PAGE_ROUTES[p] ?? "/"),
     tr,
     dir,
   }
 
-  const handleLogin = (r: Role) => {
-    navigate("/dashboard")
+  const handleLogin = (_r: Role) => {
+    navigate("/")
   }
 
   const handleLogout = async () => {
     await logout()
-    navigate("/")
+    navigate("/auth", { replace: true })
     setMobileMenuOpen(false)
+  }
+
+  if (user && pathname === "/auth") {
+    return <Navigate to="/" replace />
   }
 
   if (!user && !isLoading) {
     return (
       <Ctx.Provider value={ctx}>
-        <AuthPage
-          lang={lang}
-          tr={tr}
-          dir={dir}
-          setLang={setLang}
-        />
+        <AuthPage lang={lang} tr={tr} dir={dir} setLang={setLang} />
       </Ctx.Provider>
     )
   }
@@ -275,8 +403,14 @@ export default function App() {
               lang={lang}
               onToggleLang={() => setLang(lang === "fa" ? "en" : "fa")}
               onToggleMobileMenu={() => setMobileMenuOpen(true)}
-              userName={lang === "fa" ? user?.nameFa || "علی" : user?.nameEn || "Ali"}
-              userInitial={lang === "fa" ? (user?.nameFa?.charAt(0) || "ع") : (user?.nameEn?.charAt(0) || "A")}
+              userName={
+                lang === "fa" ? user?.nameFa || "علی" : user?.nameEn || "Ali"
+              }
+              userInitial={
+                lang === "fa"
+                  ? user?.nameFa?.charAt(0) || "ع"
+                  : user?.nameEn?.charAt(0) || "A"
+              }
               theme={theme}
               onToggleTheme={toggleTheme}
               fontSize={fontSize}
@@ -492,6 +626,65 @@ export default function App() {
                       <AiPage />
                     </div>
                   </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRoute>
+                    <div className="flex-1 overflow-y-auto">
+                      {role === "employer" ? (
+                        <EmployerDashboard lang={lang} tr={tr} role={role} />
+                      ) : (
+                        <AdminDashboard lang={lang} tr={tr} />
+                      )}
+                    </div>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/wallet"
+                element={
+                  <ProtectedRoute>
+                    <div className="flex-1 overflow-y-auto">
+                      <WalletPage tr={tr} lang={lang} />
+                    </div>
+                  </ProtectedRoute>
+                }
+              />
+              {([
+                "/admin/users",
+                "/admin/content",
+                "/admin/tickets",
+                "/admin/workspace",
+                "/admin/portfolio",
+              ] as const).map((alias) => (
+                <Route
+                  key={alias}
+                  path={alias}
+                  element={
+                    <Navigate
+                      to={alias.replace("/admin/", "/admin-")}
+                      replace
+                    />
+                  }
+                />
+              ))}
+              <Route
+                path="*"
+                element={
+                  <div className="flex-1 overflow-y-auto">
+                    <PlaceholderPage
+                      title="404"
+                      subtitle={
+                        lang === "fa"
+                          ? "صفحه‌ای که دنبال آن بودید پیدا نشد"
+                          : "The page you were looking for was not found"
+                      }
+                      comingSoon={tr.common.underConstruction}
+                      underConstruction={tr.common.back}
+                    />
+                  </div>
                 }
               />
               <Route

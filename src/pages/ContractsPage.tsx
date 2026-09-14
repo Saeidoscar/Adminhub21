@@ -1,26 +1,23 @@
 import { useState } from "react"
-import { t, type Lang } from "../i18n"
+import { type Lang, type Tr } from "../i18n"
 import { Icon } from "../components/layout/Icon"
 import { Badge } from "../components/ui/Badge"
 import { ListSkeleton } from "../components/ui/Skeleton"
 import { contractStatusLabel, contractStatusColor } from "../domain/contract"
 import { contractAmountDisplay } from "../services/contractService"
 import { useContracts } from "../hooks/useMarketplace"
-import type { Contract } from "@adminhub/shared"
+import type { ContractRow as Contract } from "@adminhub/shared"
 import ContractDetailView from "../components/contracts/ContractDetailView"
 
 const STATUS_OPTIONS = ["active", "pending", "completed", "disputed"] as const
 
-export default function ContractsPage({
-  tr,
-  lang,
-}: {
-  tr: typeof t["en"]
-  lang: Lang
-}) {
-  const { contracts, loading, error, updateStatus, viewContract } = useContracts()
+export default function ContractsPage({ tr, lang }: { tr: Tr; lang: Lang }) {
+  const { contracts, loading, error, updateStatus, viewContract } =
+    useContracts()
   const [updatingId, setUpdatingId] = useState<string | null>(null)
-  const [selectedContract, setSelectedContract] = useState<Contract | null>(null)
+  const [selectedContract, setSelectedContract] = useState<Contract | null>(
+    null,
+  )
 
   const isFa = lang === "fa"
 

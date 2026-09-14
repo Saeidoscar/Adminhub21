@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react"
-import type { ContractRow, Contract, FavoriteRow, AdminProfile } from "@adminhub/shared"
+import type { ContractRow, FavoriteRow, AdminProfile } from "@adminhub/shared"
 import {
   listContracts,
   getContract,
@@ -8,7 +8,12 @@ import {
   addFavorite,
   removeFavorite,
 } from "../lib/api"
-import { filterAndSortAdmins, isFavoriteAdmin, toggleFavoriteService, loadMarketplaceData } from "../services/marketplaceService"
+import {
+  filterAndSortAdmins,
+  isFavoriteAdmin,
+  toggleFavoriteService,
+  loadMarketplaceData,
+} from "../services/marketplaceService"
 import type { MarketplaceFilters } from "../services/marketplaceService"
 
 export function useContracts() {
@@ -33,20 +38,44 @@ export function useContracts() {
     void loadContracts()
   }, [loadContracts])
 
-  const updateStatus = useCallback(async (contractId: string, status: string) => {
-    const validStatuses = ["active", "pending", "completed", "disputed"] as const
-    const safeStatus = validStatuses.includes(status as (typeof validStatuses)[number]) ? (status as (typeof validStatuses)[number]) : undefined
-    const updated = await updateContractStatus(contractId, { status: safeStatus })
-    setContracts((prev) => prev.map((c) => (c.id === contractId ? updated : c)))
-    return updated
-  }, [])
+  const updateStatus = useCallback(
+    async (contractId: string, status: string) => {
+      const validStatuses = [
+        "active",
+        "pending",
+        "completed",
+        "disputed",
+      ] as const
+      if (!validStatuses.includes(status as typeof validStatuses[number])) {
+        throw new Error(`Invalid contract status: ${status}`)
+      }
+      const updated = await updateContractStatus(contractId, {
+        status: status as typeof validStatuses[number],
+      })
+      setContracts((prev) =>
+        prev.map((c) => (c.id === contractId ? updated : c)),
+      )
+      return updated
+    },
+    [],
+  )
 
-  const viewContract = useCallback(async (id: string): Promise<Contract | null> => {
-    const contract = await getContract(id)
-    return contract
-  }, [])
+  const viewContract = useCallback(
+    async (id: string): Promise<ContractRow | null> => {
+      const contract = await getContract(id)
+      return contract
+    },
+    [],
+  )
 
-  return { contracts, loading, error, loadContracts, updateStatus, viewContract }
+  return {
+    contracts,
+    loading,
+    error,
+    loadContracts,
+    updateStatus,
+    viewContract,
+  }
 }
 
 export function useFavorites() {
@@ -62,30 +91,36 @@ export function useFavorites() {
     }
   }, [])
 
-  const toggleFavorite = useCallback(async (adminId: string) => {
-    setFavLoading((prev) => ({ ...prev, [adminId]: true }))
-    try {
-      const isFav = isFavoriteAdmin(favorites, adminId)
-      if (isFav) {
-        await removeFavorite(adminId)
-      } else {
-        await addFavorite(adminId)
+  const toggleFavorite = useCallback(
+    async (adminId: string) => {
+      setFavLoading((prev) => ({ ...prev, [adminId]: true }))
+      try {
+        const isFav = isFavoriteAdmin(favorites, adminId)
+        if (isFav) {
+          await removeFavorite(adminId)
+        } else {
+          await addFavorite(adminId)
+        }
+        setFavorites((prev) => toggleFavoriteService(prev, adminId, isFav))
+      } catch {
+        // silently fail
+      } finally {
+        setFavLoading((prev) => {
+          const next = { ...prev }
+          delete next[adminId]
+          return next
+        })
       }
-      setFavorites((prev) => toggleFavoriteService(prev, adminId, isFav))
-    } catch {
-      // silently fail
-    } finally {
-      setFavLoading((prev) => {
-        const next = { ...prev }
-        delete next[adminId]
-        return next
-      })
-    }
-  }, [favorites])
+    },
+    [favorites],
+  )
 
-  const isFavorite = useCallback((adminId: string) => {
-    return isFavoriteAdmin(favorites, adminId)
-  }, [favorites])
+  const isFavorite = useCallback(
+    (adminId: string) => {
+      return isFavoriteAdmin(favorites, adminId)
+    },
+    [favorites],
+  )
 
   return { favorites, favLoading, loadFavorites, toggleFavorite, isFavorite }
 }
@@ -93,7 +128,8 @@ export function useFavorites() {
 export function useMarketplace(filters: MarketplaceFilters) {
   const [admins, setAdmins] = useState<AdminProfile[]>([])
   const [loading, setLoading] = useState(true)
-  const { loadFavorites, favorites, favLoading, toggleFavorite, isFavorite } = useFavorites()
+  const { loadFavorites, favorites, favLoading, toggleFavorite, isFavorite } =
+    useFavorites()
 
   useEffect(() => {
     let cancelled = false
@@ -125,5 +161,13 @@ export function useMarketplace(filters: MarketplaceFilters) {
 
   const filtered = filterAndSortAdmins(admins, filters)
 
-  return { admins, filtered, loading, favorites, favLoading, toggleFavorite, isFavorite }
+  return {
+    admins,
+    filtered,
+    loading,
+    favorites,
+    favLoading,
+    toggleFavorite,
+    isFavorite,
+  }
 }

@@ -2,7 +2,8 @@ import { type ReactNode } from "react"
 
 interface ButtonProps {
   children: ReactNode
-  onClick?: () => void
+  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void
+  title?: string
   variant?: "primary" | "secondary" | "ghost" | "danger" | "success"
   size?: "sm" | "md" | "lg"
   disabled?: boolean
@@ -14,6 +15,7 @@ interface ButtonProps {
 export function Button({
   children,
   onClick,
+  title,
   variant = "primary",
   size = "md",
   disabled = false,
@@ -42,6 +44,7 @@ export function Button({
     <button
       type={type}
       onClick={onClick}
+      title={title}
       disabled={disabled}
       className={`${base} ${variants[variant]} ${sizes[size]} ${className}`}
     >

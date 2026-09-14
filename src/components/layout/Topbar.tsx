@@ -6,8 +6,8 @@ interface TopbarProps {
   lang: "fa" | "en"
   onToggleLang: () => void
   onToggleMobileMenu: () => void
-  userName: string
-  userInitial: string
+  userName?: string
+  userInitial?: string
   theme?: "light" | "dark"
   onToggleTheme?: () => void
   fontSize?: "sm" | "md" | "lg"
@@ -20,8 +20,8 @@ export function Topbar({
   lang,
   onToggleLang,
   onToggleMobileMenu,
-  userName,
-  userInitial,
+  userName = "",
+  userInitial = "",
   children,
   theme,
   onToggleTheme,

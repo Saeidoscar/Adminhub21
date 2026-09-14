@@ -104,6 +104,8 @@ export interface ContractRow {
   updatedAt: string
 }
 
+export type Contract = ContractRow
+
 export interface ReviewRow {
   id: string
   adminId: string
@@ -141,9 +143,17 @@ export interface WalletTransactionRow {
 }
 
 export interface FavoriteRow {
-  id: string
-  userId: string
+  id?: string
+  userId?: string
   adminId: string
+  adminNameEn?: string
+  adminNameFa?: string
+  adminPhoto?: string
+  adminRating?: number
+  adminReviews?: number
+  adminVerified?: boolean
+  adminInsured?: boolean
+  platforms?: PlatformKey[]
   createdAt: string
 }
 

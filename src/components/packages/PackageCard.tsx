@@ -4,6 +4,7 @@ import { Button } from "../ui/Button"
 import type { ContractPackage } from "@adminhub/shared"
 import { PLATFORM_SPECS } from "./platformSpecs"
 import { formatPrice } from "../../domain/package"
+import type { Tr } from "../../i18n"
 
 const PLATFORM_COLORS: Record<string, string> = {
   instagram: "badge-instagram",
@@ -17,7 +18,7 @@ const PLATFORM_COLORS: Record<string, string> = {
 interface PackageCardProps {
   pkg: ContractPackage
   lang: "en" | "fa"
-  tr: Record<string, string>
+  tr: Tr
   inCompare?: boolean
   onToggleCompare?: () => void
   onEdit?: () => void
@@ -189,7 +190,11 @@ export default function PackageCard({
             className={inCompare ? "border-[#1e3a5f] text-[#1e3a5f]" : ""}
           >
             <Icon name={inCompare ? "check" : "compare"} size={14} />
-            {inCompare ? (isFa ? "در مقایسه" : "Comparing") : tr.common?.compare || "Compare"}
+            {inCompare
+              ? isFa
+                ? "در مقایسه"
+                : "Comparing"
+              : tr.common?.compare || "Compare"}
           </Button>
         )}
       </div>
