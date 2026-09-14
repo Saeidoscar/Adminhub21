@@ -1,11 +1,11 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\V1\AdminController;
 use App\Http\Controllers\Api\V1\AdminContentController;
+use App\Http\Controllers\Api\V1\AdminController;
 use App\Http\Controllers\Api\V1\AdminTicketController;
+use Illuminate\Support\Facades\Route;
 
-Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
+Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function (): void {
     Route::get('/dashboard', [AdminController::class, 'dashboard']);
     Route::get('/dashboard/stats', [AdminController::class, 'dashboardStats']);
     Route::get('/users', [AdminController::class, 'users']);
@@ -43,7 +43,7 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::post('/tickets/{id}/reply', [AdminTicketController::class, 'reply'])->whereNumber('id');
 });
 
-Route::middleware(['auth:sanctum', 'admin'])->prefix('admin-profiles')->group(function () {
+Route::middleware(['auth:sanctum', 'admin'])->prefix('admin-profiles')->group(function (): void {
     Route::get('/', [AdminController::class, 'profiles']);
     Route::get('/{id}', [AdminController::class, 'showProfile'])->whereNumber('id');
     Route::put('/me', [AdminController::class, 'updateMyProfile']);

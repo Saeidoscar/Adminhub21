@@ -54,7 +54,7 @@ class AiConfigCacheService
 
         return Cache::tags(['ai', 'pricing'])->remember($cacheKey, self::TTL * 12, function () use ($code) {
             $model = AiModel::where('code', $code)->first();
-            if (!$model) {
+            if (! $model) {
                 return null;
             }
 

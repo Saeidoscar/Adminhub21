@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 class ManageModelsAction
 {
     /**
-     * @param  array<string, mixed>  $data
+     * @param array<string, mixed> $data
      */
     public function execute(?AiModel $model, array $data): AiModel
     {

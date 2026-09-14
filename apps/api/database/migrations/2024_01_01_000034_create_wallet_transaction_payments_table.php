@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('wallet_transaction_payments', function (Blueprint $table) {
+        Schema::create('wallet_transaction_payments', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('transaction_id')->constrained('wallet_transactions')->cascadeOnDelete();
             $table->string('gateway');

@@ -19,11 +19,13 @@ class TicketPolicy
 
     public function update(User $user, Ticket $ticket): bool
     {
-        return $user->hasRole('admin') || $user->hasRole('super_admin');
+        return $user->hasRole('admin') || $user->hasRole('super_admin')
+            || $user->id === $ticket->user_id
+            || $user->id === $ticket->assigned_to;
     }
 
     public function manage(User $user, Ticket $ticket): bool
     {
-        return $user->hasRole('admin') || $user->hasRole('super_admin');
+        return $this->update($user, $ticket);
     }
 }

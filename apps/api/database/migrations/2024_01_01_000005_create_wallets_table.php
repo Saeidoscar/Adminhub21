@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('wallets', function (Blueprint $table) {
+        Schema::create('wallets', function (Blueprint $table): void {
             $table->foreignId('user_id')->constrained()->cascadeOnDelete()->primary();
             $table->unsignedInteger('balance')->default(0);
             $table->unsignedInteger('blocked_balance')->default(0);

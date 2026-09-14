@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('ticket_departments', function (Blueprint $table) {
+        Schema::create('ticket_departments', function (Blueprint $table): void {
             $table->id();
             $table->string('name');
             $table->string('slug')->unique();
@@ -17,7 +17,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('ticket_messages', function (Blueprint $table) {
+        Schema::create('ticket_messages', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('ticket_id')->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
@@ -28,7 +28,7 @@ return new class extends Migration
             $table->index(['ticket_id', 'created_at']);
         });
 
-        Schema::create('ticket_department_user', function (Blueprint $table) {
+        Schema::create('ticket_department_user', function (Blueprint $table): void {
             $table->foreignId('ticket_department_id')->constrained('ticket_departments')->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->primary(['ticket_department_id', 'user_id']);

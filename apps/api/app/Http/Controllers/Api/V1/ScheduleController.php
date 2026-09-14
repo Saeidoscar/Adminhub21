@@ -3,13 +3,12 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-
-use App\Services\Cases\CaseService;
-use App\Services\Schedule\ScheduleService;
 use App\Models\OfficeCase;
-use App\Models\Office;
+use App\Models\OfficeCaseEvent;
 use App\Models\OfficeCaseTask;
 use App\Models\OfficeTimeLog;
+use App\Services\Cases\CaseService;
+use App\Services\Schedule\ScheduleService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -22,7 +21,7 @@ class ScheduleController extends Controller
 
     public function events(Request $request): JsonResponse
     {
-        $events = \App\Models\OfficeCaseEvent::query()
+        $events = OfficeCaseEvent::query()
             ->whereHas('officeCase.office', function ($q) use ($request): void {
                 $q->where('owner_id', $request->user()->id);
             })
@@ -47,7 +46,7 @@ class ScheduleController extends Controller
 
     public function updateEvent(Request $request, $id): JsonResponse
     {
-        $event = \App\Models\OfficeCaseEvent::query()->findOrFail($id);
+        $event = OfficeCaseEvent::query()->findOrFail($id);
 
         $event->update($request->validate([
             'title' => ['nullable', 'string', 'max:255'],
@@ -62,7 +61,7 @@ class ScheduleController extends Controller
 
     public function deleteEvent($id): JsonResponse
     {
-        $event = \App\Models\OfficeCaseEvent::query()->findOrFail($id);
+        $event = OfficeCaseEvent::query()->findOrFail($id);
         $event->delete();
 
         return response()->json(null, 204);
@@ -140,5 +139,3 @@ class ScheduleController extends Controller
         return response()->json($logs);
     }
 }
-
-

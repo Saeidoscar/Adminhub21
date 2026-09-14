@@ -2,20 +2,21 @@
 
 namespace App\Services\Cases;
 
-use App\Models\OfficeCase;
-use App\Models\Office;
-use App\Models\User;
-use App\Models\OfficeCaseEvent;
-use App\Models\OfficeTimeLog;
-use App\Actions\Cases\CreateCaseAction;
-use App\Actions\Cases\AssignTaskAction;
-use App\Actions\Cases\LogTimeAction;
 use App\Actions\Cases\AddEventAction;
+use App\Actions\Cases\AssignTaskAction;
+use App\Actions\Cases\CreateCaseAction;
+use App\Actions\Cases\DestroyEventAction;
+use App\Actions\Cases\DestroyTimeLogAction;
+use App\Actions\Cases\LogTimeAction;
 use App\Actions\Cases\TrackProgressAction;
 use App\Actions\Cases\UpdateEventAction;
-use App\Actions\Cases\DestroyEventAction;
 use App\Actions\Cases\UpdateTimeLogAction;
-use App\Actions\Cases\DestroyTimeLogAction;
+use App\Models\Office;
+use App\Models\OfficeCase;
+use App\Models\OfficeCaseEvent;
+use App\Models\OfficeCaseTask;
+use App\Models\OfficeTimeLog;
+use App\Models\User;
 
 class CaseService
 {
@@ -36,17 +37,17 @@ class CaseService
         return $this->createCase->execute($office, $data);
     }
 
-    public function assignTask(OfficeCase $case, User $assignee, array $data): \App\Models\OfficeCaseTask
+    public function assignTask(OfficeCase $case, User $assignee, array $data): OfficeCaseTask
     {
         return $this->assignTask->execute($case, $assignee, $data);
     }
 
-    public function logTime(OfficeCase $case, User $user, array $data): \App\Models\OfficeTimeLog
+    public function logTime(OfficeCase $case, User $user, array $data): OfficeTimeLog
     {
         return $this->logTime->execute($case, $user, $data);
     }
 
-    public function addEvent(OfficeCase $case, array $data): \App\Models\OfficeCaseEvent
+    public function addEvent(OfficeCase $case, array $data): OfficeCaseEvent
     {
         return $this->addEvent->execute($case, $data);
     }

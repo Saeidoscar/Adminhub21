@@ -2,17 +2,16 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Actions\Affiliates\GenerateReferralCodeAction;
 use App\Http\Controllers\Controller;
-
 use App\Models\Affiliate;
-use App\Models\AffiliateCommission;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class AffiliateController extends Controller
 {
     public function __construct(
-        private readonly \App\Actions\Affiliates\GenerateReferralCodeAction $generateCode,
+        private readonly GenerateReferralCodeAction $generateCode,
     ) {}
 
     public function stats(Request $request): JsonResponse
@@ -25,7 +24,7 @@ class AffiliateController extends Controller
                 'totalCommission' => $affiliate?->commissions()->sum('amount') ?? 0,
                 'pendingCommission' => $affiliate?->commissions()->where('status', 'pending')->sum('amount') ?? 0,
                 'paidCommission' => $affiliate?->commissions()->where('status', 'paid')->sum('amount') ?? 0,
-            ]
+            ],
         ]);
     }
 
@@ -33,7 +32,7 @@ class AffiliateController extends Controller
     {
         $affiliate = Affiliate::query()->where('user_id', $request->user()->id)->first();
 
-        if (!$affiliate) {
+        if (! $affiliate) {
             return response()->json(['code' => null]);
         }
 
@@ -104,5 +103,3 @@ class AffiliateController extends Controller
         return response()->json($affiliate);
     }
 }
-
-

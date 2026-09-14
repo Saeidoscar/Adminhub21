@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 class SendMessageAction
 {
     /**
-     * @param  array<string, mixed>  $data
+     * @param array<string, mixed> $data
      */
     public function execute(AiConversation $conversation, array $data): AiMessage
     {

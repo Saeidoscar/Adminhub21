@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\DB;
 class DepositAction
 {
     /**
-     * @param  array<string, mixed>  $payload
+     * @param array<string, mixed> $payload
      */
     public function execute(User $user, int $amount, WalletTransactionType $type, array $payload = []): WalletTransaction
     {

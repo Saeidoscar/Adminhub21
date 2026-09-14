@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('ai_messages', function (Blueprint $table) {
+        Schema::table('ai_messages', function (Blueprint $table): void {
             $table->string('provider')->nullable()->after('response');
             $table->string('model_code')->nullable()->after('provider');
         });
@@ -16,7 +16,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::table('ai_messages', function (Blueprint $table) {
+        Schema::table('ai_messages', function (Blueprint $table): void {
             $table->dropColumn(['provider', 'model_code']);
         });
     }

@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('tasks', function (Blueprint $table) {
+        Schema::create('tasks', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('case_id')->constrained()->cascadeOnDelete();
             $table->foreignId('assigned_to')->nullable()->constrained('users')->nullOnDelete();

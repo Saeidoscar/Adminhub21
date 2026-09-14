@@ -2,7 +2,6 @@
 
 namespace App\Actions\Reviews;
 
-use App\Models\Review;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 

@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 class TrackCommissionAction
 {
     /**
-     * @param  array<string, mixed>  $payload
+     * @param array<string, mixed> $payload
      */
     public function execute(Affiliate $affiliate, WalletTransaction $sourceTransaction, array $payload = []): AffiliateCommission
     {

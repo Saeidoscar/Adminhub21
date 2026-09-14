@@ -2,16 +2,13 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Http\Controllers\Controller;
-
 use App\Actions\AdminProfile\CreateAdminProfileAction;
-use App\Actions\AdminProfile\UpdateAdminProfileAction;
 use App\Actions\AdminProfile\ToggleVerificationAction;
+use App\Actions\AdminProfile\UpdateAdminProfileAction;
+use App\Http\Controllers\Controller;
 use App\Models\AdminProfile;
-use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
@@ -84,5 +81,3 @@ class ProfileController extends Controller
         return response()->json(null, 204);
     }
 }
-
-

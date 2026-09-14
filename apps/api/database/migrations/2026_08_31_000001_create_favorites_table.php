@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('favorites', function (Blueprint $table) {
+        Schema::create('favorites', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('admin_id')->constrained('users')->cascadeOnDelete();

@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('office_cases', function (Blueprint $table) {
+        Schema::create('office_cases', function (Blueprint $table): void {
             $table->id();
             $table->uuid('uuid')->unique();
             $table->foreignId('office_id')->constrained()->cascadeOnDelete();

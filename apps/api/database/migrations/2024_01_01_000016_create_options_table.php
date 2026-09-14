@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('options', function (Blueprint $table) {
+        Schema::create('options', function (Blueprint $table): void {
             $table->id();
             $table->string('group');
             $table->string('key')->unique();

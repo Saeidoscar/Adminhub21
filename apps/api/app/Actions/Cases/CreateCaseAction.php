@@ -2,8 +2,8 @@
 
 namespace App\Actions\Cases;
 
-use App\Models\OfficeCase;
 use App\Models\Office;
+use App\Models\OfficeCase;
 use Illuminate\Support\Facades\DB;
 
 class CreateCaseAction

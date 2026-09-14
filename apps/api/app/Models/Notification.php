@@ -5,7 +5,6 @@ namespace App\Models;
 use App\Enums\NotificationCategory;
 use App\Enums\NotificationPriority;
 use App\Enums\NotificationStatus;
-use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

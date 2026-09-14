@@ -1,25 +1,32 @@
 <?php
 
+use App\Http\Middleware\AdminMiddleware;
+use App\Http\Middleware\VerifyPaymentCallback;
+use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Middleware\SubstituteBindings;
+use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
-        api: __DIR__.'/../routes/api.php',
-        commands: __DIR__.'/../routes/console.php',
+        api: __DIR__ . '/../routes/api.php',
+        commands: __DIR__ . '/../routes/console.php',
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->api(append: [
-            \Illuminate\Routing\Middleware\SubstituteBindings::class,
-            \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+            SubstituteBindings::class,
+            EnsureFrontendRequestsAreStateful::class,
         ]);
+        $middleware->throttleApi('api');
 
         $middleware->alias([
-            'auth.sanctum' => \App\Http\Middleware\RequireAuth::class,
-            'admin' => \App\Http\Middleware\AdminMiddleware::class,
+            'auth.sanctum' => Authenticate::class,
+            'admin' => AdminMiddleware::class,
+            'payment.callback' => VerifyPaymentCallback::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

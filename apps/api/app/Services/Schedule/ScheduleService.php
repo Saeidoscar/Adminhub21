@@ -2,12 +2,12 @@
 
 namespace App\Services\Schedule;
 
+use App\Actions\Schedule\CreateCalendarEventAction;
+use App\Actions\Schedule\ManageTaskQueueAction;
+use App\Actions\Schedule\SendReminderAction;
 use App\Models\OfficeCase;
 use App\Models\OfficeCaseEvent;
 use App\Models\OfficeCaseTask;
-use App\Actions\Schedule\CreateCalendarEventAction;
-use App\Actions\Schedule\SendReminderAction;
-use App\Actions\Schedule\ManageTaskQueueAction;
 
 class ScheduleService
 {

@@ -2,18 +2,20 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Http\Controllers\Controller;
-
-use App\Services\Notifications\NotificationService;
 use App\Actions\Wallet\ApproveWithdrawalAction;
 use App\Actions\Wallet\RejectWithdrawalAction;
 use App\Enums\NotificationCategory;
-use App\Models\User;
+use App\Http\Controllers\Controller;
+use App\Models\AdminProfile;
 use App\Models\Affiliate;
-use App\Models\AffiliateCommission;
-use App\Models\Option;
-use App\Models\WalletTransaction;
 use App\Models\Contract;
+use App\Models\Option;
+use App\Models\Package;
+use App\Models\Review;
+use App\Models\Ticket;
+use App\Models\User;
+use App\Models\WalletTransaction;
+use App\Services\Notifications\NotificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -29,10 +31,10 @@ class AdminController extends Controller
     {
         return response()->json([
             'users' => User::query()->count(),
-            'packages' => \App\Models\Package::query()->count(),
+            'packages' => Package::query()->count(),
             'contracts' => Contract::query()->count(),
-            'reviews' => \App\Models\Review::query()->count(),
-            'tickets' => \App\Models\Ticket::query()->count(),
+            'reviews' => Review::query()->count(),
+            'tickets' => Ticket::query()->count(),
         ]);
     }
 
@@ -46,9 +48,9 @@ class AdminController extends Controller
             'activeContracts' => Contract::query()->where('status', 'active')->count(),
             'totalRevenueToman' => (float) WalletTransaction::query()->where('direction', 'deposit')->where('status', 'completed')->sum('amount'),
             'totalRevenueUSD' => 0,
-            'totalPackages' => \App\Models\Package::query()->count(),
-            'totalReviews' => \App\Models\Review::query()->count(),
-            'avgRating' => (float) \App\Models\Review::query()->avg('rating') ?? 0,
+            'totalPackages' => Package::query()->count(),
+            'totalReviews' => Review::query()->count(),
+            'avgRating' => (float) Review::query()->avg('rating') ?? 0,
         ]]);
     }
 
@@ -59,10 +61,10 @@ class AdminController extends Controller
         $query = User::query();
 
         if ($search = $request->string('search')->toString()) {
-            $query->where(function ($q) use ($search) {
+            $query->where(function ($q) use ($search): void {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhere('phone', 'like', "%{$search}%");
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('phone', 'like', "%{$search}%");
             });
         }
 
@@ -172,21 +174,21 @@ class AdminController extends Controller
 
     public function profiles(Request $request): JsonResponse
     {
-        $profiles = \App\Models\AdminProfile::query()->with('user')->paginate();
+        $profiles = AdminProfile::query()->with('user')->paginate();
 
         return response()->json(['profiles' => $profiles->items()], 200, ['X-Total-Count' => $profiles->total()]);
     }
 
     public function showProfile($id): JsonResponse
     {
-        $profile = \App\Models\AdminProfile::query()->with('user')->findOrFail($id);
+        $profile = AdminProfile::query()->with('user')->findOrFail($id);
 
         return response()->json(['profile' => $profile]);
     }
 
     public function updateMyProfile(Request $request): JsonResponse
     {
-        $profile = \App\Models\AdminProfile::query()->where('user_id', $request->user()->id)->firstOrFail();
+        $profile = AdminProfile::query()->where('user_id', $request->user()->id)->firstOrFail();
 
         $validated = $request->validate([
             'photo' => ['nullable', 'string'],
@@ -313,5 +315,3 @@ class AdminController extends Controller
         return response()->json(['commissions' => $commissions->items()], 200, ['X-Total-Count' => $commissions->total()]);
     }
 }
-
-

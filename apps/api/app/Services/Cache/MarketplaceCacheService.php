@@ -2,8 +2,8 @@
 
 namespace App\Services\Cache;
 
-use App\Models\AiModel;
 use App\Models\Package;
+use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
@@ -20,10 +20,10 @@ class MarketplaceCacheService
         $cacheKey = self::PREFIX . "listings:page:{$perPage}";
 
         return Cache::tags(['listings'])->remember($cacheKey, self::TTL, function () {
-            return User::whereHas('packages', function ($query) {
+            return User::whereHas('packages', function ($query): void {
                 $query->where('status', 'published');
             })
-                ->with(['packages' => function ($query) {
+                ->with(['packages' => function ($query): void {
                     $query->where('status', 'published')
                         ->with('platformConfigs');
                 }])
@@ -37,7 +37,7 @@ class MarketplaceCacheService
         $cacheKey = self::PREFIX . "featured:{$limit}";
 
         return Cache::tags(['listings', 'featured'])->remember($cacheKey, self::TTL, function () {
-            return User::whereHas('packages', function ($query) {
+            return User::whereHas('packages', function ($query): void {
                 $query->where('status', 'published');
             })
                 ->withAvg('reviews', 'rating')
@@ -53,7 +53,7 @@ class MarketplaceCacheService
         $cacheKey = self::PREFIX . 'categories';
 
         return Cache::tags(['categories'])->remember($cacheKey, self::TTL * 24, function () {
-            return \App\Models\Tag::whereNull('parentId')
+            return Tag::whereNull('parentId')
                 ->withCount('stories')
                 ->orderByDesc('stories_count')
                 ->get();

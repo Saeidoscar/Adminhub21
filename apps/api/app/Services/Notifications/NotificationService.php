@@ -2,10 +2,10 @@
 
 namespace App\Services\Notifications;
 
-use App\Enums\NotificationChannel;
 use App\Enums\NotificationCategory;
+use App\Enums\NotificationChannel;
+use App\Enums\NotificationPriority;
 use App\Models\Notification;
-use App\Models\NotificationDelivery;
 use App\Models\User;
 
 class NotificationService
@@ -15,7 +15,7 @@ class NotificationService
         $notification = Notification::query()->create([
             'user_id' => $user->id,
             'category' => $category,
-            'priority' => \App\Enums\NotificationPriority::Normal,
+            'priority' => NotificationPriority::Normal,
             'title' => $title,
             'body' => $body,
             'data' => $data,

@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('admin_profiles', function (Blueprint $table) {
+        Schema::create('admin_profiles', function (Blueprint $table): void {
             $table->foreignId('user_id')->constrained()->cascadeOnDelete()->primary();
             $table->foreignId('photo_id')->nullable()->constrained('attachments')->nullOnDelete();
             $table->foreignId('insurance_document_id')->nullable()->constrained('attachments')->nullOnDelete();

@@ -2,13 +2,13 @@
 
 namespace App\Services\Payments;
 
+use App\Actions\Payments\InitiateCryptoPaymentAction;
+use App\Actions\Payments\InitiateSepPaymentAction;
+use App\Actions\Payments\InitiateZibalPaymentAction;
 use App\Enums\PaymentGateway;
 use App\Models\PaymentGateway as PaymentGatewayModel;
 use App\Models\User;
 use App\Models\WalletTransaction;
-use App\Actions\Payments\InitiateZibalPaymentAction;
-use App\Actions\Payments\InitiateSepPaymentAction;
-use App\Actions\Payments\InitiateCryptoPaymentAction;
 
 class PaymentGatewayService
 {
@@ -19,7 +19,7 @@ class PaymentGatewayService
     ) {}
 
     /**
-     * @param  array<string, mixed>  $payload
+     * @param array<string, mixed> $payload
      */
     public function initiate(User $user, PaymentGateway $gateway, int $amount, array $payload = []): WalletTransaction
     {

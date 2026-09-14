@@ -2,16 +2,15 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Http\Controllers\Controller;
-
-use App\Actions\Contracts\CreateContractAction;
 use App\Actions\Contracts\ActivateContractAction;
-use App\Actions\Contracts\CompleteContractAction;
 use App\Actions\Contracts\CancelContractAction;
-use App\Actions\Contracts\UpdateContractAction;
-use App\Actions\Contracts\SignContractAction;
+use App\Actions\Contracts\CompleteContractAction;
+use App\Actions\Contracts\CreateContractAction;
 use App\Actions\Contracts\GenerateContractPdfAction;
+use App\Actions\Contracts\SignContractAction;
+use App\Actions\Contracts\UpdateContractAction;
 use App\Actions\Reviews\SubmitReviewAction;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\StoreContractRequest;
 use App\Http\Requests\Api\V1\StoreReviewRequest;
 use App\Models\Contract;
@@ -56,6 +55,7 @@ class ContractController extends Controller
 
     public function show(Contract $contract): JsonResponse
     {
+        $this->authorize('view', $contract);
         $contract->load(['user', 'client', 'package', 'reviews', 'clauses']);
 
         return response()->json($contract);
@@ -63,6 +63,7 @@ class ContractController extends Controller
 
     public function update(Request $request, Contract $contract): JsonResponse
     {
+        $this->authorize('update', $contract);
         $contract = $this->updateContract->execute($contract, $request->validate([
             'title' => ['nullable', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
@@ -82,6 +83,7 @@ class ContractController extends Controller
 
     public function sign(Request $request, Contract $contract): JsonResponse
     {
+        $this->authorize('update', $contract);
         $signature = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'ip_address' => ['nullable', 'ip'],
@@ -95,14 +97,16 @@ class ContractController extends Controller
 
     public function generatePdf(Contract $contract): JsonResponse
     {
+        $this->authorize('view', $contract);
         $contract = $this->generateContractPdf->execute($contract);
 
         return response()->json(['pdf_path' => $contract->pdf_path]);
     }
 
-    public function downloadPdf(Contract $contract): \Symfony\Component\HttpFoundation\BinaryFileResponse
+    public function downloadPdf(Contract $contract): Symfony\Component\HttpFoundation\BinaryFileResponse
     {
-        if (!$contract->pdf_path || !Storage::disk('public')->exists($contract->pdf_path)) {
+        $this->authorize('view', $contract);
+        if (! $contract->pdf_path || ! Storage::disk('public')->exists($contract->pdf_path)) {
             abort(404, 'PDF not generated yet.');
         }
 
@@ -111,6 +115,7 @@ class ContractController extends Controller
 
     public function activate(Contract $contract): JsonResponse
     {
+        $this->authorize('update', $contract);
         $contract = $this->activateContract->execute($contract);
 
         return response()->json($contract);
@@ -118,6 +123,7 @@ class ContractController extends Controller
 
     public function complete(Contract $contract): JsonResponse
     {
+        $this->authorize('update', $contract);
         $contract = $this->completeContract->execute($contract);
 
         return response()->json($contract);
@@ -125,6 +131,7 @@ class ContractController extends Controller
 
     public function cancel(Contract $contract): JsonResponse
     {
+        $this->authorize('update', $contract);
         $contract = $this->cancelContract->execute($contract);
 
         return response()->json($contract);
@@ -132,10 +139,9 @@ class ContractController extends Controller
 
     public function review(StoreReviewRequest $request, Contract $contract): JsonResponse
     {
+        $this->authorize('view', $contract);
         $review = $this->submitReview->execute($request->user(), $contract, $request->validated());
 
         return response()->json($review, 201);
     }
 }
-
-

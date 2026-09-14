@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 class TrackTokensAction
 {
     /**
-     * @param  array<string, mixed>  $usage
+     * @param array<string, mixed> $usage
      */
     public function execute(AiMessage $message, array $usage): AiMessage
     {

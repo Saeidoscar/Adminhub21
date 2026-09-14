@@ -15,6 +15,5 @@ class TicketReplied
     public function __construct(
         public readonly Ticket $ticket,
         public readonly TicketMessage $message
-    ) {
-    }
+    ) {}
 }

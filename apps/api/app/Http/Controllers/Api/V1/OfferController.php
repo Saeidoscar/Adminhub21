@@ -2,12 +2,9 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Http\Controllers\Controller;
-
 use App\Enums\OfferStatus;
+use App\Http\Controllers\Controller;
 use App\Models\Offer;
-use App\Models\Package;
-use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -51,6 +48,7 @@ class OfferController extends Controller
 
     public function show(Offer $offer): JsonResponse
     {
+        $this->authorize('view', $offer);
         $offer->load(['user', 'targetUser', 'package']);
 
         return response()->json($offer);
@@ -58,6 +56,7 @@ class OfferController extends Controller
 
     public function update(Request $request, Offer $offer): JsonResponse
     {
+        $this->authorize('update', $offer);
         $offer->update($request->validate([
             'message' => ['nullable', 'string'],
             'amount' => ['nullable', 'numeric', 'min:0'],
@@ -69,6 +68,7 @@ class OfferController extends Controller
 
     public function destroy(Offer $offer): JsonResponse
     {
+        $this->authorize('update', $offer);
         $offer->delete();
 
         return response()->json(null, 204);
@@ -76,6 +76,7 @@ class OfferController extends Controller
 
     public function accept(Offer $offer): JsonResponse
     {
+        $this->authorize('update', $offer);
         $offer->update(['status' => OfferStatus::Accepted->value]);
 
         return response()->json($offer->load(['user', 'targetUser', 'package']));
@@ -83,10 +84,9 @@ class OfferController extends Controller
 
     public function reject(Offer $offer): JsonResponse
     {
+        $this->authorize('update', $offer);
         $offer->update(['status' => OfferStatus::Rejected->value]);
 
         return response()->json($offer->load(['user', 'targetUser', 'package']));
     }
 }
-
-

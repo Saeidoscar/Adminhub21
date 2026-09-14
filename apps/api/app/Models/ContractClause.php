@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Enums\ContractClauseType;
-use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 

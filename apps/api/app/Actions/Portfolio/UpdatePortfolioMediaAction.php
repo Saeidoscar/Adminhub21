@@ -3,13 +3,12 @@
 namespace App\Actions\Portfolio;
 
 use App\Models\Portfolio;
-use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
 class UpdatePortfolioMediaAction
 {
     /**
-     * @param  array<string, mixed>  $media
+     * @param array<string, mixed> $media
      */
     public function execute(Portfolio $portfolio, array $media): Portfolio
     {

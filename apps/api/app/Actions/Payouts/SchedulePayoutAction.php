@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 class SchedulePayoutAction
 {
     /**
-     * @param  array<string, mixed>  $details
+     * @param array<string, mixed> $details
      */
     public function execute(WalletTransaction $transaction, array $details): PayoutSettlement
     {

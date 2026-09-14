@@ -2,16 +2,15 @@
 
 namespace App\Actions\Marketplace;
 
-use App\Enums\ContentStatus;
 use App\Models\Package;
-use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class SearchMarketplaceAction
 {
     /**
-     * @param  array<string, mixed>  $filters
+     * @param array<string, mixed> $filters
+     *
      * @return LengthAwarePaginator<int, Package>
      */
     public function execute(array $filters): LengthAwarePaginator

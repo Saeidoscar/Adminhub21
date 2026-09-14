@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('affiliate_referrals', function (Blueprint $table) {
+        Schema::create('affiliate_referrals', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('referred_user_id')->constrained('users')->cascadeOnDelete();
@@ -18,7 +18,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('affiliate_commissions', function (Blueprint $table) {
+        Schema::create('affiliate_commissions', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('referral_id')->constrained()->cascadeOnDelete();

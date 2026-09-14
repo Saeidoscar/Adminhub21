@@ -8,7 +8,8 @@ use Illuminate\Support\Facades\DB;
 class ManageTagsAction
 {
     /**
-     * @param  array<int, array{name: string, slug: string, type?: string|null}>  $tags
+     * @param array<int, array{name: string, slug: string, type?: string|null}> $tags
+     *
      * @return array<int, Tag>
      */
     public function execute(array $tags): array

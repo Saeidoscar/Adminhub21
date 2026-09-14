@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('time_logs', function (Blueprint $table) {
+        Schema::create('time_logs', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('case_id')->nullable()->constrained()->nullOnDelete();

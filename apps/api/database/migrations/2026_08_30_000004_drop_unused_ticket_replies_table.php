@@ -13,7 +13,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::create('ticket_replies', function (Blueprint $table) {
+        Schema::create('ticket_replies', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('ticket_id')->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();

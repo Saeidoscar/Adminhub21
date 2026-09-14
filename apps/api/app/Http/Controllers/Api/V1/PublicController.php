@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Http\Controllers\Controller;
-
 use App\Actions\Marketplace\SearchMarketplaceAction;
-use App\Models\Package;
+use App\Http\Controllers\Controller;
 use App\Models\AdminProfile;
+use App\Models\Package;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -62,5 +61,3 @@ class PublicController extends Controller
         ]);
     }
 }
-
-

@@ -28,7 +28,7 @@ class ContractSignedNotification extends Notification implements ShouldQueue
         return (new MailMessage)
             ->subject("Contract Signed: #{$this->contract->id}")
             ->greeting("Hello {$notifiable->name},")
-            ->line("A contract has been successfully signed.")
+            ->line('A contract has been successfully signed.')
             ->line("Contract ID: #{$this->contract->id}")
             ->line("Status: {$this->contract->status->value}")
             ->action('View Contract', url("/contracts/{$this->contract->id}"))

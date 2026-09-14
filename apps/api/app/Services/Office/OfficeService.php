@@ -2,11 +2,11 @@
 
 namespace App\Services\Office;
 
+use App\Actions\Office\CreateOfficeAction;
+use App\Actions\Office\ManageMemberAction;
+use App\Actions\Office\UpdateOfficeAction;
 use App\Models\Office;
 use App\Models\User;
-use App\Actions\Office\CreateOfficeAction;
-use App\Actions\Office\UpdateOfficeAction;
-use App\Actions\Office\ManageMemberAction;
 
 class OfficeService
 {

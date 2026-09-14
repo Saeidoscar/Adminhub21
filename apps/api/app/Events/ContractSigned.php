@@ -13,6 +13,5 @@ class ContractSigned
 
     public function __construct(
         public readonly Contract $contract
-    ) {
-    }
+    ) {}
 }

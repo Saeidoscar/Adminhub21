@@ -5,7 +5,6 @@ namespace App\Models;
 use App\Enums\WalletTransactionDirection;
 use App\Enums\WalletTransactionStatus;
 use App\Enums\WalletTransactionType;
-use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

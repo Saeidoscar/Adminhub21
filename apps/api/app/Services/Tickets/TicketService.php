@@ -2,13 +2,14 @@
 
 namespace App\Services\Tickets;
 
-use App\Models\Ticket;
-use App\Models\User;
-use App\Actions\Tickets\CreateTicketAction;
+use App\Actions\Tickets\AddTicketMessageAction;
 use App\Actions\Tickets\AssignTicketAction;
 use App\Actions\Tickets\CloseTicketAction;
-use App\Actions\Tickets\AddTicketMessageAction;
+use App\Actions\Tickets\CreateTicketAction;
 use App\Actions\Tickets\MarkTicketReadAction;
+use App\Models\Ticket;
+use App\Models\TicketMessage;
+use App\Models\User;
 
 class TicketService
 {
@@ -35,7 +36,7 @@ class TicketService
         return $this->close->execute($ticket);
     }
 
-    public function addMessage(Ticket $ticket, User $user, array $data): \App\Models\TicketMessage
+    public function addMessage(Ticket $ticket, User $user, array $data): TicketMessage
     {
         return $this->addMessage->execute($ticket, $user, $data);
     }

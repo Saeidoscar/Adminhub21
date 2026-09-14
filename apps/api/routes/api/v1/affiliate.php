@@ -1,9 +1,9 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\AffiliateController;
+use Illuminate\Support\Facades\Route;
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware('auth:sanctum')->group(function (): void {
     Route::get('/affiliate/stats', [AffiliateController::class, 'stats']);
     Route::get('/affiliate/codes', [AffiliateController::class, 'codes']);
     Route::get('/affiliate/referrals', [AffiliateController::class, 'referrals']);

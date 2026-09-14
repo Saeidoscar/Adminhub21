@@ -1,9 +1,9 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\CaseController;
+use Illuminate\Support\Facades\Route;
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware('auth:sanctum')->group(function (): void {
     Route::get('/cases', [CaseController::class, 'index']);
     Route::post('/cases', [CaseController::class, 'store']);
     Route::get('/cases/{id}', [CaseController::class, 'show'])->whereNumber('id');

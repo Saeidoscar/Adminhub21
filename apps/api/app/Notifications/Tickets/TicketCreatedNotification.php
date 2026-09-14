@@ -30,7 +30,7 @@ class TicketCreatedNotification extends Notification implements ShouldQueue
         return (new MailMessage)
             ->subject("New Ticket: {$this->ticket->subject}")
             ->greeting("Hello {$notifiable->name},")
-            ->line("A new support ticket has been created.")
+            ->line('A new support ticket has been created.')
             ->line("Ticket ID: #{$this->ticket->id}")
             ->line("Subject: {$this->ticket->subject}")
             ->line("Priority: {$this->ticket->priority->value}")

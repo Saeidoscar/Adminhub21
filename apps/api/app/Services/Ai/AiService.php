@@ -2,14 +2,14 @@
 
 namespace App\Services\Ai;
 
-use App\Models\AiConversation;
-use App\Models\AiMessage;
-use App\Models\User;
 use App\Actions\Ai\CreateConversationAction;
+use App\Actions\Ai\ManageModelsAction;
 use App\Actions\Ai\SendMessageAction;
 use App\Actions\Ai\TrackTokensAction;
-use App\Actions\Ai\ManageModelsAction;
-use App\Services\Ai\AIProviderFactory;
+use App\Models\AiConversation;
+use App\Models\AiMessage;
+use App\Models\AiModel;
+use App\Models\User;
 use App\Services\Ai\Providers\AIProviderInterface;
 use Illuminate\Support\Facades\DB;
 
@@ -61,7 +61,7 @@ class AiService
         return $this->trackTokens->execute($message, $usage);
     }
 
-    public function manageModel(?object $model, array $data): \App\Models\AiModel
+    public function manageModel(?object $model, array $data): AiModel
     {
         return $this->manageModels->execute($model, $data);
     }

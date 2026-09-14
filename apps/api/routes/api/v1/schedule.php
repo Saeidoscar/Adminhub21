@@ -1,9 +1,9 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\ScheduleController;
+use Illuminate\Support\Facades\Route;
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware('auth:sanctum')->group(function (): void {
     Route::get('/schedule/events', [ScheduleController::class, 'events']);
     Route::post('/schedule/events', [ScheduleController::class, 'storeEvent']);
     Route::put('/schedule/events/{id}', [ScheduleController::class, 'updateEvent'])->whereNumber('id');

@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('conversations', function (Blueprint $table) {
+        Schema::create('conversations', function (Blueprint $table): void {
             $table->id();
             $table->string('subject_type');
             $table->unsignedBigInteger('subject_id');
@@ -16,7 +16,7 @@ return new class extends Migration
             $table->index(['subject_type', 'subject_id']);
         });
 
-        Schema::create('messages', function (Blueprint $table) {
+        Schema::create('messages', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('conversation_id')->constrained()->cascadeOnDelete();
             $table->foreignId('sender_id')->nullable()->constrained('users')->nullOnDelete();
@@ -28,7 +28,7 @@ return new class extends Migration
             $table->index(['conversation_id', 'created_at']);
         });
 
-        Schema::create('message_attachments', function (Blueprint $table) {
+        Schema::create('message_attachments', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('message_id')->constrained()->cascadeOnDelete();
             $table->string('storage_key');

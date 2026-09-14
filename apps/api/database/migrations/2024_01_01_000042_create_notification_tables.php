@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('notifications', function (Blueprint $table) {
+        Schema::create('notifications', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
             $table->string('category');
@@ -22,7 +22,7 @@ return new class extends Migration
             $table->index(['user_id', 'status']);
         });
 
-        Schema::create('notification_deliveries', function (Blueprint $table) {
+        Schema::create('notification_deliveries', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('notification_id')->constrained()->cascadeOnDelete();
             $table->string('channel');
@@ -33,7 +33,7 @@ return new class extends Migration
             $table->index(['notification_id', 'status']);
         });
 
-        Schema::create('notification_preferences', function (Blueprint $table) {
+        Schema::create('notification_preferences', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('channel');
@@ -43,7 +43,7 @@ return new class extends Migration
             $table->unique(['user_id', 'channel', 'category']);
         });
 
-        Schema::create('notification_templates', function (Blueprint $table) {
+        Schema::create('notification_templates', function (Blueprint $table): void {
             $table->id();
             $table->string('key')->unique();
             $table->string('category');

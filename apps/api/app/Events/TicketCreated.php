@@ -15,6 +15,5 @@ class TicketCreated
     public function __construct(
         public readonly Ticket $ticket,
         public readonly User $creator
-    ) {
-    }
+    ) {}
 }

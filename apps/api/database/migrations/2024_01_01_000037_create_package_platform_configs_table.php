@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('package_platform_configs', function (Blueprint $table) {
+        Schema::create('package_platform_configs', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('package_id')->constrained()->cascadeOnDelete();
             $table->string('platform');

@@ -2,13 +2,13 @@
 
 namespace App\Services\Affiliates;
 
+use App\Actions\Affiliates\ApproveCommissionAction;
+use App\Actions\Affiliates\GenerateReferralCodeAction;
+use App\Actions\Affiliates\TrackCommissionAction;
 use App\Models\Affiliate;
 use App\Models\AffiliateCommission;
 use App\Models\User;
 use App\Models\WalletTransaction;
-use App\Actions\Affiliates\GenerateReferralCodeAction;
-use App\Actions\Affiliates\TrackCommissionAction;
-use App\Actions\Affiliates\ApproveCommissionAction;
 
 class AffiliateService
 {

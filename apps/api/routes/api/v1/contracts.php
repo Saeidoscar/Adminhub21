@@ -1,9 +1,9 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\ContractController;
+use Illuminate\Support\Facades\Route;
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware('auth:sanctum')->group(function (): void {
     Route::get('/contracts', [ContractController::class, 'index']);
     Route::post('/contracts', [ContractController::class, 'store']);
     Route::get('/contracts/{id}', [ContractController::class, 'show'])->whereNumber('id');

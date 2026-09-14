@@ -2,14 +2,14 @@
 
 namespace App\Services\Content;
 
-use App\Models\Story;
-use App\Models\Blog;
-use App\Models\Tag;
+use App\Actions\Content\ManageTagsAction;
+use App\Actions\Content\ModerateCommentAction;
+use App\Actions\Content\PublishBlogAction;
 use App\Actions\Content\PublishStoryAction;
 use App\Actions\Content\UnpublishStoryAction;
-use App\Actions\Content\PublishBlogAction;
-use App\Actions\Content\ModerateCommentAction;
-use App\Actions\Content\ManageTagsAction;
+use App\Models\Blog;
+use App\Models\Story;
+use App\Models\Tag;
 
 class ContentService
 {
@@ -37,7 +37,8 @@ class ContentService
     }
 
     /**
-     * @param  array<int, array{name: string, slug: string, type?: string|null}>  $tags
+     * @param array<int, array{name: string, slug: string, type?: string|null}> $tags
+     *
      * @return array<int, Tag>
      */
     public function manageTags(array $tags): array

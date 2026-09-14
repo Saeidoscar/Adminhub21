@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -48,6 +47,6 @@ class AiMessage extends Model
 
     public function hasResponse(): bool
     {
-        return !empty($this->response);
+        return ! empty($this->response);
     }
 }

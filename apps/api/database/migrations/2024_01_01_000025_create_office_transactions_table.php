@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('office_transactions', function (Blueprint $table) {
+        Schema::create('office_transactions', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('office_id')->constrained()->cascadeOnDelete();
             $table->foreignId('case_id')->nullable()->constrained('office_cases')->nullOnDelete();

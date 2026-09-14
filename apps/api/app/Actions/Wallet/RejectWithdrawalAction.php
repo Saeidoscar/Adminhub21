@@ -3,7 +3,6 @@
 namespace App\Actions\Wallet;
 
 use App\Enums\WalletTransactionStatus;
-use App\Models\User;
 use App\Models\Wallet;
 use App\Models\WalletTransaction;
 use Illuminate\Support\Facades\DB;

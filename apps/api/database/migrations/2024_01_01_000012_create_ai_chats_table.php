@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('ai_models', function (Blueprint $table) {
+        Schema::create('ai_models', function (Blueprint $table): void {
             $table->id();
             $table->string('provider');
             $table->string('code')->unique();
@@ -19,7 +19,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('ai_conversations', function (Blueprint $table) {
+        Schema::create('ai_conversations', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('title')->nullable();
@@ -30,7 +30,7 @@ return new class extends Migration
             $table->index(['user_id', 'status']);
         });
 
-        Schema::create('ai_messages', function (Blueprint $table) {
+        Schema::create('ai_messages', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('conversation_id')->constrained('ai_conversations')->cascadeOnDelete();
             $table->text('prompt');

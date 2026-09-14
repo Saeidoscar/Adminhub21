@@ -3,10 +3,9 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-
-use App\Services\Tickets\TicketService;
 use App\Models\Ticket;
 use App\Models\User;
+use App\Services\Tickets\TicketService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -40,6 +39,7 @@ class TicketController extends Controller
 
     public function show(Ticket $ticket): JsonResponse
     {
+        $this->authorize('view', $ticket);
         $ticket->load(['user', 'assignedTo', 'messages.user']);
 
         return response()->json($ticket);
@@ -47,6 +47,7 @@ class TicketController extends Controller
 
     public function update(Request $request, Ticket $ticket): JsonResponse
     {
+        $this->authorize('update', $ticket);
         $ticket->update($request->validate([
             'status' => ['nullable', 'string', 'in:open,in_progress,resolved,closed'],
             'priority' => ['nullable', 'string', 'in:low,medium,high,urgent'],
@@ -58,6 +59,7 @@ class TicketController extends Controller
 
     public function assign(Request $request, Ticket $ticket): JsonResponse
     {
+        $this->authorize('manage', $ticket);
         $request->validate([
             'assigned_to' => ['required', 'integer', 'exists:users,id'],
         ]);
@@ -70,6 +72,7 @@ class TicketController extends Controller
 
     public function close(Request $request, Ticket $ticket): JsonResponse
     {
+        $this->authorize('manage', $ticket);
         $ticket = $this->ticketService->close($ticket);
 
         return response()->json($ticket);
@@ -77,6 +80,7 @@ class TicketController extends Controller
 
     public function reply(Request $request, Ticket $ticket): JsonResponse
     {
+        $this->authorize('manage', $ticket);
         $message = $this->ticketService->addMessage($ticket, $request->user(), $request->validate([
             'body' => ['required', 'string'],
             'is_internal' => ['nullable', 'boolean'],
@@ -87,6 +91,7 @@ class TicketController extends Controller
 
     public function addMessage(Request $request, Ticket $ticket): JsonResponse
     {
+        $this->authorize('manage', $ticket);
         $message = $this->ticketService->addMessage($ticket, $request->user(), $request->validate([
             'body' => ['required', 'string'],
             'is_internal' => ['nullable', 'boolean'],
@@ -97,10 +102,9 @@ class TicketController extends Controller
 
     public function markRead(Request $request, Ticket $ticket): JsonResponse
     {
+        $this->authorize('update', $ticket);
         $ticket = $this->ticketService->markRead($ticket, $request->user());
 
         return response()->json($ticket);
     }
 }
-
-

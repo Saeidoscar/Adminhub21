@@ -2,11 +2,11 @@
 
 namespace App\Services\Payouts;
 
+use App\Actions\Payouts\SchedulePayoutAction;
+use App\Actions\Payouts\TrackPayoutStatusAction;
 use App\Enums\PayoutSettlementStatus;
 use App\Models\PayoutSettlement;
 use App\Models\WalletTransaction;
-use App\Actions\Payouts\SchedulePayoutAction;
-use App\Actions\Payouts\TrackPayoutStatusAction;
 
 class PayoutSettlementService
 {

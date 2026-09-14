@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
@@ -33,7 +33,7 @@ class AuthController extends Controller
             'is_verified' => false,
         ]);
 
-        $token = $user->createToken('auth-token')->plainTextToken;
+        $token = $this->createToken($user);
 
         return response()->json([
             'user' => $user,
@@ -50,13 +50,13 @@ class AuthController extends Controller
 
         $user = User::where('email', $request->email)->first();
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
+        if (! $user || ! Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([
                 'email' => ['The provided credentials are incorrect.'],
             ]);
         }
 
-        $token = $user->createToken('auth-token')->plainTextToken;
+        $token = $this->createToken($user);
 
         return response()->json([
             'user' => $user,
@@ -103,11 +103,18 @@ class AuthController extends Controller
 
     public function refresh(Request $request)
     {
-        $token = $request->user()->createToken('auth-token')->plainTextToken;
+        $request->user()->currentAccessToken()?->delete();
+        $token = $this->createToken($request->user());
 
         return response()->json([
             'token' => $token,
         ]);
     }
-}
 
+    private function createToken(User $user): string
+    {
+        $expiration = max(1, (int) config('sanctum.expiration', 1440));
+
+        return $user->createToken('auth-token', expiresAt: now()->addMinutes($expiration))->plainTextToken;
+    }
+}

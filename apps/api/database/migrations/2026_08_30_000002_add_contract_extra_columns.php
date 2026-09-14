@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('contracts', function (Blueprint $table) {
+        Schema::table('contracts', function (Blueprint $table): void {
             $table->json('step_data')->nullable()->after('status');
             $table->decimal('insurance_amount', 12, 2)->nullable()->after('step_data');
             $table->string('substitute_provider')->nullable()->after('insurance_amount');
@@ -18,7 +18,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::table('contracts', function (Blueprint $table) {
+        Schema::table('contracts', function (Blueprint $table): void {
             $table->dropColumn(['step_data', 'insurance_amount', 'substitute_provider', 'clauses_accepted_at']);
         });
     }

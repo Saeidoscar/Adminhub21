@@ -3,9 +3,9 @@
 namespace App\Actions\Contracts;
 
 use App\Models\Contract;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Barryvdh\DomPDF\Facade\Pdf;
 
 class GenerateContractPdfAction
 {

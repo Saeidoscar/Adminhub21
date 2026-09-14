@@ -2,13 +2,13 @@
 
 namespace App\Services\Portfolio;
 
-use App\Models\Portfolio;
-use App\Models\User;
-use App\Actions\Portfolio\CreatePortfolioAction;
 use App\Actions\Portfolio\AddPortfolioItemAction;
+use App\Actions\Portfolio\CreatePortfolioAction;
 use App\Actions\Portfolio\UpdatePortfolioMediaAction;
+use App\Models\Portfolio;
+use App\Models\PortfolioItem;
+use App\Models\User;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
 
 class PortfolioService
 {
@@ -23,13 +23,13 @@ class PortfolioService
         return $this->create->execute($user, $data);
     }
 
-    public function addItem(Portfolio $portfolio, array $data): \App\Models\PortfolioItem
+    public function addItem(Portfolio $portfolio, array $data): PortfolioItem
     {
         return $this->addItem->execute($portfolio, $data);
     }
 
     /**
-     * @param  array<int, UploadedFile|string>  $media
+     * @param array<int, UploadedFile|string> $media
      */
     public function updateMedia(Portfolio $portfolio, array $media): Portfolio
     {

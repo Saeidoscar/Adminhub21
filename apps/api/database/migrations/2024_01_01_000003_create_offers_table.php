@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('offers', function (Blueprint $table) {
+        Schema::create('offers', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('target_user_id')->constrained('users')->cascadeOnDelete();

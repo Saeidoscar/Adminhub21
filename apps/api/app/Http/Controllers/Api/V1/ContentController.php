@@ -3,21 +3,12 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-
-use App\Actions\Content\PublishStoryAction;
-use App\Actions\Content\UnpublishStoryAction;
-use App\Actions\Content\PublishBlogAction;
-use App\Actions\Content\ModerateCommentAction;
-use App\Actions\Content\ManageTagsAction;
-use App\Actions\Reactions\ReactToContentAction;
-use App\Services\Content\ContentService;
-use App\Services\Notifications\NotificationService;
-use App\Enums\NotificationCategory;
-use App\Models\Story;
 use App\Models\Blog;
 use App\Models\Comment;
+use App\Models\Story;
 use App\Models\Tag;
-use App\Models\User;
+use App\Services\Content\ContentService;
+use App\Services\Notifications\NotificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -109,7 +100,7 @@ class ContentController extends Controller
 
     public function storeComment(Request $request): JsonResponse
     {
-        $comment = \App\Models\Comment::query()->create($request->validate([
+        $comment = Comment::query()->create($request->validate([
             'commentable_id' => ['required', 'integer'],
             'commentable_type' => ['required', 'string'],
             'content' => ['required', 'string'],
@@ -151,5 +142,3 @@ class ContentController extends Controller
         return response()->json($tags);
     }
 }
-
-

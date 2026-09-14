@@ -4,7 +4,6 @@ namespace App\Actions\Content;
 
 use App\Enums\ContentStatus;
 use App\Models\Story;
-use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
 class PublishStoryAction

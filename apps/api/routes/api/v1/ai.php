@@ -1,9 +1,9 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\AiController;
+use Illuminate\Support\Facades\Route;
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware('auth:sanctum')->group(function (): void {
     Route::get('/ai/models', [AiController::class, 'models']);
     Route::get('/ai/conversations', [AiController::class, 'conversations']);
     Route::post('/ai/conversations', [AiController::class, 'storeConversation']);

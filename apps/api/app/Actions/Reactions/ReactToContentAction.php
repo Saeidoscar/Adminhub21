@@ -9,9 +9,6 @@ use Illuminate\Support\Facades\DB;
 
 class ReactToContentAction
 {
-    /**
-     * @param  Model|string  $reactionable
-     */
     public function execute(User $user, Model|string $reactionable, string $type): ContentReaction
     {
         $type = $reactionable instanceof Model ? $reactionable->getMorphClass() : $reactionable;

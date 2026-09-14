@@ -21,7 +21,7 @@ class WalletService
     }
 
     /**
-     * @param  array<string, mixed>  $payload
+     * @param array<string, mixed> $payload
      */
     public function createPendingOnlineCharge(User $user, int $amount, array $payload = []): WalletTransaction
     {
@@ -66,7 +66,7 @@ class WalletService
     }
 
     /**
-     * @param  array<string, mixed>  $payload
+     * @param array<string, mixed> $payload
      */
     public function withdrawForPurchase(User $user, int $amount, WalletTransactionType $type, array $payload = []): WalletTransaction
     {
@@ -99,7 +99,7 @@ class WalletService
     }
 
     /**
-     * @param  array<string, mixed>  $payload
+     * @param array<string, mixed> $payload
      */
     public function addWithdrawableIncome(User $user, int $amount, WalletTransactionType $type, array $payload = []): WalletTransaction
     {

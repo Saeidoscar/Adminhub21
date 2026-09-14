@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Enums\TicketStatus;
 use App\Http\Controllers\Controller;
-
 use App\Models\Ticket;
 use App\Models\TicketMessage;
 use App\Models\User;
-use App\Enums\TicketStatus;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -100,5 +99,3 @@ class AdminTicketController extends Controller
         return response()->json(['message' => $message], 201);
     }
 }
-
-

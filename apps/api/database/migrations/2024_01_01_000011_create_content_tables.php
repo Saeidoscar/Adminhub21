@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('stories', function (Blueprint $table) {
+        Schema::create('stories', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('title');
@@ -21,7 +21,7 @@ return new class extends Migration
             $table->softDeletes();
         });
 
-        Schema::create('blogs', function (Blueprint $table) {
+        Schema::create('blogs', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('title');
@@ -37,7 +37,7 @@ return new class extends Migration
             $table->softDeletes();
         });
 
-        Schema::create('comments', function (Blueprint $table) {
+        Schema::create('comments', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->nullableMorphs('commentable');

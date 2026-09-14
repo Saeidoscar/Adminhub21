@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Http\Controllers\Controller;
-
-use App\Actions\Wallet\DepositAction;
-use App\Actions\Wallet\WithdrawAction;
 use App\Actions\Wallet\BlockAmountAction;
-use App\Actions\Wallet\UnblockAmountAction;
+use App\Actions\Wallet\DepositAction;
 use App\Actions\Wallet\TransferAction;
+use App\Actions\Wallet\UnblockAmountAction;
+use App\Actions\Wallet\WithdrawAction;
 use App\Enums\WalletTransactionType;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\DepositRequest;
 use App\Http\Requests\Api\V1\WithdrawRequest;
 use App\Models\User;
@@ -115,5 +114,3 @@ class WalletController extends Controller
         return response()->json($transaction, 201);
     }
 }
-
-

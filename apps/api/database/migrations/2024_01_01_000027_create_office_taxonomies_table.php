@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('office_request_types', function (Blueprint $table) {
+        Schema::create('office_request_types', function (Blueprint $table): void {
             $table->id();
             $table->string('name');
             $table->string('slug')->unique();
@@ -18,7 +18,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('office_claim_types', function (Blueprint $table) {
+        Schema::create('office_claim_types', function (Blueprint $table): void {
             $table->id();
             $table->string('name');
             $table->string('slug')->unique();
@@ -28,7 +28,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('office_referral_authorities', function (Blueprint $table) {
+        Schema::create('office_referral_authorities', function (Blueprint $table): void {
             $table->id();
             $table->string('name');
             $table->string('slug')->unique();

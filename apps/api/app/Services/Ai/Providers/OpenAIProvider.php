@@ -2,9 +2,11 @@
 
 namespace App\Services\Ai\Providers;
 
+use GuzzleHttp\Client;
+
 class OpenAIProvider implements AIProviderInterface
 {
-    public function __construct(private readonly \GuzzleHttp\Client $httpClient, private readonly string $apiKey) {}
+    public function __construct(private readonly Client $httpClient, private readonly string $apiKey) {}
 
     public function chat(array $messages, array $options = []): array
     {

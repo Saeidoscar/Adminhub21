@@ -2,14 +2,13 @@
 
 namespace App\Actions\Cases;
 
-use App\Models\OfficeCase;
 use App\Models\OfficeCaseEvent;
 use Illuminate\Support\Facades\DB;
 
 class UpdateEventAction
 {
     /**
-     * @param  array<string, mixed>  $data
+     * @param array<string, mixed> $data
      */
     public function execute(OfficeCaseEvent $event, array $data): OfficeCaseEvent
     {
