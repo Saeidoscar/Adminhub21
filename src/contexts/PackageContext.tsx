@@ -24,7 +24,6 @@ import {
   updatePackage as updatePackageApi,
 } from "../lib/api"
 import {
-  findAdmin,
   findPackage,
   packagesByAdmin,
   packagesByPlatform,
@@ -173,7 +172,8 @@ export function PackageProvider({ children }: { children: ReactNode }) {
   )
   const has = useCallback((id: string) => selected.has(id), [selected])
   const admin = useCallback(
-    (id: string | number) => findAdmin(admins, id),
+    (id: string | number) =>
+      admins.find((item) => String(item.id) === String(id)),
     [admins],
   )
   const pkg = useCallback(

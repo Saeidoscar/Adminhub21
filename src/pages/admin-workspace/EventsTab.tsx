@@ -169,7 +169,7 @@ function EventsTab({ tr, lang, isFa }: { tr: Tr; lang: Lang; isFa: boolean }) {
         >
           <div>
             <label className="block text-sm font-semibold text-[#0f172a] mb-1.5">
-              {tr.adminWorkspace.title}
+              {tr.adminWorkspace.fieldTitle}
             </label>
             <input
               value={form.title}
@@ -274,7 +274,7 @@ function EventsTab({ tr, lang, isFa }: { tr: Tr; lang: Lang; isFa: boolean }) {
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-semibold text-[#0f172a] mb-1.5">
-                      {tr.adminWorkspace.title}
+                      {tr.adminWorkspace.fieldTitle}
                     </label>
                     <input
                       value={editForm.title}

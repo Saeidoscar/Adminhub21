@@ -1,11 +1,13 @@
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { t, type Lang } from "../i18n"
 import { Icon } from "../components/layout/Icon"
 import { Badge } from "../components/ui/Badge"
 import { ListSkeleton } from "../components/ui/Skeleton"
 import { useMarketplace } from "../hooks/useMarketplace"
+import { Stars } from "../components/platform/Stars"
 import { formatAdminPrice } from "../domain/profile"
+import { photoUrl } from "../lib/photo"
 
 const PLATFORM_LABELS: Record<string, string> = {
   instagram: "Instagram",
@@ -117,7 +119,8 @@ export default function Marketplace({ lang, tr }: MarketplaceProps) {
                 {/* Header */}
                 <div className="flex items-start gap-3 mb-4">
                   <img
-                    src={`https://images.unsplash.com/${admin.photo}?w=64&h=64&fit=crop&auto=format`}
+                    src={photoUrl(admin.photo, 64)}
+            onError={(e) => (e.currentTarget.style.visibility = "hidden")}
                     alt={admin.nameEn}
                     className="w-14 h-14 rounded-2xl object-cover bg-[#f2f5fa] flex-shrink-0"
                   />

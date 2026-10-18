@@ -29,6 +29,7 @@ import { PackagesTab } from "./admin-public-profile/PackagesTab"
 import { CustomOfferForm } from "./admin-public-profile/CustomOfferForm"
 import { ReviewsTab } from "./admin-public-profile/ReviewsTab"
 import { PackageCard } from "./admin-public-profile/PackageCard"
+import { photoUrl } from "../lib/photo"
 
 export const PLATFORM_COLORS: Record<string, string> = {
   instagram: "badge-instagram",
@@ -85,22 +86,6 @@ export default function AdminPublicProfilePage() {
     (p) => p.adminId === adminId && p.active !== false,
   )
 
-  if (!admin) {
-    return (
-      <div className="p-6 lg:p-8 max-w-6xl mx-auto fade-in">
-        <div className="text-center py-16">
-          <div className="text-4xl mb-3">🔍</div>
-          <div className="font-bold text-[#0f172a] mb-1">
-            {isFa ? "ادمین پیدا نشد" : "Admin not found"}
-          </div>
-          <Button onClick={() => navigate("/marketplace")}>
-            {isFa ? "بازگشت به بازار کار" : "Back to Marketplace"}
-          </Button>
-        </div>
-      </div>
-    )
-  }
-
   const platformPackages = adminPackages.filter((p) => p.type === "platform")
   const bundlePackages = adminPackages.filter((p) => p.type === "bundle")
 
@@ -143,6 +128,22 @@ export default function AdminPublicProfilePage() {
     }
   }, [adminId])
 
+  if (!admin) {
+    return (
+      <div className="p-6 lg:p-8 max-w-6xl mx-auto fade-in">
+        <div className="text-center py-16">
+          <div className="text-4xl mb-3">🔍</div>
+          <div className="font-bold text-[#0f172a] mb-1">
+            {isFa ? "ادمین پیدا نشد" : "Admin not found"}
+          </div>
+          <Button onClick={() => navigate("/marketplace")}>
+            {isFa ? "بازگشت به بازار کار" : "Back to Marketplace"}
+          </Button>
+        </div>
+      </div>
+    )
+  }
+
   const handleSubmitReview = async () => {
     if (!adminId || !reviewForm.comment.trim()) return
     setSubmittingReview(true)
@@ -175,7 +176,8 @@ export default function AdminPublicProfilePage() {
       <div className="bg-white rounded-2xl border border-[#e2e8f0] p-6 mb-6">
         <div className="flex items-start gap-4">
           <img
-            src={`https://images.unsplash.com/${admin.photo}?w=120&h=120&fit=crop&auto=format`}
+            src={photoUrl(admin.photo, 120)}
+            onError={(e) => (e.currentTarget.style.visibility = "hidden")}
             alt={admin.nameEn}
             className="w-20 h-20 rounded-2xl object-cover bg-[#f2f5fa] flex-shrink-0"
           />

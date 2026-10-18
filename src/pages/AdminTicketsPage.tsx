@@ -13,7 +13,7 @@ import {
 } from "../lib/api"
 import { TicketCardSkeleton, ListSkeleton } from "../components/ui/Skeleton"
 
-const CATEGORY_LABELS: Record<string, { en: string fa: string }> = {
+const CATEGORY_LABELS: Record<string, { en: string; fa: string }> = {
   billing: { en: "Billing", fa: "مالی" },
   technical: { en: "Technical", fa: "فنی" },
   account: { en: "Account", fa: "حساب کاربری" },
@@ -27,7 +27,7 @@ const PRIORITY_COLORS: Record<string, string> = {
   urgent: "bg-red-100 text-red-700",
 }
 
-const PRIORITY_LABELS: Record<string, { en: string fa: string }> = {
+const PRIORITY_LABELS: Record<string, { en: string; fa: string }> = {
   low: { en: "Low", fa: "پایین" },
   medium: { en: "Medium", fa: "متوسط" },
   high: { en: "High", fa: "بالا" },
@@ -41,7 +41,7 @@ const STATUS_COLORS: Record<string, string> = {
   closed: "bg-gray-100 text-gray-700",
 }
 
-const STATUS_LABELS: Record<string, { en: string fa: string }> = {
+const STATUS_LABELS: Record<string, { en: string; fa: string }> = {
   open: { en: "Open", fa: "باز" },
   in_progress: { en: "In Progress", fa: "در حال بررسی" },
   resolved: { en: "Resolved", fa: "حل شده" },
@@ -210,7 +210,7 @@ export default function AdminTicketsPage({
                 {tr.adminTickets.category}
               </div>
               <span className="inline-flex px-2.5 py-1 rounded-full bg-[#1e3a5f]/10 text-[#1e3a5f] text-xs font-semibold">
-                {CATEGORY_LABELS[currentTicket.category]?.en || currentTicket.category}
+                {isFa ? CATEGORY_LABELS[currentTicket.category]?.fa : CATEGORY_LABELS[currentTicket.category]?.en || currentTicket.category}
               </span>
             </div>
             <div>
@@ -466,7 +466,7 @@ export default function AdminTicketsPage({
                     </div>
                     <div className="flex items-center gap-3 text-xs text-[#64748b]">
                       <span className="inline-flex px-2.5 py-0.5 rounded-full bg-[#1e3a5f]/10 text-[#1e3a5f] font-semibold">
-                        {CATEGORY_LABELS[ticket.category]?.en || ticket.category}
+                        {isFa ? CATEGORY_LABELS[ticket.category]?.fa : CATEGORY_LABELS[ticket.category]?.en || ticket.category}
                       </span>
                       <span>{ticket.userName}</span>
                       <span className="hidden sm:inline">{ticket.userEmail}</span>

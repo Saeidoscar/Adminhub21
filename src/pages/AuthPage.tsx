@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom"
 import { t, type Lang } from "../i18n"
 import { Icon } from "../components/layout/Icon"
 import { useAuth } from "../contexts/AuthContext"
+import { isDemoMode } from "../lib/demo-mode"
 import {
   loginSchema,
   registerSchema,
@@ -27,7 +28,7 @@ export default function AuthPage({
   dir,
   setLang,
 }: AuthPageProps) {
-  const { user, login, register, sendOtp, loginWithOtp, isLoading } = useAuth()
+  const { user, login, register, sendOtp, loginWithOtp, isLoading, loginDemo } = useAuth()
   const navigate = useNavigate()
 
   const [tab, setTab] = useState<"login" | "register">("login")
@@ -227,7 +228,7 @@ export default function AuthPage({
       </div>
 
       {/* Right panel — form */}
-      <div className="flex-1 flex flex-col justify-center px-6 sm:px-12 lg:px-16 py-12 bg-[#f2f5fa]">
+      <div className="relative flex-1 flex flex-col px-6 sm:px-12 lg:px-16 py-16 bg-[#f2f5fa] overflow-y-auto">
         {/* Language switcher */}
         <div className="absolute top-6 end-6">
           <button
@@ -239,7 +240,7 @@ export default function AuthPage({
           </button>
         </div>
 
-        <div className="max-w-md w-full mx-auto">
+        <div className="max-w-md w-full mx-auto my-auto">
           {/* Logo on mobile */}
           <div className="lg:hidden flex items-center gap-2 mb-8">
             <div className="w-8 h-8 rounded-lg bg-[#1e3a5f] flex items-center justify-center">
@@ -407,7 +408,14 @@ export default function AuthPage({
                 </button>
 
                 <button
-                  onClick={() => navigate("/dashboard")}
+                  onClick={() => {
+                    if (isDemoMode) {
+                      loginDemo()
+                      navigate("/dashboard")
+                    } else {
+                      navigate("/dashboard")
+                    }
+                  }}
                   className="w-full py-3 rounded-xl border border-[#e2e8f0] bg-white text-[#64748b] text-sm hover:bg-[#f2f5fa] transition-colors btn-press"
                 >
                   {tr.auth.demo} {tr.auth.demoArrow}

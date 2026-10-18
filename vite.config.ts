@@ -4,11 +4,18 @@ import tailwindcss from "@tailwindcss/vite"
 import path from "node:path"
 
 import siteConfiguration from "./.figma/make/site.json"
+import { demoApiPlugin } from "./dev/demo-api-plugin"
 
 // Vite config — https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   // .figma/make/deploy-preview passes `--mode development` for cached-preview builds.
   const emitSourcemaps = mode === "development"
+  // `pnpm dev:demo` serves the UI from an in-memory demo API (no database).
+  const isDemo = mode === "demo"
+  // The hosted preview proxies the dev server over HTTPS on port 443.
+  const hmr = process.env.E2B_SANDBOX
+    ? { protocol: "wss" as const, clientPort: 443 }
+    : undefined
 
   return {
     base: process.env.FIGMA_PUBLIC_URL
@@ -21,6 +28,7 @@ export default defineConfig(({ mode }) => {
     plugins: [
       react(),
       tailwindcss(),
+      ...(isDemo ? [demoApiPlugin()] : []),
       figmaSiteConfiguration(siteConfiguration),
       figmaErrorOverlayReplay(),
       figmaReactRefreshBoundaryFallback(),
@@ -39,11 +47,14 @@ export default defineConfig(({ mode }) => {
       host: "0.0.0.0",
       port: parseInt(process.env.PORT || "8443"),
       strictPort: true,
+      allowedHosts: true,
+      hmr,
       watch: { ignored: ["**/.figma/**"] },
     },
     preview: {
       host: "0.0.0.0",
       port: parseInt(process.env.PORT || "8443"),
+      allowedHosts: true,
     },
   }
 })

@@ -5,12 +5,14 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
+    "dev:demo": "vite --mode demo --host 0.0.0.0",
     "build": "vite build",
     "preview": "vite preview",
     "format": "oxfmt",
-    "dev:api": "pnpm --filter @adminhub/server dev",
+    "dev:api": "docker compose up api nginx horizon",
     "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui"
+    "test:e2e:ui": "playwright test --ui",
+    "dev:api:legacy": "pnpm --filter @adminhub/server dev"
   },
   "dependencies": {
     "react": "^19.0.0",

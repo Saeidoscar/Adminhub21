@@ -10,19 +10,29 @@ The product ships as a responsive web app and an Android build via Capacitor.
 
 ## Architecture
 
-The repository is a monorepo with two main surfaces:
+The repository is a monorepo:
 
 - **Frontend** — `src/` is a React 19 single-page application built with Vite 8, React Router 7, and Tailwind CSS v4. It uses React Context for auth and package state, and a custom design system for theming, typography, and icons.
-- **Backend** — `apps/server/` is a Hono-based HTTP API. Each domain (auth, contracts, packages, AI, wallets, etc.) lives in its own module with routes, schemas, and services. Zod validates requests; JWT handles authentication; CORS and rate limiting are applied at the edge.
+- **Backend** — `apps/api/` is the Laravel API (`adminhub/api`) that every Docker stack builds. Domain logic lives in invokable actions under `app/Actions/<Domain>/`, with authorization in `app/Policies/`, validation in `app/Http/Requests/`, and queued work in `app/Jobs/`. Routes are split per domain under `routes/api/v1/`.
+- **Shared types** — `packages/shared/` holds the TypeScript contracts imported as `@adminhub/shared`.
 
-The frontend talks to the backend through a typed `apiFetch` wrapper in `src/lib/api.ts`. Shared types are imported from `@adminhub/shared`.
+The frontend talks to the backend through a typed `apiFetch` wrapper in `src/lib/api/`.
+
+### Legacy backends
+
+Two earlier backends remain in the tree for reference and are no longer built by any Docker stack:
+
+- `apps/server/` — the archived Hono + Drizzle service (its compose service is commented out).
+- `apps/laravel/` — an early, partial Laravel port that `apps/api/` supersedes.
+
+Prefer `apps/api/` for all new backend work.
 
 ### Data flow
 
-1. AuthContext manages session state, token storage, and OTP/password login flows.
+1. `AuthContext` manages session state, token storage, and OTP/password login flows.
 2. Pages consume translation objects from `src/i18n/` and switch direction (`ltr`/`rtl`) based on the selected language.
-3. Protected routes enforce role-based access (`employer`, `admin`, `super_admin`).
-4. The backend returns normalized payloads; the frontend unwraps lists and items before rendering.
+3. Protected routes enforce role-based access (`employer`, `admin`, `super_admin`); the API enforces the same rules again through policies.
+4. The API returns normalized payloads; the frontend unwraps lists and items before rendering.
 
 ## Tech stack
 
@@ -30,11 +40,14 @@ The frontend talks to the backend through a typed `apiFetch` wrapper in `src/lib
 |-------|-----------|
 | Frontend | React 19, React Router 7, TypeScript 5.7 |
 | Styling | Tailwind CSS v4 (`@tailwindcss/vite`) |
-| Backend | Hono, Zod, JWT |
-| Database | PostgreSQL (via schema in `apps/server/src/db/`) |
+| Backend | Laravel 13, PHP 8.3+, Sanctum, Actions + Policies |
+| Database | PostgreSQL 16 (47 migrations) |
+| Queue | Redis + Laravel Horizon (`ai-*`, `pdf-*`, `notifications-*` queues) |
+| PDF | `barryvdh/laravel-dompdf` (contract generation) |
 | AI | OpenRouter / OpenAI / Anthropic providers |
+| Payments | Zibal, SEP, crypto callbacks with signature + replay protection |
 | Mobile | Capacitor (Android) |
-| Testing | Playwright (E2E) |
+| Testing | PHPUnit (API), Playwright (E2E) |
 | Formatting | `oxfmt` |
 
 ## User roles
@@ -54,10 +67,10 @@ Browse verified professionals by platform, rating, and price. Each admin profile
 Admins create platform-specific or multi-platform bundles. Employers can select up to three packages and compare them side-by-side on features, billing cycle, and price.
 
 ### Contract generator
-A five-step wizard (Parties → Scope → Payment → Terms → Review) produces a styled service agreement. It supports termination clauses, substitution and insurance terms, payment schedules, and downloadable contract files.
+A five-step wizard (Parties → Scope → Payment → Terms → Review) produces a styled service agreement. It supports termination clauses, substitution and insurance terms, payment schedules, and PDF generation on a dedicated queue.
 
 ### AI assistant
-An MCP-connected chat interface provides hiring intelligence for employers and career guidance for admins. It supports multiple model providers and conversation management.
+An MCP-connected chat interface provides hiring intelligence for employers and career guidance for admins. It supports multiple model providers and conversation management; completions run through `ProcessAiRequest` on the AI queues.
 
 ### Admin panel
 Super admins manage users, moderate stories/blogs/comments, triage support tickets, and oversee workspace cases, tasks, events, and time logs. Admins manage their own portfolios and packages.
@@ -67,76 +80,105 @@ The web shell is wrapped with Capacitor for Android. The UI is responsive by def
 
 ## Prerequisites
 
-- Node.js (see `.mise.toml` for pinned version)
-- pnpm
-- PostgreSQL (for the backend)
+- Node.js 22 and pnpm
+- Docker (for the full stack), or PHP 8.3+, Composer, PostgreSQL 16 and Redis for a local backend
 - Optional: Android SDK (for mobile builds)
 
 ## Setup
 
+### Frontend only, with the built-in demo API
+
+The fastest way to see the product. `--mode demo` boots an in-memory API that answers `/api/*` and `/ai/*` from a seeded dataset, so no database or backend is needed.
+
 ```bash
-# Install dependencies
 pnpm install
-
-# Start the backend API (port 8787 by default)
-pnpm dev:api
-
-# Start the frontend dev server (port 8443 by default)
-pnpm dev
+pnpm dev:demo        # http://localhost:8443
 ```
 
-Open `http://localhost:8443` in your browser.
+You are signed in automatically as an employer; the floating role switcher in the bottom-left corner toggles between the employer and admin views. Seed data lives in `dev/demo-data.ts`.
+
+### Frontend + real Laravel backend
+
+```bash
+pnpm install
+
+# PostgreSQL, Redis, API, nginx (:8080) and Horizon
+pnpm dev:api
+
+# Frontend pointed at the API
+VITE_API_BASE_URL=http://localhost:8080 pnpm dev
+```
+
+Then create the schema and an admin user:
+
+```bash
+docker compose exec api php artisan migrate --seed
+```
+
+### Full Docker stack
+
+```bash
+docker compose up --build          # production-shaped stack
+docker compose -f docker-compose.demo.yml up --build   # demo stack
+```
+
+| Service | URL |
+|---------|-----|
+| API through nginx | http://localhost:8080 |
+| Frontend, production build (`docker-compose.yml`) | http://localhost:8443 |
+| Frontend, demo stack (`docker-compose.demo.yml`) | http://localhost:8444 |
+| Mailpit | http://localhost:8025 |
+| Vite dev server (`pnpm dev`) | http://localhost:8443 |
+
+`pnpm dev` and the Docker `web` service both bind port 8443, so run one or the other (or change the published port in the compose file).
 
 ### Environment variables
 
-Create a `.env` file in the project root for frontend variables:
+Frontend — create `.env` in the project root:
 
 ```
-VITE_API_BASE_URL=http://localhost:8787
+VITE_API_BASE_URL=http://localhost:8080
 VITE_AUTH_TOKEN=  # optional; used for demo / CI login
 ```
 
-Backend variables are defined in `apps/server/src/env.ts` and can be overridden in `apps/server/.env`:
+Backend — copy `apps/api/.env.example` to `apps/api/.env` and run `php artisan key:generate`. The template documents every variable the files in `apps/api/config/` read, including Redis, Sanctum, hashing, mail, AI providers, and payment callbacks.
 
-```
-NODE_ENV=development
-PORT=8787
-DATABASE_URL=postgres://postgres:postgres@localhost:5432/adminhub
-JWT_ACCESS_SECRET=dev-only-access-secret-change-me
-JWT_REFRESH_SECRET=dev-only-refresh-secret-change-me
-CORS_ORIGINS=http://localhost:8443,http://localhost:5173
-OPENAI_API_KEY=
-ANTHROPIC_API_KEY=
-OPENROUTER_API_KEY=
-```
-
-> **Security note:** The default JWT secrets are for development only. Rotate them before any production deployment.
+> **Security note:** the example file ships with empty secrets. Set real values for `APP_KEY` and every `*_CALLBACK_SECRET` before deploying, and keep `APP_DEBUG=false` outside local development.
 
 ## Development workflow
 
-- Run `pnpm dev` for the frontend and `pnpm dev:api` for the backend in parallel.
+- Run `pnpm dev:demo` (no backend) or `pnpm dev` + `pnpm dev:api` (real backend).
 - The frontend reloads on file changes via Vite HMR.
 - Use `pnpm format` to format code with `oxfmt`.
 - Routes are declared in `src/App.tsx`. Add new pages under `src/pages/` and register them there.
-- Backend modules follow the pattern `modules/<name>/<name>.routes.ts`, `<name>.service.ts`, and `<name>.schemas.ts`.
+- Backend: put domain logic in `app/Actions/<Domain>/`, authorize with a policy in `app/Policies/`, validate in `app/Http/Requests/`, and register endpoints in the matching file under `routes/api/v1/`.
+- All user-facing strings belong in `src/i18n/`; add the key to both `en.ts` and `fa.ts`.
 
 ## Testing
 
-End-to-end tests use Playwright:
-
 ```bash
+# API feature and unit tests
+cd apps/api && php artisan test
+
+# End-to-end browser tests
 pnpm test:e2e
 pnpm test:e2e:ui
 ```
 
-Test specs live alongside the scenarios they cover. The backend does not yet have a dedicated unit-test suite, but each module is small and schema-validated, which keeps behavior predictable.
+The API suite covers authentication, catalog, payment callbacks, review authorization, and security regressions (`tests/Feature/`), plus hashing configuration (`tests/Unit/HashingConfigTest.php`). Playwright specs live in `e2e/`.
+
+## Security notes
+
+- Passwords default to **argon2id** (`HASH_DRIVER`); legacy bcrypt hashes remain verifiable and are rehashed on next login.
+- Payment gateway callbacks are validated against an HMAC secret, an IP allowlist, a timestamp tolerance window, and a replay cache — see `config/payment.php`.
+- Authorization is enforced by policies, not only by route middleware.
 
 ## Deployment notes
 
-- Build the frontend with `pnpm build`. Output goes to `dist/`.
-- The backend is a standard Node.js server. Deploy it behind a reverse proxy with TLS.
-- Set production `CORS_ORIGINS` to your actual frontend domain.
-- Set strong `JWT_ACCESS_SECRET` and `JWT_REFRESH_SECRET` values.
+- Build the frontend with `pnpm build`; output goes to `dist/`.
+- The backend runs as PHP-FPM behind nginx with Horizon as a separate container (`docker-compose.prod.yml`).
+- Set `APP_ENV=production`, `APP_DEBUG=false`, a strong `APP_KEY`, real payment secrets, and `CORS_ALLOWED_ORIGINS` restricted to your frontend domain.
+- Run `php artisan migrate --force` and `php artisan horizon:terminate` as part of each release.
 - For mobile, run `pnpm build` then `npx cap sync android` before building the APK.
 
 ## Project structure
@@ -147,33 +189,60 @@ src/
     ai/             — Chat UI, model selector, conversation sidebar
     auth/           — ProtectedRoute
     dashboard/      — EmployerDashboard, AdminDashboard
+    demo/           — Role switcher used by demo mode
     layout/         — Sidebar, Topbar, Icon
     platform/       — Stars, MCPConnectorStatus
     ui/             — Badge, Button, Card, Input, Tabs, CommandPalette, ErrorBoundary
   contexts/         — AuthContext, PackageContext, AiContext
   design-system/    — ThemeProvider, tokens
-  lib/              — api.ts, mockPackages, types
+  lib/
+    api/            — typed API client (apiFetch, per-domain modules)
+    photo.ts        — avatar URL resolution (absolute vs. Unsplash id)
   pages/            — Marketplace, Contracts, Tickets, AI, Admin pages, etc.
   i18n/             — English and Persian translations
   App.tsx           — Routes, layout shell, role-based nav
   main.tsx          — React entrypoint
 
-apps/server/
-  src/
-    modules/        — auth, contracts, packages, ai, wallets, tickets, etc.
-    middleware/     — auth, rate-limit
-    lib/            — tokens, sanctum, password, AI providers
-    db/             — schema, seed, index
-    index.ts        — Hono app bootstrap
+dev/
+  demo-data.ts      — seeded in-memory dataset
+  demo-api-handler.ts — request handlers for the demo API
+  demo-api-plugin.ts  — Vite middleware mounting /api and /ai in demo mode
+
+apps/api/
+  app/
+    Actions/        — invokable domain actions (AdminProfile, Ai, Contracts, …)
+    Console/        — Artisan commands
+    Enums/          — shared enums
+    Hashing/        — Argon2IdHasher with bcrypt verification fallback
+    Http/           — Controllers, Middleware, Requests, Resources
+    Jobs/           — GenerateContractPdf, ProcessAiRequest, SendNotification
+    Models/         — Eloquent models
+    Policies/       — authorization for blog, comment, contract, offer, review, ticket, user…
+  config/           — app, cache, cors, database, hashing, horizon, payment, queue, sanctum…
+  database/
+    migrations/     — 47 migrations
+    seeders/
+  routes/
+    api.php
+    api/v1/         — admin, affiliate, ai, auth, cases, catalog, content, contracts,
+                      favorites, offers, packages, payments, portfolio, profiles,
+                      public, reviews, schedule, tickets, wallets
+  tests/
+    Feature/        — Auth, Catalog, PaymentCallback, ReviewAuthorization, Security
+    Unit/           — HashingConfig
+
+packages/shared/    — TypeScript types shared by the frontend
+apps/server/        — archived Hono backend
+apps/laravel/       — superseded partial Laravel port
 ```
 
 ## Contributing
 
 1. Keep modules small and domain-focused.
-2. Add Zod schemas for every new input and response shape.
+2. Validate every new input with a form request (API) or Zod schema (frontend demo tooling).
 3. Use `src/i18n/` for all user-facing strings; do not hardcode English or Persian text in components.
-4. Run `pnpm format` before opening a pull request.
-5. If you touch the backend, update or add E2E coverage for the affected flow.
+4. Add or extend a feature test for backend behavior changes.
+5. Run `pnpm format` and `pnpm build` before opening a pull request.
 
 ## License
 

@@ -13,6 +13,7 @@ import {
   type ContractPackage,
 } from "../../lib/api"
 import { TOMAN_PER_MILLION, TOMANS_PER_USD } from "../../lib/constants"
+import { photoUrl } from "../../lib/photo"
 
 const PLATFORM_LABELS: Record<string, string> = {
   instagram: "Instagram",
@@ -249,7 +250,8 @@ export default function AdminDashboard({
               <div className="flex items-center gap-4 mb-5">
                 <div className="relative">
                   <img
-                    src={`https://images.unsplash.com/${profile.photo}?w=80&h=80&fit=crop&auto=format`}
+                    src={photoUrl(profile.photo, 80)}
+            onError={(e) => (e.currentTarget.style.visibility = "hidden")}
                     alt="Profile"
                     className="w-16 h-16 rounded-2xl object-cover"
                   />

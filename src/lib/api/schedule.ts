@@ -51,7 +51,7 @@ export async function listAdminCases(query: {
   status?: string
   priority?: string
   search?: string
-}): Promise<CaseRow[]> {
+} = {}): Promise<CaseRow[]> {
   const params = new URLSearchParams()
   if (query.status) params.set("status", query.status)
   if (query.priority) params.set("priority", query.priority)
@@ -164,7 +164,7 @@ export async function updateAdminTask(
 export async function listAdminEvents(query: {
   from?: string
   to?: string
-}): Promise<EventRow[]> {
+} = {}): Promise<EventRow[]> {
   const params = new URLSearchParams()
   if (query.from) params.set("from", query.from)
   if (query.to) params.set("to", query.to)
@@ -230,7 +230,7 @@ export async function deleteAdminEvent(id: string): Promise<void> {
 export async function listAdminTimeLogs(query: {
   caseId?: string
   taskId?: string
-}): Promise<TimeLogRow[]> {
+} = {}): Promise<TimeLogRow[]> {
   const params = new URLSearchParams()
   if (query.caseId) params.set("caseId", query.caseId)
   if (query.taskId) params.set("taskId", query.taskId)

@@ -3,6 +3,7 @@ dist/
 build/
 .cache/
 .env*
+!.env.demo
 .vite/
 vite.config.*.timestamp-*
 *.tsbuildinfo
@@ -13,3 +14,4 @@ logs/
 .tmp-*
 playwright-report/
 test-results/
+.phpunit.cache/

@@ -34,6 +34,8 @@ import AuthPage from "./pages/AuthPage"
 import EmployerDashboard from "./components/dashboard/EmployerDashboard"
 import AdminDashboard from "./components/dashboard/AdminDashboard"
 import Marketplace from "./pages/Marketplace"
+import { DemoRoleSwitcher } from "./components/demo/DemoRoleSwitcher"
+import { isDemoMode } from "./lib/demo-mode"
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -479,7 +481,7 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <div className="flex-1 overflow-hidden flex flex-col">
-                      <AiPage />
+                      <AiPage tr={tr} lang={lang} />
                     </div>
                   </ProtectedRoute>
                 }
@@ -489,7 +491,7 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <div className="flex-1 overflow-hidden flex flex-col">
-                      <AiPage />
+                      <AiPage tr={tr} lang={lang} />
                     </div>
                   </ProtectedRoute>
                 }
@@ -510,6 +512,8 @@ export default function App() {
               />
             </Routes>
           </div>
+
+          {isDemoMode && <DemoRoleSwitcher role={role} lang={lang} />}
         </div>
       </Ctx.Provider>
     </ErrorBoundary>

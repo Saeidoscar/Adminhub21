@@ -254,7 +254,7 @@ export default function AdminPortfolioPage({
               >
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex-1 min-w-0">
-                    <div className="font-bold text-sm text-[#0f172a] mb-1 truncate">
+                    <div className="font-bold text-sm text-[#0f172a] mb-1 truncate" dir="auto">
                       {item.title}
                     </div>
                     <div className="flex items-center gap-1.5">
@@ -276,11 +276,25 @@ export default function AdminPortfolioPage({
                     </button>
                   </div>
                 </div>
+                {item.mediaUrl && (
+                  <div className="mb-3 overflow-hidden rounded-xl border border-[#e2e8f0] bg-[#f2f5fa] aspect-video">
+                    {item.mediaType === "image" ? (
+                      <img
+                        src={item.mediaUrl}
+                        alt=""
+                        loading="lazy"
+                        className="h-full w-full object-cover"
+                        onError={(e) => (e.currentTarget.style.display = "none")}
+                      />
+                    ) : (
+                      <div className="flex h-full items-center justify-center text-xs text-[#64748b]">
+                        <Icon name="image" size={20} />
+                      </div>
+                    )}
+                  </div>
+                )}
                 <p className="text-xs text-[#64748b] mb-3 line-clamp-2">
                   {item.description}
-                </p>
-                <p className="text-xs text-[#64748b] mb-3 truncate">
-                  {item.mediaUrl}
                 </p>
                 <div className="flex flex-wrap gap-1 mb-3">
                   {item.tags.slice(0, 4).map((tag) => (
@@ -309,12 +323,12 @@ export default function AdminPortfolioPage({
           <div className="space-y-5">
             <div>
               <label className="block text-sm font-semibold text-[#0f172a] mb-1.5">
-                {tr.adminPortfolio.title}
+                {tr.adminPortfolio.fieldTitle}
               </label>
               <Input
                 value={form.title}
                 onChange={(v) => setForm((f) => ({ ...f, title: v }))}
-                placeholder={tr.adminPortfolio.title}
+                placeholder={tr.adminPortfolio.fieldTitle}
               />
               {errors.title && (
                 <p className="mt-1 text-xs text-red-600">{errors.title}</p>

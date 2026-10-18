@@ -129,7 +129,7 @@ export default function TicketsPage({
                 {isFa ? "دسته‌بندی" : "Category"}
               </div>
               <span className="inline-flex px-2.5 py-1 rounded-full bg-[#1e3a5f]/10 text-[#1e3a5f] text-xs font-semibold">
-                {CATEGORY_LABELS[currentTicket.category]?.en || currentTicket.category}
+                {CATEGORY_LABELS[currentTicket.category]?.[lang] || currentTicket.category}
               </span>
             </div>
             <div>
@@ -397,7 +397,7 @@ export default function TicketsPage({
                   </div>
                   <div className="flex items-center gap-3 text-xs text-[#64748b]">
                     <span className="inline-flex px-2.5 py-0.5 rounded-full bg-[#1e3a5f]/10 text-[#1e3a5f] font-semibold">
-                      {CATEGORY_LABELS[ticket.category]?.en || ticket.category}
+                      {CATEGORY_LABELS[ticket.category]?.[lang] || ticket.category}
                     </span>
                     <span>
                       {new Date(ticket.createdAt).toLocaleDateString()}

@@ -30,9 +30,17 @@ export type {
   WalletTransactionRow,
 }
 
+import { isDemoMode } from "../demo-mode"
+
 export const DEFAULT_API_BASE_URL = "http://localhost:8000"
 
 export function getApiBaseUrl() {
+  // In demo mode every request is served by the Vite middleware on the same
+  // origin, so relative URLs are exactly what we want.
+  if (isDemoMode && !import.meta.env.VITE_API_BASE_URL?.trim()) {
+    return ""
+  }
+
   return (import.meta.env.VITE_API_BASE_URL?.trim() || DEFAULT_API_BASE_URL)
     .replace(/\/+$/, "")
 }

@@ -5,9 +5,11 @@ import { Button } from "../ui/Button"
 export function MessageInput({
   onSend,
   disabled,
+  placeholder,
 }: {
   onSend: (content: string) => void
   disabled?: boolean
+  placeholder?: string
 }) {
   const [content, setContent] = useState("")
 
@@ -31,7 +33,7 @@ export function MessageInput({
       <textarea
         value={content}
         onChange={(e) => setContent(e.target.value)}
-        placeholder="Type a message..."
+        placeholder={placeholder}
         rows={1}
         disabled={disabled}
         className="flex-1 resize-none rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-primary disabled:opacity-50"

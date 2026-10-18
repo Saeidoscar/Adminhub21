@@ -5,6 +5,8 @@ import {
   getAdminCase,
   createAdminCase,
   updateAdminCase,
+  listAdminUsers,
+  type AdminUserRow,
   type CaseRow,
 } from "../../lib/api"
 import { ListSkeleton } from "../../components/ui/Skeleton"
@@ -32,6 +34,7 @@ function CasesTab({ tr, lang, isFa }: { tr: Tr; lang: Lang; isFa: boolean }) {
     tags: "",
   })
   const [editErrors, setEditErrors] = useState<Record<string, string>>({})
+  const [employers, setEmployers] = useState<AdminUserRow[]>([])
 
   const load = async () => {
     setLoading(true)
@@ -48,7 +51,20 @@ function CasesTab({ tr, lang, isFa }: { tr: Tr; lang: Lang; isFa: boolean }) {
 
   useEffect(() => {
     load()
+    listAdminUsers({ role: "employer" })
+      .then(setEmployers)
+      .catch(() => setEmployers([]))
   }, [])
+
+  const employerLabel = (caseRow: CaseRow) => {
+    const match = employers.find((employer) => employer.id === caseRow.employerId)
+    if (match) {
+      return isFa
+        ? match.nameFa || match.nameEn
+        : match.nameEn || match.nameFa
+    }
+    return caseRow.employerName || caseRow.employerId
+  }
 
   const resetForm = () => {
     setForm({ title: "", description: "", priority: "medium", employerId: "", tags: "" })
@@ -150,7 +166,7 @@ function CasesTab({ tr, lang, isFa }: { tr: Tr; lang: Lang; isFa: boolean }) {
         >
           <div>
             <label className="block text-sm font-semibold text-[#0f172a] mb-1.5">
-              {tr.adminWorkspace.title}
+              {tr.adminWorkspace.fieldTitle}
             </label>
             <input
               value={form.title}
@@ -176,14 +192,21 @@ function CasesTab({ tr, lang, isFa }: { tr: Tr; lang: Lang; isFa: boolean }) {
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-semibold text-[#0f172a] mb-1.5">
-                {isFa ? "شناسه کارفرما" : "Employer ID"}
+                {isFa ? "کارفرما" : "Employer"}
               </label>
-              <input
+              <select
                 value={form.employerId}
                 onChange={(e) => setForm({ ...form, employerId: e.target.value })}
                 required
-                className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all"
-              />
+                className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all bg-white"
+              >
+                <option value="">{isFa ? "کارفرما را انتخاب کنید" : "Select an employer"}</option>
+                {employers.map((employer) => (
+                  <option key={employer.id} value={employer.id}>
+                    {isFa ? employer.nameFa || employer.nameEn : employer.nameEn || employer.nameFa}
+                  </option>
+                ))}
+              </select>
               {errors.employerId && (
                 <p className="text-xs text-rose-600 mt-1">{errors.employerId}</p>
               )}
@@ -241,7 +264,7 @@ function CasesTab({ tr, lang, isFa }: { tr: Tr; lang: Lang; isFa: boolean }) {
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-semibold text-[#0f172a] mb-1.5">
-                      {tr.adminWorkspace.title}
+                      {tr.adminWorkspace.fieldTitle}
                     </label>
                     <input
                       value={editForm.title}
@@ -352,7 +375,7 @@ function CasesTab({ tr, lang, isFa }: { tr: Tr; lang: Lang; isFa: boolean }) {
                       </span>
                     </div>
                     <div className="text-sm text-[#64748b] mb-1">
-                      {isFa ? "کارفرما" : "Employer"}: {c.employerName || c.employerId}
+                      {isFa ? "کارفرما" : "Employer"}: {employerLabel(c)}
                     </div>
                     {c.tags && c.tags.length > 0 && (
                       <div className="flex gap-1.5 flex-wrap mt-1">

@@ -139,11 +139,13 @@ export default function AdminContentModerationPage({
   const getStatusBadge = (status: string) => {
     const colors: Record<string, string> = {
       draft: "bg-gray-100 text-gray-700",
+      pending: "bg-amber-100 text-amber-700",
       published: "bg-emerald-100 text-emerald-700",
       archived: "bg-amber-100 text-amber-700",
     }
     const labels: Record<string, string> = {
       draft: tr.adminContent.draft,
+      pending: tr.adminContent.pending,
       published: tr.adminContent.published,
       archived: tr.adminContent.archived,
     }

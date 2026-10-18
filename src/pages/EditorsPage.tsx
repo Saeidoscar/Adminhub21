@@ -5,10 +5,11 @@ import { Stars } from "../components/platform/Stars"
 import { listEditors, type Editor } from "../lib/api"
 import { ListSkeleton } from "../components/ui/Skeleton"
 import { TOMAN_PER_MILLION } from "../lib/constants"
+import { photoUrl } from "../lib/photo"
 
 type Specialty = "video" | "photo" | "motion" | "thumbnail"
 
-const SPECIALTY_LABELS: Record<Specialty, { en: string fa: string }> = {
+const SPECIALTY_LABELS: Record<Specialty, { en: string; fa: string }> = {
   video: { en: "Video Editing", fa: "ادیت ویدئو" },
   photo: { en: "Photo Editing", fa: "ادیت عکس" },
   motion: { en: "Motion Graphics", fa: "موشن گرافیک" },
@@ -109,7 +110,8 @@ export default function EditorsPage({
             >
               <div className="flex items-start gap-3 mb-4">
                 <img
-                  src={`https://images.unsplash.com/${editor.photo}?w=64&h=64&fit=crop&auto=format`}
+                  src={photoUrl(editor.photo, 64)}
+            onError={(e) => (e.currentTarget.style.visibility = "hidden")}
                   alt={isFa ? editor.nameFa : editor.nameEn}
                   className="w-14 h-14 rounded-2xl object-cover bg-[#f2f5fa] flex-shrink-0"
                 />

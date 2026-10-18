@@ -8,7 +8,7 @@ import { TOMAN_PER_MILLION } from "../lib/constants"
 
 type Category = "scheduling" | "design" | "analytics" | "automation" | "ecommerce"
 
-const CATEGORY_LABELS: Record<Category, { en: string fa: string }> = {
+const CATEGORY_LABELS: Record<Category, { en: string; fa: string }> = {
   scheduling: { en: "Scheduling", fa: "زمان‌بندی" },
   design: { en: "Design", fa: "طراحی" },
   analytics: { en: "Analytics", fa: "آنالیتیکس" },

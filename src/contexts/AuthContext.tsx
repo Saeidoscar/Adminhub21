@@ -17,6 +17,15 @@ import {
   verifyOtp as verifyOtpApi,
   getMe as getMeApi,
 } from "../lib/api"
+import {
+  DEMO_ROLE_KEY,
+  DEMO_SIGNED_OUT_KEY,
+  DEMO_TOKEN,
+  DEMO_USERS,
+  isDemoMode,
+  readStoredDemoRole,
+  type DemoRole,
+} from "../lib/demo-mode"
 
 export interface AuthContextValue {
   user: SafeUser | null
@@ -38,6 +47,8 @@ export interface AuthContextValue {
   refreshToken: () => Promise<void>
   clearError: () => void
   fetchMe: () => Promise<void>
+  /** Signs in with a demo persona (only available in demo mode). */
+  loginDemo: (role?: DemoRole) => void
 }
 
 const AuthContext = createContext<AuthContextValue>({
@@ -53,6 +64,7 @@ const AuthContext = createContext<AuthContextValue>({
   refreshToken: async () => {},
   clearError: () => {},
   fetchMe: async () => {},
+  loginDemo: () => {},
 })
 
 export function useAuth() {
@@ -84,9 +96,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setAccessTokenState(null)
       if (typeof window !== "undefined") {
         window.localStorage.removeItem("adminhub_token")
+        if (isDemoMode) {
+          window.localStorage.setItem(DEMO_SIGNED_OUT_KEY, "1")
+        }
       }
     }
   }, [])
+
+  const handleDemoLogin = useCallback((role: DemoRole = "employer") => {
+    if (!isDemoMode) return
+
+    const demoUser = DEMO_USERS[role] ?? DEMO_USERS.employer
+
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(DEMO_ROLE_KEY, role)
+      window.localStorage.removeItem(DEMO_SIGNED_OUT_KEY)
+    }
+
+    setTokens(DEMO_TOKEN)
+    setUser(demoUser)
+    setIsLoading(false)
+    setError(null)
+  }, [setTokens])
 
   const handleRefresh = useCallback(async () => {
     try {
@@ -168,6 +199,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     let cancelled = false
 
     async function bootstrap() {
+      if (isDemoMode) {
+        const signedOut =
+          typeof window !== "undefined" &&
+          window.localStorage.getItem(DEMO_SIGNED_OUT_KEY) === "1"
+
+        if (signedOut) {
+          if (!cancelled) setIsLoading(false)
+          return
+        }
+
+        const role = readStoredDemoRole()
+        const demoUser = DEMO_USERS[role] ?? DEMO_USERS.employer
+
+        if (!cancelled) {
+          setTokens(DEMO_TOKEN)
+          setUser(demoUser)
+          setIsLoading(false)
+        }
+        return
+      }
+
       const token = getAuthToken()
       if (!token) {
         if (!cancelled) {
@@ -217,6 +269,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     refreshToken: handleRefresh,
     clearError,
     fetchMe: handleFetchMe,
+    loginDemo: handleDemoLogin,
   }
 
   return (

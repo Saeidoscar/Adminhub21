@@ -9,6 +9,7 @@ import { platformLabel } from "../components/packages/platformSpecs"
 import { PLATFORM_SPECS } from "../components/packages/platformSpecs"
 import type { ContractPackage } from "@adminhub/shared"
 import { formatPrice } from "../domain/package"
+import { photoUrl } from "../lib/photo"
 
 const PLATFORM_COLORS: Record<string, string> = {
   instagram: "badge-instagram",
@@ -115,7 +116,8 @@ export default function PackageComparisonPage() {
               {adm && (
                 <div className="flex items-center gap-2 mb-2">
                   <img
-                    src={`https://images.unsplash.com/${adm.photo}?w=32&h=32&fit=crop&auto=format`}
+                    src={photoUrl(adm.photo, 32)}
+            onError={(e) => (e.currentTarget.style.visibility = "hidden")}
                     alt=""
                     className="w-6 h-6 rounded-md object-cover"
                   />
