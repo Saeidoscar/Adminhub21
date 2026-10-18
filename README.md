@@ -167,6 +167,20 @@ pnpm test:e2e:ui
 
 The API suite covers authentication, catalog, payment callbacks, review authorization, and security regressions (`tests/Feature/`), plus hashing configuration (`tests/Unit/HashingConfigTest.php`). Playwright specs live in `e2e/`.
 
+Locally, `phpunit.xml` runs the suite against in-memory SQLite so no database server is needed. CI overrides `DB_CONNECTION` with real environment variables (which take precedence over the `<env>` block) and runs the same suite on PostgreSQL 16.
+
+### Continuous integration
+
+| Job | What it runs |
+|-----|--------------|
+| `frontend-format` | `pnpm format --check` (oxfmt) |
+| `frontend-build` | `pnpm build` |
+| `api-tests` | `php artisan test` on PHP 8.4 with a PostgreSQL 16 service container |
+
+`api-tests` caches Composer downloads via `ramsey/composer-install`, copies `apps/api/.env.example` to `.env`, generates a key, and then runs the suite. Any change to the API requires a green run here.
+
+`apps/api/phpstan.neon.dist` is currently not wired into CI: it includes `larastan/larastan`, which is not in `composer.json`, and it targets level 8, so it cannot run until that dependency is added and the baseline is cleared.
+
 ## Security notes
 
 - Passwords default to **argon2id** (`HASH_DRIVER`); legacy bcrypt hashes remain verifiable and are rehashed on next login.

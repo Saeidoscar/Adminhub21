@@ -4,6 +4,7 @@ build/
 .cache/
 .env*
 !.env.demo
+!.env.example
 .vite/
 vite.config.*.timestamp-*
 *.tsbuildinfo
