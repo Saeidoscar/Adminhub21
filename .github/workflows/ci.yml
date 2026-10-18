@@ -107,7 +107,7 @@ jobs:
         with:
           php-version: ${{ env.PHP_VERSION }}
           extensions: mbstring, intl, pdo_pgsql, pgsql, gd, zip, bcmath, dom, curl, xml
-          coverage: none
+          coverage: pcov
           tools: composer:v2
           ini-values: memory_limit=-1
 

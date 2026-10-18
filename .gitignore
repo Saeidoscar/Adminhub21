@@ -16,3 +16,5 @@ logs/
 playwright-report/
 test-results/
 .phpunit.cache/
+coverage/
+coverage.xml
