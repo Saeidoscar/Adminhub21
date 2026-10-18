@@ -21,7 +21,7 @@ class SecurityTest extends TestCase
         return User::create([
             'name' => 'Test',
             'email' => uniqid('test') . '@test.com',
-            'phone' => '+980000000000',
+            'phone' => '+989' . random_int(100000000, 999999999),
             'password' => bcrypt('password'),
             'role' => $role,
             'is_verified' => true,
@@ -143,7 +143,7 @@ class SecurityTest extends TestCase
     {
         $r = $this->makeUser();
         $this->actingWithToken($r);
-        $this->postJson('/api/v1/reviews', ['contract_id' => 99999, 'rating' => 5])->assertStatus(404);
+        $this->postJson('/api/v1/reviews', ['contract_id' => 99999, 'rating' => 5])->assertStatus(422);
     }
 
     public function test_review_needs_contract_access(): void

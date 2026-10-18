@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
 class OfficeCase extends Model
 {
@@ -31,6 +32,13 @@ class OfficeCase extends Model
         'progress',
         'archived_at',
     ];
+
+    protected static function booted(): void
+    {
+        static::creating(function (self $case): void {
+            $case->uuid ??= (string) Str::uuid();
+        });
+    }
 
     protected function casts(): array
     {

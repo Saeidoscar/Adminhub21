@@ -136,9 +136,11 @@ jobs:
         if: failure()
         shell: bash
         run: |
-          tail -c 6000 /tmp/phpunit.log > /tmp/tail.log 2>/dev/null || true
+          sed -e 's/\x1b\[[0-9;]*m//g' /tmp/phpunit.log > /tmp/clean.log 2>/dev/null || true
+          grep -aE 'FAILED|Tests:|Assertions:|Time:|SQLSTATE|Failed asserting|^ *[0-9]+\) ' /tmp/clean.log \
+            | cut -c1-220 | head -50 > /tmp/summary.log || true
           python3 - <<'PY'
-          data = open('/tmp/tail.log', errors='replace').read()
+          data = open('/tmp/summary.log', errors='replace').read()
           escaped = data.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
           print('::error title=phpunit::' + escaped)
           PY
