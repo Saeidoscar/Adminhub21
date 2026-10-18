@@ -76,7 +76,7 @@ class SecurityTest extends TestCase
         $cr = $this->makeUser();
         $s = $this->makeUser();
         $this->actingWithToken($s);
-        $t = Ticket::create(['user_id' => $cr->id, 'assigned_to' => $cr->id, 'subject' => 'T', 'description' => 'D', 'priority' => 'medium', 'status' => 'open']);
+        $t = Ticket::create(['user_id' => $cr->id, 'assigned_to' => $cr->id, 'subject' => 'T', 'description' => 'D', 'priority' => 'normal', 'status' => 'open']);
         $this->getJson('/api/v1/tickets/' . $t->id)->assertStatus(403);
     }
 
@@ -84,7 +84,7 @@ class SecurityTest extends TestCase
     {
         $user = $this->makeUser();
         $this->actingWithToken($user);
-        $t = Ticket::create(['user_id' => $user->id, 'assigned_to' => $user->id, 'subject' => 'T', 'description' => 'D', 'priority' => 'medium', 'status' => 'open']);
+        $t = Ticket::create(['user_id' => $user->id, 'assigned_to' => $user->id, 'subject' => 'T', 'description' => 'D', 'priority' => 'normal', 'status' => 'open']);
         $this->getJson('/api/v1/tickets/' . $t->id)->assertStatus(200);
     }
 
