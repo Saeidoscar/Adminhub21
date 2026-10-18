@@ -127,20 +127,4 @@ jobs:
           php artisan package:discover --ansi
 
       - name: Run test suite
-        shell: bash
-        run: |
-          set -o pipefail
-          php artisan test --colors=always 2>&1 | tee /tmp/phpunit.log
-
-      - name: Surface failures
-        if: failure()
-        shell: bash
-        run: |
-          sed -e 's/\x1b\[[0-9;]*m//g' /tmp/phpunit.log > /tmp/clean.log 2>/dev/null || true
-          grep -aE 'FAILED|Tests:|Assertions:|Time:|SQLSTATE|Failed asserting|^ *[0-9]+\) ' /tmp/clean.log \
-            | cut -c1-220 | head -50 > /tmp/summary.log || true
-          python3 - <<'PY'
-          data = open('/tmp/summary.log', errors='replace').read()
-          escaped = data.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
-          print('::error title=phpunit::' + escaped)
-          PY
+        run: php artisan test --colors=always
