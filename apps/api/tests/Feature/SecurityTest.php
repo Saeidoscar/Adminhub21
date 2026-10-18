@@ -56,8 +56,9 @@ class SecurityTest extends TestCase
     public function test_contract_owner_can_view_contract(): void
     {
         $user = $this->makeUser();
+        $client = $this->makeUser();
         $this->actingWithToken($user);
-        $c = Contract::create(['user_id' => $user->id, 'client_id' => $user->id+1, 'title' => 'TC', 'amount' => 100, 'currency' => 'USD']);
+        $c = Contract::create(['user_id' => $user->id, 'client_id' => $client->id, 'title' => 'TC', 'amount' => 100, 'currency' => 'USD']);
         $this->getJson('/api/v1/contracts/' . $c->id)->assertStatus(200);
     }
 
@@ -100,8 +101,9 @@ class SecurityTest extends TestCase
     public function test_sender_can_view_offer(): void
     {
         $user = $this->makeUser();
+        $target = $this->makeUser();
         $this->actingWithToken($user);
-        $o = Offer::create(['user_id' => $user->id, 'target_user_id' => $user->id+1, 'message' => 'H', 'amount' => 100, 'currency' => 'USD']);
+        $o = Offer::create(['user_id' => $user->id, 'target_user_id' => $target->id, 'message' => 'H', 'amount' => 100, 'currency' => 'USD']);
         $this->getJson('/api/v1/offers/' . $o->id)->assertStatus(200);
     }
 
@@ -152,7 +154,7 @@ class SecurityTest extends TestCase
         $cl = $this->makeUser();
         $this->actingWithToken($rv);
         $c = Contract::create(['user_id' => $cl->id, 'client_id' => $cl->id, 'title' => 'NA', 'amount' => 100, 'currency' => 'USD']);
-        $this->postJson('/api/v1/reviews', ['contract_id' => $c->id+1, 'rating' => 5])->assertStatus(404);
+        $this->postJson('/api/v1/reviews', ['contract_id' => $c->id+1, 'rating' => 5])->assertStatus(422);
     }
 
     public function test_sanctum_expiration_config(): void
