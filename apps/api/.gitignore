@@ -9,4 +9,3 @@
 docker-compose.override.yml
 /testbench/database
 /testbench/.env
-/bootstrap/cache/*.php
