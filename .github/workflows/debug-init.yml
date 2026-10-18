@@ -1,0 +1,49 @@
+name: debug-init
+
+# Temporary workflow: surfaces bootstrap/Composer diagnostics as check-run
+# annotations because raw job logs are not reachable from this environment.
+on:
+  push:
+    branches: [arena/467f0d3f-adminhub21]
+
+jobs:
+  diag:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/api
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, intl, pdo_pgsql, pgsql, gd, zip, bcmath, dom, curl, xml
+          coverage: none
+          tools: composer:v2
+
+      - name: Diagnose install
+        run: |
+          set +e
+          {
+            echo "=== php ==="
+            php -v | head -2
+            echo "=== php -m ==="
+            php -m | tr '\n' ' '
+            echo
+            echo "=== composer install --no-scripts ==="
+            composer install --no-interaction --prefer-dist --no-progress --no-scripts --no-plugins 2>&1
+            echo "EXIT_NO_SCRIPTS=$?"
+            echo "=== artisan package:discover ==="
+            php artisan package:discover --ansi 2>&1
+            echo "EXIT_DISCOVER=$?"
+            echo "=== composer install (full) ==="
+            composer install --no-interaction --prefer-dist --no-progress 2>&1
+            echo "EXIT_FULL=$?"
+          } > /tmp/diag.log 2>&1
+          tail -c 5000 /tmp/diag.log > /tmp/tail.log
+          python3 - <<'PY'
+          data = open('/tmp/tail.log', errors='replace').read()
+          escaped = data.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
+          print('::error title=diag::' + escaped)
+          PY
