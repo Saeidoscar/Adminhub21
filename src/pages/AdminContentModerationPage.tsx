@@ -341,9 +341,7 @@ export default function AdminContentModerationPage({
                   <div className="flex gap-2 flex-shrink-0">
                     <Button
                       size="sm"
-                      onClick={() =>
-                        handleModerate(storyBlog.id, "approve")
-                      }
+                      onClick={() => handleModerate(storyBlog.id, "approve")}
                     >
                       {tr.adminContent.approve}
                     </Button>
@@ -351,9 +349,7 @@ export default function AdminContentModerationPage({
                       <Button
                         variant="danger"
                         size="sm"
-                        onClick={() =>
-                          handleModerate(storyBlog.id, "reject")
-                        }
+                        onClick={() => handleModerate(storyBlog.id, "reject")}
                       >
                         {tr.adminContent.reject}
                       </Button>
@@ -362,9 +358,7 @@ export default function AdminContentModerationPage({
                       <Button
                         variant="secondary"
                         size="sm"
-                        onClick={() =>
-                          handleModerate(storyBlog.id, "archive")
-                        }
+                        onClick={() => handleModerate(storyBlog.id, "archive")}
                       >
                         {tr.adminContent.archive}
                       </Button>

@@ -1,4 +1,9 @@
-import type { ContractPackage, PlatformKey, AdminProfile, CustomOffer } from "@adminhub/shared"
+import type {
+  ContractPackage,
+  PlatformKey,
+  AdminProfile,
+  CustomOffer,
+} from "@adminhub/shared"
 import {
   listAdminProfiles,
   listPackages,
@@ -19,7 +24,10 @@ export async function fetchPackagesWithAdmins(): Promise<{
   admins: AdminProfile[]
   packages: ContractPackage[]
 }> {
-  const [admins, packages] = await Promise.all([listAdminProfiles(), listPackages()])
+  const [admins, packages] = await Promise.all([
+    listAdminProfiles(),
+    listPackages(),
+  ])
   return { admins, packages }
 }
 

@@ -42,7 +42,15 @@ export default function Marketplace({ lang, tr }: MarketplaceProps) {
     [search, platform, sortBy, verifiedOnly, lang],
   )
 
-  const { admins, filtered, loading, favorites, favLoading, toggleFavorite, isFavorite } = useMarketplace(filters)
+  const {
+    admins,
+    filtered,
+    loading,
+    favorites,
+    favLoading,
+    toggleFavorite,
+    isFavorite,
+  } = useMarketplace(filters)
 
   return (
     <div className="p-6 lg:p-8 max-w-6xl mx-auto fade-in">
@@ -120,7 +128,9 @@ export default function Marketplace({ lang, tr }: MarketplaceProps) {
                 <div className="flex items-start gap-3 mb-4">
                   <img
                     src={photoUrl(admin.photo, 64)}
-            onError={(e) => (e.currentTarget.style.visibility = "hidden")}
+                    onError={(e) =>
+                      (e.currentTarget.style.visibility = "hidden")
+                    }
                     alt={admin.nameEn}
                     className="w-14 h-14 rounded-2xl object-cover bg-[#f2f5fa] flex-shrink-0"
                   />
@@ -138,7 +148,11 @@ export default function Marketplace({ lang, tr }: MarketplaceProps) {
                               ? "bg-rose-100 text-rose-500"
                               : "bg-[#f2f5fa] text-[#94a3b8] hover:text-rose-500"
                           }`}
-                          title={isFav ? tr.dash.removeFromFavorites : tr.dash.addToFavorites}
+                          title={
+                            isFav
+                              ? tr.dash.removeFromFavorites
+                              : tr.dash.addToFavorites
+                          }
                         >
                           <Icon
                             name="heart"

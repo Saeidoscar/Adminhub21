@@ -42,9 +42,7 @@ app.use(
   "*",
   cors({
     origin:
-      env.NODE_ENV === "production"
-        ? corsOrigins
-        : (origin: string) => origin,
+      env.NODE_ENV === "production" ? corsOrigins : (origin: string) => origin,
     credentials: true,
   }),
 )

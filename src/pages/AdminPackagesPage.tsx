@@ -10,10 +10,7 @@ import {
   ALL_PLATFORM_KEYS,
 } from "../components/packages/platformSpecs"
 import { PLATFORM_SPECS } from "../components/packages/platformSpecs"
-import type {
-  ContractPackage,
-  PlatformKey,
-} from "@adminhub/shared"
+import type { ContractPackage, PlatformKey } from "@adminhub/shared"
 import { TOMAN_PER_MILLION } from "../lib/constants"
 
 const PLATFORM_COLORS: Record<string, string> = {
@@ -189,7 +186,7 @@ export default function AdminPackagesPage() {
                 <div className="flex items-center justify-between pt-3 border-t border-[#f2f5fa]">
                   <div>
                     <span className="text-lg font-bold text-[#1e3a5f]">
-                       {(pkg.priceToman / TOMAN_PER_MILLION).toFixed(1)}M
+                      {(pkg.priceToman / TOMAN_PER_MILLION).toFixed(1)}M
                     </span>
                     <span className="text-xs text-[#94a3b8] mr-1">
                       {tr.common.perMonth}
@@ -281,7 +278,9 @@ export default function AdminPackagesPage() {
                   className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] transition-all"
                 />
                 {errors.priceToman && (
-                  <p className="text-xs text-rose-600 mt-1">{errors.priceToman}</p>
+                  <p className="text-xs text-rose-600 mt-1">
+                    {errors.priceToman}
+                  </p>
                 )}
               </div>
               <div>
@@ -295,7 +294,9 @@ export default function AdminPackagesPage() {
                   className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] transition-all"
                 />
                 {errors.priceUSD && (
-                  <p className="text-xs text-rose-600 mt-1">{errors.priceUSD}</p>
+                  <p className="text-xs text-rose-600 mt-1">
+                    {errors.priceUSD}
+                  </p>
                 )}
               </div>
             </div>
@@ -327,7 +328,9 @@ export default function AdminPackagesPage() {
                   className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] transition-all"
                 />
                 {errors.deliveryTime && (
-                  <p className="text-xs text-rose-600 mt-1">{errors.deliveryTime}</p>
+                  <p className="text-xs text-rose-600 mt-1">
+                    {errors.deliveryTime}
+                  </p>
                 )}
               </div>
             </div>
@@ -337,7 +340,10 @@ export default function AdminPackagesPage() {
               const config = form.platformConfigs.find((c) => c.platform === pl)
               if (!spec || !config) return null
               return (
-                <div key={pl} className="border border-[#e2e8f0] rounded-xl p-4">
+                <div
+                  key={pl}
+                  className="border border-[#e2e8f0] rounded-xl p-4"
+                >
                   <div className="flex items-center gap-2 mb-3">
                     <div
                       className={`w-5 h-5 rounded ${spec.colorClass} flex items-center justify-center text-white text-[10px] font-bold`}
@@ -358,7 +364,11 @@ export default function AdminPackagesPage() {
                           <button
                             type="button"
                             onClick={() =>
-                              updateConfig(pl, field.id, !config.settings[field.id])
+                              updateConfig(
+                                pl,
+                                field.id,
+                                !config.settings[field.id],
+                              )
                             }
                             className={`w-full px-3 py-2 rounded-lg text-xs font-semibold border transition-all ${
                               config.settings[field.id]
@@ -382,7 +392,9 @@ export default function AdminPackagesPage() {
                               updateConfig(
                                 pl,
                                 field.id,
-                                e.target.value ? Number(e.target.value) : field.default ?? 0,
+                                e.target.value
+                                  ? Number(e.target.value)
+                                  : (field.default ?? 0),
                               )
                             }
                             className="w-full px-3 py-2 rounded-lg border border-[#e2e8f0] text-xs focus:border-[#1e3a5f] transition-all"

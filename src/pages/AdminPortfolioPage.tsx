@@ -104,7 +104,9 @@ export default function AdminPortfolioPage({
       }
       resetForm()
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to save portfolio item")
+      setError(
+        err instanceof Error ? err.message : "Failed to save portfolio item",
+      )
     } finally {
       setSaving(false)
     }
@@ -254,7 +256,10 @@ export default function AdminPortfolioPage({
               >
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex-1 min-w-0">
-                    <div className="font-bold text-sm text-[#0f172a] mb-1 truncate" dir="auto">
+                    <div
+                      className="font-bold text-sm text-[#0f172a] mb-1 truncate"
+                      dir="auto"
+                    >
                       {item.title}
                     </div>
                     <div className="flex items-center gap-1.5">
@@ -284,7 +289,9 @@ export default function AdminPortfolioPage({
                         alt=""
                         loading="lazy"
                         className="h-full w-full object-cover"
-                        onError={(e) => (e.currentTarget.style.display = "none")}
+                        onError={(e) =>
+                          (e.currentTarget.style.display = "none")
+                        }
                       />
                     ) : (
                       <div className="flex h-full items-center justify-center text-xs text-[#64748b]">

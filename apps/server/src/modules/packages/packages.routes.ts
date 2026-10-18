@@ -83,22 +83,18 @@ packagesRoutes.put(
   },
 )
 
-packagesRoutes.delete(
-  "/:id",
-  requireAuth,
-  async (c) => {
-    const user = c.get("authUser")
-    const id = c.req.param("id")
-    const pkg = await getPackageById(id)
-    if (!pkg) {
-      throw new ApiError(404, "Package not found", "NOT_FOUND")
-    }
-    if (!(await policy.remove(user, pkg))) {
-      throw new ApiError(403, "Forbidden", "FORBIDDEN")
-    }
-    await deletePackage(id)
-    return c.json({ ok: true })
-  },
-)
+packagesRoutes.delete("/:id", requireAuth, async (c) => {
+  const user = c.get("authUser")
+  const id = c.req.param("id")
+  const pkg = await getPackageById(id)
+  if (!pkg) {
+    throw new ApiError(404, "Package not found", "NOT_FOUND")
+  }
+  if (!(await policy.remove(user, pkg))) {
+    throw new ApiError(403, "Forbidden", "FORBIDDEN")
+  }
+  await deletePackage(id)
+  return c.json({ ok: true })
+})
 
 export { packagesRoutes }

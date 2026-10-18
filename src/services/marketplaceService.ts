@@ -1,11 +1,19 @@
-import type { AdminProfile, FavoriteRow, ContractPackage } from "@adminhub/shared"
+import type {
+  AdminProfile,
+  FavoriteRow,
+  ContractPackage,
+} from "@adminhub/shared"
 import {
   listAdminProfiles,
   listFavorites,
   addFavorite,
   removeFavorite,
 } from "../lib/api"
-import { filterPackagesForAdmin, filterPackagesForPlatform, searchPackages } from "../domain/package"
+import {
+  filterPackagesForAdmin,
+  filterPackagesForPlatform,
+  searchPackages,
+} from "../domain/package"
 import { formatAdminPrice } from "../domain/profile"
 
 export interface MarketplaceFilters {
@@ -30,7 +38,8 @@ export function filterAndSortAdmins(
       !query ||
       name.toLowerCase().includes(query) ||
       bio.toLowerCase().includes(query)
-    const matchPlatform = platform === "all" || a.platforms.includes(platform as any)
+    const matchPlatform =
+      platform === "all" || a.platforms.includes(platform as any)
     const matchVerified = !verifiedOnly || a.verified
     return matchSearch && matchPlatform && matchVerified
   })
@@ -71,7 +80,10 @@ export function toggleFavoriteService(
   if (isFav) {
     return favorites.filter((f) => f.adminId !== adminId)
   }
-  return [...favorites, { id: `fav-${Date.now()}`, adminId, createdAt: new Date().toISOString() }]
+  return [
+    ...favorites,
+    { id: `fav-${Date.now()}`, adminId, createdAt: new Date().toISOString() },
+  ]
 }
 
 export function searchAndFilterPackages(

@@ -117,7 +117,9 @@ export default function PackageComparisonPage() {
                 <div className="flex items-center gap-2 mb-2">
                   <img
                     src={photoUrl(adm.photo, 32)}
-            onError={(e) => (e.currentTarget.style.visibility = "hidden")}
+                    onError={(e) =>
+                      (e.currentTarget.style.visibility = "hidden")
+                    }
                     alt=""
                     className="w-6 h-6 rounded-md object-cover"
                   />

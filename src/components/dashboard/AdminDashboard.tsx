@@ -99,9 +99,21 @@ export default function AdminDashboard({
         setPackages(adminPkgs)
 
         if (adminPkgs.length > 0) {
-          const basic = adminPkgs.find((p) => p.name.toLowerCase().includes("basic") || p.name.toLowerCase().includes("پایه"))
-          const premium = adminPkgs.find((p) => p.name.toLowerCase().includes("premium") || p.name.toLowerCase().includes("ویژه"))
-          const hourly = adminPkgs.find((p) => p.name.toLowerCase().includes("hourly") || p.name.toLowerCase().includes("ساعتی"))
+          const basic = adminPkgs.find(
+            (p) =>
+              p.name.toLowerCase().includes("basic") ||
+              p.name.toLowerCase().includes("پایه"),
+          )
+          const premium = adminPkgs.find(
+            (p) =>
+              p.name.toLowerCase().includes("premium") ||
+              p.name.toLowerCase().includes("ویژه"),
+          )
+          const hourly = adminPkgs.find(
+            (p) =>
+              p.name.toLowerCase().includes("hourly") ||
+              p.name.toLowerCase().includes("ساعتی"),
+          )
 
           setPrices({
             basic: basic ? String(basic.priceToman) : "2500000",
@@ -137,7 +149,9 @@ export default function AdminDashboard({
         bioEn: lang === "en" ? bio : profile.bioEn,
         bioFa: lang === "fa" ? bio : profile.bioFa,
         platforms: selectedPlatforms,
-        monthlyToman: Number.isNaN(parseInt(prices.basic, 10)) ? profile.monthlyToman : parseInt(prices.basic, 10),
+        monthlyToman: Number.isNaN(parseInt(prices.basic, 10))
+          ? profile.monthlyToman
+          : parseInt(prices.basic, 10),
         monthlyUSD: profile.monthlyUSD,
       })
       setProfile(updated)
@@ -154,9 +168,7 @@ export default function AdminDashboard({
     setSaving(true)
     try {
       await updatePackage(pkg)
-      setPackages((prev) =>
-        prev.map((p) => (p.id === pkg.id ? pkg : p)),
-      )
+      setPackages((prev) => prev.map((p) => (p.id === pkg.id ? pkg : p)))
       setSaveMsg(lang === "fa" ? "پکیج ذخیره شد" : "Package saved")
       setTimeout(() => setSaveMsg(null), 3000)
     } catch {
@@ -192,7 +204,9 @@ export default function AdminDashboard({
         <div className="text-center py-12">
           <div className="text-4xl mb-3">👤</div>
           <div className="font-bold text-[#0f172a] mb-1">
-            {lang === "fa" ? "پروفایل ادمین یافت نشد" : "Admin profile not found"}
+            {lang === "fa"
+              ? "پروفایل ادمین یافت نشد"
+              : "Admin profile not found"}
           </div>
           <div className="text-sm text-[#64748b]">
             {lang === "fa"
@@ -251,7 +265,9 @@ export default function AdminDashboard({
                 <div className="relative">
                   <img
                     src={photoUrl(profile.photo, 80)}
-            onError={(e) => (e.currentTarget.style.visibility = "hidden")}
+                    onError={(e) =>
+                      (e.currentTarget.style.visibility = "hidden")
+                    }
                     alt="Profile"
                     className="w-16 h-16 rounded-2xl object-cover"
                   />

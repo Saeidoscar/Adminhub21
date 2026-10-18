@@ -38,7 +38,7 @@ function toSafeCode(
     code: string
     isActive: boolean
     createdAt: Date
-  } & { nameEn: string; nameFa: string; email: string },
+  } & { nameEn: string nameFa: string email: string },
 ): AffiliateCodeRow {
   const userName = row.nameFa || row.nameEn
   return {
@@ -64,7 +64,7 @@ function toSafeCommission(
     status: string
     paidAt: string | null
     createdAt: Date
-  } & { referrerName: string; referredName: string },
+  } & { referrerName: string referredName: string },
 ): AffiliateCommissionRow {
   return {
     id: row.id,

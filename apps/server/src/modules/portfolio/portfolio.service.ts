@@ -47,7 +47,7 @@ function toSafe(row: {
 
 async function resolveAdminName(
   adminId: string,
-): Promise<{ nameEn: string; nameFa: string }> {
+): Promise<{ nameEn: string nameFa: string }> {
   const [admin] = await db
     .select({
       nameEn: users.nameEn,

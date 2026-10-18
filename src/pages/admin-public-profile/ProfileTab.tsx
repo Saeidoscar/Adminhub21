@@ -2,9 +2,7 @@ import { type AdminProfile, type Lang } from "@adminhub/shared"
 import { t } from "../../i18n"
 import { Icon } from "../../components/layout/Icon"
 import { TOMAN_PER_MILLION } from "../../lib/constants"
-import {
-  platformLabel,
-} from "../../components/packages/platformSpecs"
+import { platformLabel } from "../../components/packages/platformSpecs"
 import { PLATFORM_COLORS } from "../AdminPublicProfilePage"
 
 export function ProfileTab({
@@ -68,7 +66,7 @@ export function ProfileTab({
             </div>
             <div className="text-lg font-bold text-[#1e3a5f]">
               {isFa
-                 ? `${(admin.monthlyToman / TOMAN_PER_MILLION).toFixed(1)}M ${tr.common.toman}`
+                ? `${(admin.monthlyToman / TOMAN_PER_MILLION).toFixed(1)}M ${tr.common.toman}`
                 : `$${admin.monthlyUSD}`}
             </div>
           </div>

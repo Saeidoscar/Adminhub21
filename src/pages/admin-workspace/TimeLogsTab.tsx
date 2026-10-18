@@ -11,7 +11,7 @@ import {
 import { ListSkeleton } from "../../components/ui/Skeleton"
 import { fmtDateTime, calcMinutes } from "./utils"
 
-function TimeLogsTab({ tr, lang, isFa }: { tr: Tr; lang: Lang; isFa: boolean }) {
+function TimeLogsTab({ tr, lang, isFa }: { tr: Tr lang: Lang isFa: boolean }) {
   const [timeLogs, setTimeLogs] = useState<TimeLogRow[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -39,12 +39,12 @@ function TimeLogsTab({ tr, lang, isFa }: { tr: Tr; lang: Lang; isFa: boolean }) 
     }
   }
 
-   useEffect(() => {
-     load()
-     listAdminCases()
-       .then(setCases)
-       .catch((err) => console.error("Failed to load cases", err))
-   }, [])
+  useEffect(() => {
+    load()
+    listAdminCases()
+      .then(setCases)
+      .catch((err) => console.error("Failed to load cases", err))
+  }, [])
 
   const resetForm = () => {
     setForm({
@@ -116,7 +116,9 @@ function TimeLogsTab({ tr, lang, isFa }: { tr: Tr; lang: Lang; isFa: boolean }) 
             </label>
             <textarea
               value={form.description}
-              onChange={(e) => setForm({ ...form, description: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, description: e.target.value })
+              }
               rows={2}
               required
               className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all resize-none"
@@ -162,7 +164,9 @@ function TimeLogsTab({ tr, lang, isFa }: { tr: Tr; lang: Lang; isFa: boolean }) 
               <input
                 type="datetime-local"
                 value={form.startedAt}
-                onChange={(e) => setForm({ ...form, startedAt: e.target.value })}
+                onChange={(e) =>
+                  setForm({ ...form, startedAt: e.target.value })
+                }
                 required
                 className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all"
               />
@@ -188,7 +192,8 @@ function TimeLogsTab({ tr, lang, isFa }: { tr: Tr; lang: Lang; isFa: boolean }) 
           </div>
           {previewMinutes !== null && (
             <div className="text-sm text-[#64748b]">
-              {tr.adminWorkspace.duration}: {previewMinutes} {tr.adminWorkspace.minutes}
+              {tr.adminWorkspace.duration}: {previewMinutes}{" "}
+              {tr.adminWorkspace.minutes}
             </div>
           )}
           <button

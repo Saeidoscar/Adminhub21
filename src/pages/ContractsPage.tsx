@@ -18,9 +18,12 @@ export default function ContractsPage({
   tr: typeof t["en"]
   lang: Lang
 }) {
-  const { contracts, loading, error, updateStatus, viewContract } = useContracts()
+  const { contracts, loading, error, updateStatus, viewContract } =
+    useContracts()
   const [updatingId, setUpdatingId] = useState<string | null>(null)
-  const [selectedContract, setSelectedContract] = useState<Contract | null>(null)
+  const [selectedContract, setSelectedContract] = useState<Contract | null>(
+    null,
+  )
 
   const isFa = lang === "fa"
 

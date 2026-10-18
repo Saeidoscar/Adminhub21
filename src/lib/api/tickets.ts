@@ -57,10 +57,13 @@ export async function updateTicket(
     priority?: "low" | "medium" | "high" | "urgent"
   },
 ): Promise<Ticket> {
-  const payload = await apiFetch<Record<string, unknown>>(`/api/tickets/${id}`, {
-    method: "PATCH",
-    body: JSON.stringify(input),
-  })
+  const payload = await apiFetch<Record<string, unknown>>(
+    `/api/tickets/${id}`,
+    {
+      method: "PATCH",
+      body: JSON.stringify(input),
+    },
+  )
   const ticket = unwrapItem<Ticket>(payload, "ticket")
   if (!ticket) {
     throw new Error("Ticket update response was empty")
@@ -90,7 +93,9 @@ export async function createTicketMessage(
   return message
 }
 
-export async function listTicketMessages(ticketId: string): Promise<TicketMessage[]> {
+export async function listTicketMessages(
+  ticketId: string,
+): Promise<TicketMessage[]> {
   const payload = await apiFetch<Record<string, unknown>>(
     `/api/tickets/${ticketId}/messages`,
   )

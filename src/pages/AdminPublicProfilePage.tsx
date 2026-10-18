@@ -11,11 +11,7 @@ import {
   PLATFORM_SPECS,
   emptyPlatformConfig,
 } from "../components/packages/platformSpecs"
-import {
-  listReviews,
-  createReview,
-  type ReviewRow,
-} from "../lib/api"
+import { listReviews, createReview, type ReviewRow } from "../lib/api"
 import { TOMAN_PER_MILLION } from "../lib/constants"
 import type {
   ContractPackage,
@@ -70,9 +66,8 @@ export default function AdminPublicProfilePage() {
   const navigate = useNavigate()
   const { packages, comparison, submitOffer, admin: findAdmin } = usePackages()
   const [lang, setLang] = useState<Lang>("fa")
-  const [activeTab, setActiveTab] = useState<"profile" | "packages" | "custom" | "reviews">(
-    "profile",
-  )
+  const [activeTab, setActiveTab] =
+    useState<"profile" | "packages" | "custom" | "reviews">("profile")
   const [offerSent, setOfferSent] = useState(false)
   const [reviews, setReviews] = useState<ReviewRow[]>([])
   const [reviewsLoading, setReviewsLoading] = useState(true)
@@ -253,7 +248,9 @@ export default function AdminPublicProfilePage() {
           <button
             key={tab.id}
             onClick={() =>
-              setActiveTab(tab.id as "profile" | "packages" | "custom" | "reviews")
+              setActiveTab(
+                tab.id as "profile" | "packages" | "custom" | "reviews",
+              )
             }
             className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all btn-press ${
               activeTab === tab.id

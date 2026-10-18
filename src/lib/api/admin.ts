@@ -29,7 +29,9 @@ export async function listAdminUsers(query: {
 }
 
 export async function getAdminUser(id: string): Promise<AdminUserRow | null> {
-  const payload = await apiFetch<Record<string, unknown>>(`/api/admin/users/${id}`)
+  const payload = await apiFetch<Record<string, unknown>>(
+    `/api/admin/users/${id}`,
+  )
   return unwrapItem<AdminUserRow>(payload, "user")
 }
 
@@ -43,10 +45,13 @@ export async function updateAdminUser(
     phoneVerified: boolean
   }>,
 ): Promise<AdminUserRow> {
-  const payload = await apiFetch<Record<string, unknown>>(`/api/admin/users/${id}`, {
-    method: "PATCH",
-    body: JSON.stringify(data),
-  })
+  const payload = await apiFetch<Record<string, unknown>>(
+    `/api/admin/users/${id}`,
+    {
+      method: "PATCH",
+      body: JSON.stringify(data),
+    },
+  )
   const user = unwrapItem<AdminUserRow>(payload, "user")
   if (!user) {
     throw new Error("Update user response was empty")
@@ -198,7 +203,9 @@ export async function listAdminTickets(query: {
 }
 
 export async function getAdminTicket(id: string): Promise<TicketRow | null> {
-  const payload = await apiFetch<Record<string, unknown>>(`/api/admin/tickets/${id}`)
+  const payload = await apiFetch<Record<string, unknown>>(
+    `/api/admin/tickets/${id}`,
+  )
   return unwrapItem<TicketRow>(payload, "ticket")
 }
 
@@ -209,10 +216,13 @@ export async function updateAdminTicket(
     priority?: "low" | "medium" | "high" | "urgent"
   },
 ): Promise<TicketRow> {
-  const payload = await apiFetch<Record<string, unknown>>(`/api/admin/tickets/${id}`, {
-    method: "PATCH",
-    body: JSON.stringify(data),
-  })
+  const payload = await apiFetch<Record<string, unknown>>(
+    `/api/admin/tickets/${id}`,
+    {
+      method: "PATCH",
+      body: JSON.stringify(data),
+    },
+  )
   const ticket = unwrapItem<TicketRow>(payload, "ticket")
   if (!ticket) {
     throw new Error("Update ticket response was empty")

@@ -75,7 +75,10 @@ adminProfilesRoutes.put(
     if (!policy.update(user, profile)) {
       throw new ApiError(403, "Forbidden", "FORBIDDEN")
     }
-    const updated = await updateAdminProfile(profile.userId, c.req.valid("json"))
+    const updated = await updateAdminProfile(
+      profile.userId,
+      c.req.valid("json"),
+    )
     return c.json({ profile: updated })
   },
 )

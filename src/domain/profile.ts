@@ -16,7 +16,10 @@ export function adminSkills(admin: AdminProfile, lang: "en" | "fa"): string[] {
   return lang === "fa" ? admin.skillsFa : admin.skillsEn
 }
 
-export function formatAdminPrice(admin: AdminProfile, lang: "en" | "fa"): string {
+export function formatAdminPrice(
+  admin: AdminProfile,
+  lang: "en" | "fa",
+): string {
   if (lang === "fa") {
     return `${(admin.monthlyToman / TOMAN_PER_MILLION).toFixed(1)}M تومان`
   }

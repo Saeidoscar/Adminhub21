@@ -5,7 +5,10 @@ const API_URL = process.env.API_URL || "http://localhost:8787"
 let accessToken: string
 let userId: string
 
-async function registerAndGetToken(request: any, role: "employer" | "admin" = "employer") {
+async function registerAndGetToken(
+  request: any,
+  role: "employer" | "admin" = "employer",
+) {
   const email = `e2e-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@example.com`
   const password = "password123"
 
@@ -28,15 +31,18 @@ test.describe("Auth E2E", () => {
   test("register and login", async ({ request }) => {
     const email = `e2e-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@example.com`
 
-    const registerResponse = await request.post(`${API_URL}/api/auth/register`, {
-      data: {
-        email,
-        password: "password123",
-        role: "employer",
-        nameEn: "Test User",
-        nameFa: "کاربر تست",
+    const registerResponse = await request.post(
+      `${API_URL}/api/auth/register`,
+      {
+        data: {
+          email,
+          password: "password123",
+          role: "employer",
+          nameEn: "Test User",
+          nameFa: "کاربر تست",
+        },
       },
-    })
+    )
 
     expect(registerResponse.ok()).toBeTruthy()
     const registerData = await registerResponse.json()

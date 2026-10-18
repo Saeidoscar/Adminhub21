@@ -54,7 +54,9 @@ export async function verifyOtp(input: VerifyOtpInput): Promise<AuthResult> {
   if (!user) {
     const randomBytes = new Uint32Array(1)
     crypto.getRandomValues(randomBytes)
-    const passwordHash = await hashPassword(randomBytes[0].toString(36) + randomBytes[0].toString(36))
+    const passwordHash = await hashPassword(
+      randomBytes[0].toString(36) + randomBytes[0].toString(36),
+    )
     const [newUser] = await db
       .insert(users)
       .values({

@@ -1,5 +1,11 @@
 import { useState } from "react"
-import { type AdminProfile, type Lang, type PlatformKey, type PlatformConfig, type CustomOffer } from "@adminhub/shared"
+import {
+  type AdminProfile,
+  type Lang,
+  type PlatformKey,
+  type PlatformConfig,
+  type CustomOffer,
+} from "@adminhub/shared"
 import { t } from "../../i18n"
 import { Icon } from "../../components/layout/Icon"
 import { Input, Textarea, Select } from "../../components/ui/Input"

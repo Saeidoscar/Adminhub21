@@ -11,7 +11,7 @@ import {
 import { ListSkeleton } from "../../components/ui/Skeleton"
 import { EVENT_COLORS, fmtDateTime, toLocalInput } from "./utils"
 
-function EventsTab({ tr, lang, isFa }: { tr: Tr; lang: Lang; isFa: boolean }) {
+function EventsTab({ tr, lang, isFa }: { tr: Tr lang: Lang isFa: boolean }) {
   const [events, setEvents] = useState<EventRow[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -184,7 +184,9 @@ function EventsTab({ tr, lang, isFa }: { tr: Tr; lang: Lang; isFa: boolean }) {
             </label>
             <textarea
               value={form.description}
-              onChange={(e) => setForm({ ...form, description: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, description: e.target.value })
+              }
               rows={3}
               className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all resize-none"
             />
@@ -241,7 +243,11 @@ function EventsTab({ tr, lang, isFa }: { tr: Tr; lang: Lang; isFa: boolean }) {
                     key={color}
                     type="button"
                     onClick={() => setForm({ ...form, color })}
-                    className={`w-6 h-6 rounded-full border-2 btn-press ${form.color === color ? "border-[#0f172a]" : "border-transparent"}`}
+                    className={`w-6 h-6 rounded-full border-2 btn-press ${
+                      form.color === color
+                        ? "border-[#0f172a]"
+                        : "border-transparent"
+                    }`}
                     style={{ backgroundColor: color }}
                   />
                 ))}
@@ -291,7 +297,10 @@ function EventsTab({ tr, lang, isFa }: { tr: Tr; lang: Lang; isFa: boolean }) {
                     <textarea
                       value={editForm.description}
                       onChange={(e) =>
-                        setEditForm({ ...editForm, description: e.target.value })
+                        setEditForm({
+                          ...editForm,
+                          description: e.target.value,
+                        })
                       }
                       rows={3}
                       className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all resize-none"
@@ -347,7 +356,11 @@ function EventsTab({ tr, lang, isFa }: { tr: Tr; lang: Lang; isFa: boolean }) {
                             key={color}
                             type="button"
                             onClick={() => setEditForm({ ...editForm, color })}
-                            className={`w-6 h-6 rounded-full border-2 btn-press ${editForm.color === color ? "border-[#0f172a]" : "border-transparent"}`}
+                            className={`w-6 h-6 rounded-full border-2 btn-press ${
+                              editForm.color === color
+                                ? "border-[#0f172a]"
+                                : "border-transparent"
+                            }`}
                             style={{ backgroundColor: color }}
                           />
                         ))}

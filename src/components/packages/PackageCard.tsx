@@ -189,7 +189,11 @@ export default function PackageCard({
             className={inCompare ? "border-[#1e3a5f] text-[#1e3a5f]" : ""}
           >
             <Icon name={inCompare ? "check" : "compare"} size={14} />
-            {inCompare ? (isFa ? "در مقایسه" : "Comparing") : tr.common?.compare || "Compare"}
+            {inCompare
+              ? isFa
+                ? "در مقایسه"
+                : "Comparing"
+              : tr.common?.compare || "Compare"}
           </Button>
         )}
       </div>

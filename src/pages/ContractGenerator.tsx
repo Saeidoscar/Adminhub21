@@ -2,8 +2,16 @@ import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { t, type Lang } from "../i18n"
 import { Icon } from "../components/layout/Icon"
-import { createContract, listAdminProfiles, type AdminProfile } from "../lib/api"
-import { contractFormSchema, createDefaultContractForm, validateContractForm } from "../domain/contract/contractFormSchema"
+import {
+  createContract,
+  listAdminProfiles,
+  type AdminProfile,
+} from "../lib/api"
+import {
+  contractFormSchema,
+  createDefaultContractForm,
+  validateContractForm,
+} from "../domain/contract/contractFormSchema"
 import { computeContractAmounts } from "../domain/package"
 import { ContractStepIndicator } from "../components/contracts/ContractStepIndicator"
 import { ContractReviewStep } from "../components/contracts/ContractReviewStep"
@@ -115,16 +123,24 @@ export default function ContractGenerator({
               <div className="text-xs text-[#64748b] mb-1">Insurance</div>
               <div className="text-sm font-semibold text-[#0f172a]">
                 {initialContract.hasInsurance
-                  ? lang === "fa" ? "بله" : "Yes"
-                  : lang === "fa" ? "خیر" : "No"}
+                  ? lang === "fa"
+                    ? "بله"
+                    : "Yes"
+                  : lang === "fa"
+                    ? "خیر"
+                    : "No"}
               </div>
             </div>
             <div>
               <div className="text-xs text-[#64748b] mb-1">Substitute</div>
               <div className="text-sm font-semibold text-[#0f172a]">
                 {initialContract.hasSubstitute
-                  ? lang === "fa" ? "بله" : "Yes"
-                  : lang === "fa" ? "خیر" : "No"}
+                  ? lang === "fa"
+                    ? "بله"
+                    : "Yes"
+                  : lang === "fa"
+                    ? "خیر"
+                    : "No"}
               </div>
             </div>
             {initialContract.startDate && (
@@ -189,7 +205,11 @@ export default function ContractGenerator({
   const [step, setStep] = useState(1)
   const totalSteps = 5
   const [form, setForm] = useState(() =>
-    createDefaultContractForm(lang, tr.contract.termDefault, tr.contract.subDefault),
+    createDefaultContractForm(
+      lang,
+      tr.contract.termDefault,
+      tr.contract.subDefault,
+    ),
   )
 
   useEffect(() => {
@@ -221,7 +241,8 @@ export default function ContractGenerator({
     }
   }, [])
 
-  const setF = (k: string, v: string | boolean) => setForm((f) => ({ ...f, [k]: v }))
+  const setF = (k: string, v: string | boolean) =>
+    setForm((f) => ({ ...f, [k]: v }))
   const steps = [
     tr.contract.step1,
     tr.contract.step2,
@@ -242,7 +263,10 @@ export default function ContractGenerator({
     }
 
     try {
-      const { amountToman, amountUSD } = computeContractAmounts(form.amount, form.currency as "toman" | "usd")
+      const { amountToman, amountUSD } = computeContractAmounts(
+        form.amount,
+        form.currency as "toman" | "usd",
+      )
       await createContract({
         adminId: form.adminId,
         platform: form.platform,
@@ -273,7 +297,9 @@ export default function ContractGenerator({
             {lang === "fa" ? "قرارداد با موفقیت ایجاد شد" : "Contract Created"}
           </div>
           <div className="text-sm text-[#64748b]">
-            {lang === "fa" ? "در حال انتقال به لیست قراردادها..." : "Redirecting to contracts..."}
+            {lang === "fa"
+              ? "در حال انتقال به لیست قراردادها..."
+              : "Redirecting to contracts..."}
           </div>
         </div>
       </div>
@@ -289,7 +315,11 @@ export default function ContractGenerator({
         <p className="text-[#64748b] mt-1">{tr.contract.sub}</p>
       </div>
 
-      <ContractStepIndicator step={step} totalSteps={totalSteps} steps={steps} />
+      <ContractStepIndicator
+        step={step}
+        totalSteps={totalSteps}
+        steps={steps}
+      />
 
       <div className="bg-white rounded-2xl border border-[#e2e8f0] p-6 mb-6">
         {step === 1 && (
@@ -308,7 +338,9 @@ export default function ContractGenerator({
                   className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all"
                 />
                 {errors.employerName && (
-                  <p className="text-xs text-rose-600 mt-1">{errors.employerName}</p>
+                  <p className="text-xs text-rose-600 mt-1">
+                    {errors.employerName}
+                  </p>
                 )}
               </div>
               <div>
@@ -372,7 +404,9 @@ export default function ContractGenerator({
                 className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all"
               />
               {errors.projectTitle && (
-                <p className="text-xs text-rose-600 mt-1">{errors.projectTitle}</p>
+                <p className="text-xs text-rose-600 mt-1">
+                  {errors.projectTitle}
+                </p>
               )}
             </div>
             <div className="grid sm:grid-cols-2 gap-4">
@@ -413,7 +447,9 @@ export default function ContractGenerator({
                 className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all resize-none"
               />
               {errors.description && (
-                <p className="text-xs text-rose-600 mt-1">{errors.description}</p>
+                <p className="text-xs text-rose-600 mt-1">
+                  {errors.description}
+                </p>
               )}
             </div>
             <div>
@@ -628,4 +664,3 @@ export default function ContractGenerator({
     </div>
   )
 }
-

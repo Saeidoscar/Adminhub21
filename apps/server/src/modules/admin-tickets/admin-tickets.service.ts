@@ -93,7 +93,7 @@ export async function getTicketById(id: string): Promise<TicketRow | null> {
 
 export async function updateTicketStatus(
   id: string,
-  data: { status?: string; priority?: string },
+  data: { status?: string priority?: string },
 ): Promise<TicketRow> {
   const [row] = await db
     .update(tickets)

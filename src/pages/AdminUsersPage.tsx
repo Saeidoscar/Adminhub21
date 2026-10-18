@@ -10,7 +10,11 @@ import {
   deleteAdminUser,
   type AdminUserRow,
 } from "../lib/api"
-import { Skeleton, UserCardSkeleton, ListSkeleton } from "../components/ui/Skeleton"
+import {
+  Skeleton,
+  UserCardSkeleton,
+  ListSkeleton,
+} from "../components/ui/Skeleton"
 import { adminUserSchema, type AdminUserInput } from "../lib/validation"
 
 const ROLE_COLORS: Record<string, string> = {

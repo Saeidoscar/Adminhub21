@@ -93,10 +93,22 @@ async function seed() {
       insured: true,
       monthlyToman: 85000000,
       monthlyUSD: 1200,
-      bioEn: "Experienced social media manager specializing in Instagram and Telegram growth. I help brands build authentic communities through strategic content and engagement.",
-      bioFa: "مدیر اجتماعی رسانه‌ها با تجربه در رشد اینستاگرام و تلگرام. به برندها کمک می‌کنم تا جامعه‌های اصیل از طریق استراتژی محتوا و تعامل بسازند.",
-      skillsEn: ["social media", "content strategy", "community management", "analytics"],
-      skillsFa: ["مدیریت شبکه‌های اجتماعی", "استراتژی محتوا", "مدیریت جامعه", "تحلیل داده"],
+      bioEn:
+        "Experienced social media manager specializing in Instagram and Telegram growth. I help brands build authentic communities through strategic content and engagement.",
+      bioFa:
+        "مدیر اجتماعی رسانه‌ها با تجربه در رشد اینستاگرام و تلگرام. به برندها کمک می‌کنم تا جامعه‌های اصیل از طریق استراتژی محتوا و تعامل بسازند.",
+      skillsEn: [
+        "social media",
+        "content strategy",
+        "community management",
+        "analytics",
+      ],
+      skillsFa: [
+        "مدیریت شبکه‌های اجتماعی",
+        "استراتژی محتوا",
+        "مدیریت جامعه",
+        "تحلیل داده",
+      ],
       platforms: ["instagram", "telegram"],
     })
     .returning()
@@ -108,11 +120,15 @@ async function seed() {
       {
         adminId: adminProfile.id,
         name: "Instagram Growth Basic",
-        description: "Daily content posting, story management, and basic engagement for small businesses.",
+        description:
+          "Daily content posting, story management, and basic engagement for small businesses.",
         type: "platform",
         platforms: ["instagram"],
         platformConfigs: [
-          { platform: "instagram", settings: { postsPerWeek: 5, storiesPerDay: 2 } },
+          {
+            platform: "instagram",
+            settings: { postsPerWeek: 5, storiesPerDay: 2 },
+          },
         ],
         priceToman: 15000000,
         priceUSD: 350,
@@ -124,11 +140,15 @@ async function seed() {
       {
         adminId: adminProfile.id,
         name: "Telegram Channel Management",
-        description: "Full Telegram channel management including content curation, member growth, and community engagement.",
+        description:
+          "Full Telegram channel management including content curation, member growth, and community engagement.",
         type: "platform",
         platforms: ["telegram"],
         platformConfigs: [
-          { platform: "telegram", settings: { postsPerDay: 3, memberGrowthTarget: 500 } },
+          {
+            platform: "telegram",
+            settings: { postsPerDay: 3, memberGrowthTarget: 500 },
+          },
         ],
         priceToman: 12000000,
         priceUSD: 280,
@@ -140,12 +160,19 @@ async function seed() {
       {
         adminId: adminProfile.id,
         name: "Social Media Bundle Pro",
-        description: "Complete social media management across Instagram and Telegram with advanced analytics and reporting.",
+        description:
+          "Complete social media management across Instagram and Telegram with advanced analytics and reporting.",
         type: "bundle",
         platforms: ["instagram", "telegram"],
         platformConfigs: [
-          { platform: "instagram", settings: { postsPerWeek: 7, reelsPerWeek: 3 } },
-          { platform: "telegram", settings: { postsPerDay: 4, memberGrowthTarget: 1000 } },
+          {
+            platform: "instagram",
+            settings: { postsPerWeek: 7, reelsPerWeek: 3 },
+          },
+          {
+            platform: "telegram",
+            settings: { postsPerDay: 4, memberGrowthTarget: 1000 },
+          },
         ],
         priceToman: 28000000,
         priceUSD: 650,
@@ -157,13 +184,23 @@ async function seed() {
       {
         adminId: adminProfile.id,
         name: "One-Time Campaign Setup",
-        description: "Strategic campaign planning and execution for product launches, announcements, or special events.",
+        description:
+          "Strategic campaign planning and execution for product launches, announcements, or special events.",
         type: "bundle",
         platforms: ["instagram", "telegram", "whatsapp"],
         platformConfigs: [
-          { platform: "instagram", settings: { campaignType: "product_launch" } },
-          { platform: "telegram", settings: { campaignType: "product_launch" } },
-          { platform: "whatsapp", settings: { campaignType: "product_launch" } },
+          {
+            platform: "instagram",
+            settings: { campaignType: "product_launch" },
+          },
+          {
+            platform: "telegram",
+            settings: { campaignType: "product_launch" },
+          },
+          {
+            platform: "whatsapp",
+            settings: { campaignType: "product_launch" },
+          },
         ],
         priceToman: 45000000,
         priceUSD: 1000,
@@ -185,10 +222,14 @@ async function seed() {
         employerId: employerUser.id,
         employerName: "Ali Rezaei",
         name: "Custom Instagram Package for Tech Startup",
-        description: "Need a tailored Instagram management package for our SaaS startup launch. Includes Reels, Stories, and community building.",
+        description:
+          "Need a tailored Instagram management package for our SaaS startup launch. Includes Reels, Stories, and community building.",
         platforms: ["instagram"],
         platformConfigs: [
-          { platform: "instagram", settings: { postsPerWeek: 7, reelsPerWeek: 4, focusOnLaunch: true } },
+          {
+            platform: "instagram",
+            settings: { postsPerWeek: 7, reelsPerWeek: 4, focusOnLaunch: true },
+          },
         ],
         proposedPriceToman: 20000000,
         proposedPriceUSD: 450,
@@ -196,7 +237,8 @@ async function seed() {
         deliveryTime: "48 hours",
         startDate: "2025-02-01",
         endDate: "2025-08-01",
-        message: "We are launching a new SaaS product and need strong Instagram presence.",
+        message:
+          "We are launching a new SaaS product and need strong Instagram presence.",
       },
       {
         packageId: pkg2.id,
@@ -204,10 +246,18 @@ async function seed() {
         employerId: employerUser.id,
         employerName: "Ali Rezaei",
         name: "Telegram Channel Growth - 6 Months",
-        description: "Looking for Telegram channel management with focus on member acquisition and content strategy for 6 months.",
+        description:
+          "Looking for Telegram channel management with focus on member acquisition and content strategy for 6 months.",
         platforms: ["telegram"],
         platformConfigs: [
-          { platform: "telegram", settings: { postsPerDay: 3, memberGrowthTarget: 2000, duration: "6_months" } },
+          {
+            platform: "telegram",
+            settings: {
+              postsPerDay: 3,
+              memberGrowthTarget: 2000,
+              duration: "6_months",
+            },
+          },
         ],
         proposedPriceToman: 75000000,
         proposedPriceUSD: 1800,
@@ -215,7 +265,8 @@ async function seed() {
         deliveryTime: "24 hours",
         startDate: "2025-01-15",
         endDate: "2025-07-15",
-        message: "We want to grow our Telegram channel to 10k members in 6 months.",
+        message:
+          "We want to grow our Telegram channel to 10k members in 6 months.",
       },
       {
         packageId: pkg3.id,
@@ -223,17 +274,25 @@ async function seed() {
         employerId: employerUser.id,
         employerName: "Ali Rezaei",
         name: "Bundle Plus - Advanced Analytics Add-on",
-        description: "Adding advanced analytics and competitor benchmarking to our existing bundle.",
+        description:
+          "Adding advanced analytics and competitor benchmarking to our existing bundle.",
         platforms: ["instagram", "telegram"],
         platformConfigs: [
-          { platform: "instagram", settings: { includeAnalytics: true, competitorTracking: true } },
-          { platform: "telegram", settings: { includeAnalytics: true, competitorTracking: true } },
+          {
+            platform: "instagram",
+            settings: { includeAnalytics: true, competitorTracking: true },
+          },
+          {
+            platform: "telegram",
+            settings: { includeAnalytics: true, competitorTracking: true },
+          },
         ],
         proposedPriceToman: 32000000,
         proposedPriceUSD: 750,
         billingCycle: "monthly",
         deliveryTime: "12 hours",
-        message: "Please add weekly analytics reports and competitor analysis to the bundle.",
+        message:
+          "Please add weekly analytics reports and competitor analysis to the bundle.",
       },
     ])
     .returning()
@@ -252,8 +311,10 @@ async function seed() {
         amountUSD: 350,
         hasInsurance: true,
         hasSubstitute: false,
-        termClause: "Monthly retainer for Instagram management. Payment due on the 1st of each month.",
-        substituteClause: "No substitute admin will be provided. Account access must be maintained.",
+        termClause:
+          "Monthly retainer for Instagram management. Payment due on the 1st of each month.",
+        substituteClause:
+          "No substitute admin will be provided. Account access must be maintained.",
         startDate: "2025-01-01",
         endDate: "2025-12-31",
         signedByEmployerAt: "2025-01-01T10:00:00Z",
@@ -269,8 +330,10 @@ async function seed() {
         amountUSD: 280,
         hasInsurance: true,
         hasSubstitute: true,
-        termClause: "Monthly Telegram channel management with member growth guarantees.",
-        substituteClause: "In case of unavailability, a substitute admin with similar expertise will be assigned within 48 hours.",
+        termClause:
+          "Monthly Telegram channel management with member growth guarantees.",
+        substituteClause:
+          "In case of unavailability, a substitute admin with similar expertise will be assigned within 48 hours.",
         startDate: "2025-02-01",
         endDate: "2025-08-01",
       },
@@ -284,14 +347,16 @@ async function seed() {
       employerId: employerUser.id,
       contractId: contract1.id,
       rating: 5,
-      comment: "Excellent Instagram management. Very professional and responsive.",
+      comment:
+        "Excellent Instagram management. Very professional and responsive.",
     },
     {
       adminId: adminProfile.id,
       employerId: employerUser.id,
       contractId: contract2.id,
       rating: 4,
-      comment: "Good Telegram management, could improve on reporting frequency.",
+      comment:
+        "Good Telegram management, could improve on reporting frequency.",
     },
   ])
 
@@ -299,15 +364,42 @@ async function seed() {
   const [employerWallet, adminWallet] = await db
     .insert(schema.wallets)
     .values([
-      { userId: employerUser.id, balanceToman: 50000000, balanceUSD: 500, currency: "IRR" },
-      { userId: adminUser.id, balanceToman: 0, balanceUSD: 1200, currency: "USD" },
+      {
+        userId: employerUser.id,
+        balanceToman: 50000000,
+        balanceUSD: 500,
+        currency: "IRR",
+      },
+      {
+        userId: adminUser.id,
+        balanceToman: 0,
+        balanceUSD: 1200,
+        currency: "USD",
+      },
     ])
     .returning()
 
   console.log("[seed] inserting wallet transactions...")
   await db.insert(schema.walletTransactions).values([
-    { walletId: employerWallet.id, type: "deposit", amountToman: 100000000, amountUSD: 0, currency: "IRR", status: "completed", note: "Initial deposit" },
-    { walletId: employerWallet.id, type: "payment", amountToman: 15000000, amountUSD: 0, currency: "IRR", status: "completed", referenceId: contract1.code, note: "Contract payment" },
+    {
+      walletId: employerWallet.id,
+      type: "deposit",
+      amountToman: 100000000,
+      amountUSD: 0,
+      currency: "IRR",
+      status: "completed",
+      note: "Initial deposit",
+    },
+    {
+      walletId: employerWallet.id,
+      type: "payment",
+      amountToman: 15000000,
+      amountUSD: 0,
+      currency: "IRR",
+      status: "completed",
+      referenceId: contract1.code,
+      note: "Contract payment",
+    },
   ])
 
   console.log("[seed] inserting favorites...")
@@ -331,8 +423,10 @@ async function seed() {
         popular: true,
         priceToman: 0,
         priceUSD: 0,
-        descEn: "Free online design tool for creating social media graphics, presentations, and marketing materials.",
-        descFa: "ابزار طراحی آنلاین رایگان برای ایجاد گرافیک‌های شبکه‌های اجتماعی، ارائه‌ها و مواد بازاریابی.",
+        descEn:
+          "Free online design tool for creating social media graphics, presentations, and marketing materials.",
+        descFa:
+          "ابزار طراحی آنلاین رایگان برای ایجاد گرافیک‌های شبکه‌های اجتماعی، ارائه‌ها و مواد بازاریابی.",
         active: true,
       },
       {
@@ -344,8 +438,10 @@ async function seed() {
         popular: true,
         priceToman: 0,
         priceUSD: 19,
-        descEn: "Social media management platform for scheduling posts, tracking analytics, and managing multiple accounts.",
-        descFa: "پلتفرم مدیریت شبکه‌های اجتماعی برای زمان‌بندی پست‌ها، پیگیری تحلیل‌ها و مدیریت چندین حساب.",
+        descEn:
+          "Social media management platform for scheduling posts, tracking analytics, and managing multiple accounts.",
+        descFa:
+          "پلتفرم مدیریت شبکه‌های اجتماعی برای زمان‌بندی پست‌ها، پیگیری تحلیل‌ها و مدیریت چندین حساب.",
         active: true,
       },
       {
@@ -357,8 +453,10 @@ async function seed() {
         popular: true,
         priceToman: 0,
         priceUSD: 6,
-        descEn: "Simple and intuitive social media scheduling tool for individuals and small teams.",
-        descFa: "ابزار زمان‌بندی ساده و شهودی شبکه‌های اجتماعی برای افراد و تیم‌های کوچک.",
+        descEn:
+          "Simple and intuitive social media scheduling tool for individuals and small teams.",
+        descFa:
+          "ابزار زمان‌بندی ساده و شهودی شبکه‌های اجتماعی برای افراد و تیم‌های کوچک.",
         active: true,
       },
       {
@@ -370,8 +468,10 @@ async function seed() {
         popular: true,
         priceToman: 0,
         priceUSD: 0,
-        descEn: "Free tool from Meta to manage Facebook and Instagram accounts, schedule posts, and view insights.",
-        descFa: "ابزار رایگان متا برای مدیریت حساب‌های فیسبوک و اینستاگرام، زمان‌بندی پست‌ها و مشاهده بینش‌ها.",
+        descEn:
+          "Free tool from Meta to manage Facebook and Instagram accounts, schedule posts, and view insights.",
+        descFa:
+          "ابزار رایگان متا برای مدیریت حساب‌های فیسبوک و اینستاگرام، زمان‌بندی پست‌ها و مشاهده بینش‌ها.",
         active: true,
       },
       {
@@ -383,8 +483,10 @@ async function seed() {
         popular: true,
         priceToman: 0,
         priceUSD: 8,
-        descEn: "All-in-one workspace for notes, tasks, wikis, and databases. Great for content planning.",
-        descFa: "فضای کار همه‌کاره برای یادداشت‌ها، وظایف، ویکی‌ها و پایگاه‌های داده. عالی برای برنامه‌ریزی محتوا.",
+        descEn:
+          "All-in-one workspace for notes, tasks, wikis, and databases. Great for content planning.",
+        descFa:
+          "فضای کار همه‌کاره برای یادداشت‌ها، وظایف، ویکی‌ها و پایگاه‌های داده. عالی برای برنامه‌ریزی محتوا.",
         active: true,
       },
     ])
@@ -405,8 +507,10 @@ async function seed() {
         delivery: "3 days",
         rateToman: 8500000,
         rateUSD: 200,
-        bioEn: "Professional video editor with 8+ years of experience in social media content, commercials, and short-form videos.",
-        bioFa: "ویرایشگر حرفه‌ای ویدیو با بیش از ۸ سال تجربه در محتوای شبکه‌های اجتماعی، تبلیغات و ویدیوهای کوتاه.",
+        bioEn:
+          "Professional video editor with 8+ years of experience in social media content, commercials, and short-form videos.",
+        bioFa:
+          "ویرایشگر حرفه‌ای ویدیو با بیش از ۸ سال تجربه در محتوای شبکه‌های اجتماعی، تبلیغات و ویدیوهای کوتاه.",
         active: true,
       },
       {
@@ -420,8 +524,10 @@ async function seed() {
         delivery: "2 days",
         rateToman: 6000000,
         rateUSD: 140,
-        bioEn: "Creative graphic designer specializing in brand identity, social media visuals, and marketing materials.",
-        bioFa: "طراح گرافیک خلاق متخصص در هویت برند، بصری‌های شبکه‌های اجتماعی و مواد بازاریابی.",
+        bioEn:
+          "Creative graphic designer specializing in brand identity, social media visuals, and marketing materials.",
+        bioFa:
+          "طراح گرافیک خلاق متخصص در هویت برند، بصری‌های شبکه‌های اجتماعی و مواد بازاریابی.",
         active: true,
       },
       {
@@ -435,8 +541,10 @@ async function seed() {
         delivery: "24 hours",
         rateToman: 4500000,
         rateUSD: 100,
-        bioEn: "Bilingual content writer and copywriter helping brands tell compelling stories in both Persian and English.",
-        bioFa: "نویسنده محتوا و کپی‌رایتر دوزبانه که به برندها کمک می‌کند داستان‌های جذابی به فارسی و انگلیسی روایت کنند.",
+        bioEn:
+          "Bilingual content writer and copywriter helping brands tell compelling stories in both Persian and English.",
+        bioFa:
+          "نویسنده محتوا و کپی‌رایتر دوزبانه که به برندها کمک می‌کند داستان‌های جذابی به فارسی و انگلیسی روایت کنند.",
         active: true,
       },
     ])
@@ -457,8 +565,10 @@ async function seed() {
         rateToman: 12000000,
         rateUSD: 280,
         delivery: "5 days",
-        bioEn: "Full-stack developer specializing in modern web technologies. Building fast, accessible, and beautiful applications.",
-        bioFa: "توسعه‌دهنده فول‌استک متخصص در فناوری‌های وب مدرن. ساخت برنامه‌های سریع، قابل دسترس و زیبا.",
+        bioEn:
+          "Full-stack developer specializing in modern web technologies. Building fast, accessible, and beautiful applications.",
+        bioFa:
+          "توسعه‌دهنده فول‌استک متخصص در فناوری‌های وب مدرن. ساخت برنامه‌های سریع، قابل دسترس و زیبا.",
         active: true,
       },
       {
@@ -472,8 +582,10 @@ async function seed() {
         rateToman: 11000000,
         rateUSD: 250,
         delivery: "4 days",
-        bioEn: "Backend engineer with strong database and API design skills. Expert in scalable system architecture.",
-        bioFa: "مهندس بک‌اند با مهارت‌های قوی در پایگاه داده و طراحی API. متخصص در معماری سیستم‌های مقیاس‌پذیر.",
+        bioEn:
+          "Backend engineer with strong database and API design skills. Expert in scalable system architecture.",
+        bioFa:
+          "مهندس بک‌اند با مهارت‌های قوی در پایگاه داده و طراحی API. متخصص در معماری سیستم‌های مقیاس‌پذیر.",
         active: true,
       },
       {
@@ -487,8 +599,10 @@ async function seed() {
         rateToman: 9500000,
         rateUSD: 220,
         delivery: "7 days",
-        bioEn: "Mobile developer crafting cross-platform apps with Flutter. Passionate about smooth UX and clean code.",
-        bioFa: "توسعه‌دهنده موبایل که اپ‌های چندپلتفرمی با فلاتر می‌سازد. مشتاق درباره تجربه کاربری روان و کد تمیز.",
+        bioEn:
+          "Mobile developer crafting cross-platform apps with Flutter. Passionate about smooth UX and clean code.",
+        bioFa:
+          "توسعه‌دهنده موبایل که اپ‌های چندپلتفرمی با فلاتر می‌سازد. مشتاق درباره تجربه کاربری روان و کد تمیز.",
         active: true,
       },
     ])
@@ -501,7 +615,8 @@ async function seed() {
       adminId: adminProfile.id,
       employerId: employerUser.id,
       title: "Instagram Q1 Campaign",
-      description: "Full campaign for Q1 Instagram growth including content calendar and engagement strategy.",
+      description:
+        "Full campaign for Q1 Instagram growth including content calendar and engagement strategy.",
       priority: "high",
       status: "in_progress",
       tags: ["instagram", "campaign", "q1"],
@@ -509,25 +624,85 @@ async function seed() {
     .returning()
 
   await db.insert(schema.tasks).values([
-    { caseId: case1.id, title: "Content calendar design", description: "Create weekly content calendar", status: "done", priority: "high" },
-    { caseId: case1.id, title: "Stories setup", description: "Configure story highlights and templates", status: "in_progress", priority: "medium" },
+    {
+      caseId: case1.id,
+      title: "Content calendar design",
+      description: "Create weekly content calendar",
+      status: "done",
+      priority: "high",
+    },
+    {
+      caseId: case1.id,
+      title: "Stories setup",
+      description: "Configure story highlights and templates",
+      status: "in_progress",
+      priority: "medium",
+    },
   ])
 
   console.log("[seed] inserting event and timelog...")
   await db.insert(schema.events).values([
-    { userId: mainUser.id, title: "Super Admin Review", description: "Review pending content moderation items", startAt: "2025-02-01T14:00:00Z", endAt: "2025-02-01T15:00:00Z", allDay: false, color: "#3b82f6" },
-    { userId: adminUser.id, title: "Content Review", description: "Weekly content review meeting", startAt: "2025-02-01T14:00:00Z", endAt: "2025-02-01T15:00:00Z", allDay: false, color: "#3b82f6" },
-    { userId: employerUser.id, title: "Campaign Kickoff", description: "Q1 campaign kickoff call", startAt: "2025-02-05T10:00:00Z", endAt: "2025-02-05T11:00:00Z", allDay: false, color: "#10b981" },
+    {
+      userId: mainUser.id,
+      title: "Super Admin Review",
+      description: "Review pending content moderation items",
+      startAt: "2025-02-01T14:00:00Z",
+      endAt: "2025-02-01T15:00:00Z",
+      allDay: false,
+      color: "#3b82f6",
+    },
+    {
+      userId: adminUser.id,
+      title: "Content Review",
+      description: "Weekly content review meeting",
+      startAt: "2025-02-01T14:00:00Z",
+      endAt: "2025-02-01T15:00:00Z",
+      allDay: false,
+      color: "#3b82f6",
+    },
+    {
+      userId: employerUser.id,
+      title: "Campaign Kickoff",
+      description: "Q1 campaign kickoff call",
+      startAt: "2025-02-05T10:00:00Z",
+      endAt: "2025-02-05T11:00:00Z",
+      allDay: false,
+      color: "#10b981",
+    },
   ])
 
-  await db.insert(schema.timeLogs).values([
-    { userId: adminUser.id, caseId: case1.id, taskId: null, description: "Content calendar design", startedAt: "2025-01-20T09:00:00Z", endedAt: "2025-01-20T12:00:00Z", durationMinutes: 180 },
-  ])
+  await db
+    .insert(schema.timeLogs)
+    .values([
+      {
+        userId: adminUser.id,
+        caseId: case1.id,
+        taskId: null,
+        description: "Content calendar design",
+        startedAt: "2025-01-20T09:00:00Z",
+        endedAt: "2025-01-20T12:00:00Z",
+        durationMinutes: 180,
+      },
+    ])
 
   console.log("[seed] inserting portfolio...")
   await db.insert(schema.portfolioItems).values([
-    { adminId: adminProfile.id, title: "Brand Launch Campaign", description: "Complete Instagram launch for tech startup", mediaUrl: "https://example.com/portfolio/1.jpg", mediaType: "image", tags: ["instagram", "launch"] },
-    { adminId: adminProfile.id, title: "Telegram Growth Strategy", description: "6-month Telegram growth to 10k members", mediaUrl: "https://example.com/portfolio/2.pdf", mediaType: "link", tags: ["telegram", "growth"] },
+    {
+      adminId: adminProfile.id,
+      title: "Brand Launch Campaign",
+      description: "Complete Instagram launch for tech startup",
+      mediaUrl: "https://example.com/portfolio/1.jpg",
+      mediaType: "image",
+      tags: ["instagram", "launch"],
+    },
+    {
+      adminId: adminProfile.id,
+      title: "Telegram Growth Strategy",
+      description: "6-month Telegram growth to 10k members",
+      mediaUrl: "https://example.com/portfolio/2.pdf",
+      mediaType: "link",
+      tags: ["telegram", "growth"],
+    },
   ])
 
   console.log("[seed] inserting tickets...")
@@ -542,9 +717,15 @@ async function seed() {
     })
     .returning()
 
-  await db.insert(schema.ticketMessages).values([
-    { ticketId: ticket1.id, senderId: employerUser.id, body: "I was charged twice for the same contract. Please investigate." },
-  ])
+  await db
+    .insert(schema.ticketMessages)
+    .values([
+      {
+        ticketId: ticket1.id,
+        senderId: employerUser.id,
+        body: "I was charged twice for the same contract. Please investigate.",
+      },
+    ])
 
   console.log("[seed] inserting stories and blogs...")
   const [story1] = await db
@@ -552,7 +733,8 @@ async function seed() {
     .values({
       authorId: mainUser.id,
       title: "How I Grew 50k Instagram Followers",
-      content: "In this story I share my proven strategies for growing Instagram followers organically...",
+      content:
+        "In this story I share my proven strategies for growing Instagram followers organically...",
       coverUrl: "https://example.com/stories/1.jpg",
       status: "published",
       views: 1240,
@@ -564,7 +746,8 @@ async function seed() {
     .values({
       authorId: mainUser.id,
       title: "The Future of Social Media Marketing in Iran",
-      content: "Social media marketing in Iran is evolving rapidly. Here are the key trends to watch in 2025...",
+      content:
+        "Social media marketing in Iran is evolving rapidly. Here are the key trends to watch in 2025...",
       coverUrl: "https://example.com/blogs/1.jpg",
       status: "published",
       views: 856,
@@ -572,8 +755,20 @@ async function seed() {
     .returning()
 
   await db.insert(schema.comments).values([
-    { postId: story1.id, postType: "story", authorId: employerUser.id, body: "Great insights! Thanks for sharing.", parentId: null },
-    { postId: blog1.id, postType: "blog", authorId: employerUser.id, body: "Very informative article.", parentId: null },
+    {
+      postId: story1.id,
+      postType: "story",
+      authorId: employerUser.id,
+      body: "Great insights! Thanks for sharing.",
+      parentId: null,
+    },
+    {
+      postId: blog1.id,
+      postType: "blog",
+      authorId: employerUser.id,
+      body: "Very informative article.",
+      parentId: null,
+    },
   ])
 
   console.log("[seed] inserting AI models...")
@@ -636,8 +831,16 @@ async function seed() {
     .returning()
 
   await db.insert(schema.aiMessages).values([
-    { conversationId: conv1.id, role: "user", content: "How can I improve my Instagram engagement?" },
-    { conversationId: conv1.id, role: "assistant", content: "Here are 7 proven strategies to boost Instagram engagement..." },
+    {
+      conversationId: conv1.id,
+      role: "user",
+      content: "How can I improve my Instagram engagement?",
+    },
+    {
+      conversationId: conv1.id,
+      role: "assistant",
+      content: "Here are 7 proven strategies to boost Instagram engagement...",
+    },
   ])
 
   console.log("[seed] inserting affiliate data...")
@@ -650,14 +853,33 @@ async function seed() {
     })
     .returning()
 
-  await db.insert(schema.affiliateCommissions).values([
-    { codeId: affiliateCode.id, referrerId: employerUser.id, referredId: adminUser.id, amountToman: 500000, amountUSD: 0, status: "pending" },
-  ])
+  await db
+    .insert(schema.affiliateCommissions)
+    .values([
+      {
+        codeId: affiliateCode.id,
+        referrerId: employerUser.id,
+        referredId: adminUser.id,
+        amountToman: 500000,
+        amountUSD: 0,
+        status: "pending",
+      },
+    ])
 
   console.log("[seed] inserting payouts...")
-  await db.insert(schema.payouts).values([
-    { userId: adminUser.id, amountToman: 0, amountUSD: 500, currency: "USD", method: "paypal", accountDetails: { email: "sarah@example.com" }, status: "pending" },
-  ])
+  await db
+    .insert(schema.payouts)
+    .values([
+      {
+        userId: adminUser.id,
+        amountToman: 0,
+        amountUSD: 500,
+        currency: "USD",
+        method: "paypal",
+        accountDetails: { email: "sarah@example.com" },
+        status: "pending",
+      },
+    ])
 
   console.log("[seed] done.")
 }

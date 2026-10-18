@@ -1,15 +1,26 @@
-import { AIProvider, AIProviderError, AIConfigurationError, AICompletionResult, ChatMessage, ModelConfig, SendOptions } from "../ai-provider"
+import {
+  AIProvider,
+  AIProviderError,
+  AIConfigurationError,
+  AICompletionResult,
+  ChatMessage,
+  ModelConfig,
+  SendOptions,
+} from "../ai-provider"
 
 interface AnthropicResponse {
   content: { text: string }[]
-  usage: { input_tokens: number; output_tokens: number }
+  usage: { input_tokens: number output_tokens: number }
   stop_reason?: string
 }
 
 export class AnthropicProvider implements AIProvider {
   constructor(private config: ModelConfig) {}
 
-  async sendMessage(messages: ChatMessage[], options?: SendOptions): Promise<AICompletionResult> {
+  async sendMessage(
+    messages: ChatMessage[],
+    options?: SendOptions,
+  ): Promise<AICompletionResult> {
     const apiKey = process.env.ANTHROPIC_API_KEY
     if (!apiKey) {
       throw new AIConfigurationError("ANTHROPIC_API_KEY is not set")
@@ -17,7 +28,8 @@ export class AnthropicProvider implements AIProvider {
 
     const baseUrl = this.config.apiBaseUrl || "https://api.anthropic.com/v1"
     const model = options?.model || this.config.code
-    const temperature = options?.temperature ?? this.config.defaultTemperature ?? 0.7
+    const temperature =
+      options?.temperature ?? this.config.defaultTemperature ?? 0.7
     const maxTokens = options?.maxTokens || this.config.maxOutputTokens || 1024
 
     const systemMessage = messages.find((m) => m.role === "system")
@@ -50,7 +62,8 @@ export class AnthropicProvider implements AIProvider {
 
     if (!response.ok) {
       const errorText = await response.text()
-      const sanitized = errorText.replace(/Bearer\s+[A-Za-z0-9\-_]+/gi, "[REDACTED]")
+      const sanitized = errorText
+        .replace(/Bearer\s+[A-Za-z0-9\-_]+/gi, "[REDACTED]")
         .replace(/api[_-]?key['":\s]+[A-Za-z0-9\-_]+/gi, "[REDACTED]")
       throw new AIProviderError(
         `Anthropic error: ${response.status} ${response.statusText} - ${sanitized.slice(0, 500)}`,
@@ -64,7 +77,8 @@ export class AnthropicProvider implements AIProvider {
       content: data.content?.[0]?.text || "",
       promptTokens: data.usage?.input_tokens,
       completionTokens: data.usage?.output_tokens,
-      totalTokens: (data.usage?.input_tokens || 0) + (data.usage?.output_tokens || 0),
+      totalTokens:
+        (data.usage?.input_tokens || 0) + (data.usage?.output_tokens || 0),
       finishReason: data.stop_reason,
     }
   }

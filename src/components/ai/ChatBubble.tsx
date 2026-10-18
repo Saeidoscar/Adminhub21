@@ -38,9 +38,7 @@ export function ChatBubble({ message }: { message: AiMessageRow }) {
   const { copied: messageCopied, copy: copyMessage } = useCopyText()
 
   return (
-    <div
-      className={`flex gap-3 ${isUser ? "flex-row-reverse" : "flex-row"}`}
-    >
+    <div className={`flex gap-3 ${isUser ? "flex-row-reverse" : "flex-row"}`}>
       <div
         className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
           isUser ? "bg-primary text-white" : "bg-subtle text-foreground"
@@ -71,7 +69,10 @@ export function ChatBubble({ message }: { message: AiMessageRow }) {
               aria-label={messageCopied ? "Copied" : "Copy message"}
               className="inline-flex items-center gap-1 rounded-full bg-surface px-2 py-0.5 hover:opacity-80"
             >
-              <Icon name={messageCopied ? "check" : "copy"} className="h-3 w-3" />
+              <Icon
+                name={messageCopied ? "check" : "copy"}
+                className="h-3 w-3"
+              />
               {messageCopied ? "Copied" : "Copy"}
             </button>
             {message.provider && (

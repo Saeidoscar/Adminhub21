@@ -3,7 +3,10 @@ import { test, expect } from "@playwright/test"
 const uniqueEmail = (prefix: string) =>
   `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@example.com`
 
-async function registerAndLogin(request: any, role: "employer" | "admin" = "employer") {
+async function registerAndLogin(
+  request: any,
+  role: "employer" | "admin" = "employer",
+) {
   const email = uniqueEmail(role)
   const password = "password123"
 
@@ -56,7 +59,13 @@ test.describe("Auth flow", () => {
   test("should reject login with wrong password", async ({ request }) => {
     const email = uniqueEmail("badlogin")
     await request.post("/api/auth/register", {
-      data: { email, password: "password123", role: "employer", nameEn: "Test", nameFa: "تست" },
+      data: {
+        email,
+        password: "password123",
+        role: "employer",
+        nameEn: "Test",
+        nameFa: "تست",
+      },
     })
 
     const response = await request.post("/api/auth/login", {

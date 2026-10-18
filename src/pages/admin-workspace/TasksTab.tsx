@@ -12,7 +12,7 @@ import {
 import { ListSkeleton } from "../../components/ui/Skeleton"
 import { TASK_STATUS, PRIORITY, fmtDate } from "./utils"
 
-function TasksTab({ tr, lang, isFa }: { tr: Tr; lang: Lang; isFa: boolean }) {
+function TasksTab({ tr, lang, isFa }: { tr: Tr lang: Lang isFa: boolean }) {
   const [cases, setCases] = useState<CaseRow[]>([])
   const [selectedCaseId, setSelectedCaseId] = useState<string>("")
   const [tasks, setTasks] = useState<TaskRow[]>([])
@@ -142,7 +142,9 @@ function TasksTab({ tr, lang, isFa }: { tr: Tr; lang: Lang; isFa: boolean }) {
   return (
     <div>
       <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
-        <h2 className="text-lg font-bold text-[#0f172a]">{tr.adminWorkspace.tasks}</h2>
+        <h2 className="text-lg font-bold text-[#0f172a]">
+          {tr.adminWorkspace.tasks}
+        </h2>
         <div className="flex items-center gap-3">
           <select
             value={selectedCaseId}
@@ -196,15 +198,15 @@ function TasksTab({ tr, lang, isFa }: { tr: Tr; lang: Lang; isFa: boolean }) {
                 <label className="block text-sm font-semibold text-[#0f172a] mb-1.5">
                   {tr.adminWorkspace.fieldTitle}
                 </label>
-            <input
-              value={form.title}
-              onChange={(e) => setForm({ ...form, title: e.target.value })}
-              required
-              className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all"
-            />
-            {errors.title && (
-              <p className="text-xs text-rose-600 mt-1">{errors.title}</p>
-            )}
+                <input
+                  value={form.title}
+                  onChange={(e) => setForm({ ...form, title: e.target.value })}
+                  required
+                  className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all"
+                />
+                {errors.title && (
+                  <p className="text-xs text-rose-600 mt-1">{errors.title}</p>
+                )}
               </div>
               <div>
                 <label className="block text-sm font-semibold text-[#0f172a] mb-1.5">
@@ -219,7 +221,9 @@ function TasksTab({ tr, lang, isFa }: { tr: Tr; lang: Lang; isFa: boolean }) {
                   className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all resize-none"
                 />
                 {errors.description && (
-                  <p className="text-xs text-rose-600 mt-1">{errors.description}</p>
+                  <p className="text-xs text-rose-600 mt-1">
+                    {errors.description}
+                  </p>
                 )}
               </div>
               <div className="grid sm:grid-cols-3 gap-4">
@@ -229,7 +233,9 @@ function TasksTab({ tr, lang, isFa }: { tr: Tr; lang: Lang; isFa: boolean }) {
                   </label>
                   <select
                     value={form.status}
-                    onChange={(e) => setForm({ ...form, status: e.target.value })}
+                    onChange={(e) =>
+                      setForm({ ...form, status: e.target.value })
+                    }
                     className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] transition-all bg-white"
                   >
                     {Object.entries(TASK_STATUS).map(([key, val]) => (
@@ -264,7 +270,9 @@ function TasksTab({ tr, lang, isFa }: { tr: Tr; lang: Lang; isFa: boolean }) {
                   <input
                     type="date"
                     value={form.dueDate}
-                    onChange={(e) => setForm({ ...form, dueDate: e.target.value })}
+                    onChange={(e) =>
+                      setForm({ ...form, dueDate: e.target.value })
+                    }
                     className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all"
                   />
                 </div>
@@ -341,7 +349,10 @@ function TasksTab({ tr, lang, isFa }: { tr: Tr; lang: Lang; isFa: boolean }) {
                           <select
                             value={editForm.status}
                             onChange={(e) =>
-                              setEditForm({ ...editForm, status: e.target.value })
+                              setEditForm({
+                                ...editForm,
+                                status: e.target.value,
+                              })
                             }
                             className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] transition-all bg-white"
                           >
@@ -444,7 +455,8 @@ function TasksTab({ tr, lang, isFa }: { tr: Tr; lang: Lang; isFa: boolean }) {
                         </div>
                         {task.assignedTo && (
                           <div className="text-sm text-[#64748b] mb-1">
-                            {tr.adminWorkspace.assignedTo}: {task.assignedName || task.assignedTo}
+                            {tr.adminWorkspace.assignedTo}:{" "}
+                            {task.assignedName || task.assignedTo}
                           </div>
                         )}
                         {task.dueDate && (

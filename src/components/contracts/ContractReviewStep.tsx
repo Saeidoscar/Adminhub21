@@ -2,7 +2,10 @@ import { type Lang } from "../../i18n"
 import { Icon } from "../../components/layout/Icon"
 import type { ContractFormValues } from "../../domain/contract/contractFormSchema"
 import type { AdminProfile } from "@adminhub/shared"
-import { buildContractPdfLines, downloadContractPdf } from "../../domain/contract/generateContractPdf"
+import {
+  buildContractPdfLines,
+  downloadContractPdf,
+} from "../../domain/contract/generateContractPdf"
 
 interface ContractReviewStepProps {
   form: ContractFormValues
@@ -47,8 +50,7 @@ export function ContractReviewStep({
           {tr.contract.between} <strong>{form.employerName}</strong>{" "}
           {form.employerCo ? `(${form.employerCo})` : ""},{" "}
           {tr.contract.partyEmployer},<br />
-          {tr.contract.and}{" "}
-          <strong>{admin?.nameEn || form.adminId}</strong>,{" "}
+          {tr.contract.and} <strong>{admin?.nameEn || form.adminId}</strong>,{" "}
           {tr.contract.partyAdmin}.
         </p>
         <p>
@@ -86,9 +88,7 @@ export function ContractReviewStep({
         </p>
         <p>
           <strong>
-            {lang === "fa"
-              ? "بیمه و جایگزینی:"
-              : "Substitution & Insurance:"}
+            {lang === "fa" ? "بیمه و جایگزینی:" : "Substitution & Insurance:"}
           </strong>
           <br />
           {form.subClause}
@@ -132,7 +132,9 @@ export function ContractReviewStep({
           className="py-3 rounded-xl bg-emerald-500 text-white text-sm font-bold hover:bg-emerald-600 transition-colors shadow-md btn-press disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {submitting
-            ? (lang === "fa" ? "در حال ارسال..." : "Sending...")
+            ? lang === "fa"
+              ? "در حال ارسال..."
+              : "Sending..."
             : tr.contract.sendForSigning}
         </button>
       </div>
@@ -147,4 +149,3 @@ export function ContractReviewStep({
     </div>
   )
 }
-

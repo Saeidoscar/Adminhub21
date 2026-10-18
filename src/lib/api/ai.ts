@@ -1,4 +1,8 @@
-import type { AiConversationRow, AiMessageRow, AiModelRow } from "@adminhub/shared"
+import type {
+  AiConversationRow,
+  AiMessageRow,
+  AiModelRow,
+} from "@adminhub/shared"
 import { apiFetch, unwrapList, unwrapItem } from "./core"
 
 export type { AiConversationRow, AiMessageRow, AiModelRow }

@@ -23,20 +23,18 @@ export async function changeContractStatus(
   return updateContractStatus(id, { status })
 }
 
-export async function createContractService(
-  input: {
-    platform: string
-    amountToman: number
-    amountUSD: number
-    hasInsurance: boolean
-    hasSubstitute: boolean
-    termClause?: string
-    substituteClause?: string
-    startDate?: string
-    endDate?: string
-    adminId?: string
-  },
-): Promise<ContractRow> {
+export async function createContractService(input: {
+  platform: string
+  amountToman: number
+  amountUSD: number
+  hasInsurance: boolean
+  hasSubstitute: boolean
+  termClause?: string
+  substituteClause?: string
+  startDate?: string
+  endDate?: string
+  adminId?: string
+}): Promise<ContractRow> {
   return createContract({
     ...input,
     adminId: input.adminId || "current",
@@ -63,7 +61,7 @@ export function filterActiveContracts(contracts: ContractRow[]): ContractRow[] {
 
 export function sumCompletedContractAmounts(
   contracts: ContractRow[],
-): { toman: number; usd: number } {
+): { toman: number usd: number } {
   return contracts
     .filter((c) => c.status === "completed")
     .reduce(

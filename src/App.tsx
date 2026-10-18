@@ -65,14 +65,17 @@ export const useApp = () => useContext(Ctx)
 
 // ─── Route metadata ──────────────────────────────────────────────────────────
 
-const ROUTE_META: Record<string, { page: Page; titleKey?: string }> = {
+const ROUTE_META: Record<string, { page: Page titleKey?: string }> = {
   "/marketplace": { page: "marketplace", titleKey: "marketplace" },
   "/tools-rental": { page: "toolsRental", titleKey: "toolsRental" },
   "/editors": { page: "editors", titleKey: "editors" },
   "/vibe-coders": { page: "vibeCoders", titleKey: "vibeCoders" },
   "/skills": { page: "skills", titleKey: "skills" },
   "/contracts": { page: "contracts", titleKey: "contracts" },
-  "/contracts/history": { page: "contractsHistory", titleKey: "contractsHistory" },
+  "/contracts/history": {
+    page: "contractsHistory",
+    titleKey: "contractsHistory",
+  },
   "/tickets": { page: "tickets", titleKey: "tickets" },
   "/packages": { page: "packages", titleKey: "packages" },
   "/admin-users": { page: "adminUsers", titleKey: "adminUsers" },
@@ -90,11 +93,13 @@ function getPageMeta(
   pathname: string,
   lang: Lang,
   tr: typeof t["en"],
-): { page: Page; title: string } {
+): { page: Page title: string } {
   const exactMatch = ROUTE_META[pathname]
   if (exactMatch) {
     const meta = exactMatch
-    const title = meta.titleKey ? tr.nav[meta.titleKey as keyof typeof tr.nav] || tr.nav.dashboard : tr.nav.dashboard
+    const title = meta.titleKey
+      ? tr.nav[(meta.titleKey as keyof typeof tr.nav)] || tr.nav.dashboard
+      : tr.nav.dashboard
     return { page: meta.page, title }
   }
 
@@ -133,9 +138,7 @@ function PlaceholderPage({
       <div className="bg-white rounded-2xl border border-[#e2e8f0] p-12 text-center">
         <div className="text-4xl mb-4">🚧</div>
         <div className="font-bold text-[#0f172a] mb-1">{comingSoon}</div>
-        <div className="text-sm text-[#64748b]">
-          {underConstruction}
-        </div>
+        <div className="text-sm text-[#64748b]">{underConstruction}</div>
       </div>
     </div>
   )
@@ -155,7 +158,7 @@ export default function App() {
 
   const dir = lang === "fa" ? "rtl" : "ltr"
   const tr = t[lang]
-  const role = (user?.role as Role) || "employer"
+  const role = user?.role as Role || "employer"
 
   const { page, title: pageTitle } = getPageMeta(pathname, lang, tr)
 
@@ -174,11 +177,31 @@ export default function App() {
     ...(role === "admin"
       ? [
           { id: "packages" as Page, icon: "package", label: tr.nav.packages },
-          { id: "adminUsers" as Page, icon: "users", label: tr.adminUsers.title },
-          { id: "adminContent" as Page, icon: "edit", label: tr.adminContent.title },
-          { id: "adminTickets" as Page, icon: "tickets", label: tr.adminTickets.title },
-          { id: "adminWorkspace" as Page, icon: "dashboard", label: tr.adminWorkspace.title },
-          { id: "adminPortfolio" as Page, icon: "image", label: tr.adminPortfolio.title },
+          {
+            id: "adminUsers" as Page,
+            icon: "users",
+            label: tr.adminUsers.title,
+          },
+          {
+            id: "adminContent" as Page,
+            icon: "edit",
+            label: tr.adminContent.title,
+          },
+          {
+            id: "adminTickets" as Page,
+            icon: "tickets",
+            label: tr.adminTickets.title,
+          },
+          {
+            id: "adminWorkspace" as Page,
+            icon: "dashboard",
+            label: tr.adminWorkspace.title,
+          },
+          {
+            id: "adminPortfolio" as Page,
+            icon: "image",
+            label: tr.adminPortfolio.title,
+          },
         ]
       : []),
     ...(role === "employer"
@@ -211,12 +234,7 @@ export default function App() {
   if (!user && !isLoading) {
     return (
       <Ctx.Provider value={ctx}>
-        <AuthPage
-          lang={lang}
-          tr={tr}
-          dir={dir}
-          setLang={setLang}
-        />
+        <AuthPage lang={lang} tr={tr} dir={dir} setLang={setLang} />
       </Ctx.Provider>
     )
   }
@@ -277,8 +295,14 @@ export default function App() {
               lang={lang}
               onToggleLang={() => setLang(lang === "fa" ? "en" : "fa")}
               onToggleMobileMenu={() => setMobileMenuOpen(true)}
-              userName={lang === "fa" ? user?.nameFa || "علی" : user?.nameEn || "Ali"}
-              userInitial={lang === "fa" ? (user?.nameFa?.charAt(0) || "ع") : (user?.nameEn?.charAt(0) || "A")}
+              userName={
+                lang === "fa" ? user?.nameFa || "علی" : user?.nameEn || "Ali"
+              }
+              userInitial={
+                lang === "fa"
+                  ? user?.nameFa?.charAt(0) || "ع"
+                  : user?.nameEn?.charAt(0) || "A"
+              }
               theme={theme}
               onToggleTheme={toggleTheme}
               fontSize={fontSize}

@@ -34,7 +34,9 @@ export async function createContract(
 }
 
 export async function getContract(id: string): Promise<ContractRow | null> {
-  const payload = await apiFetch<Record<string, unknown>>(`/api/contracts/${id}`)
+  const payload = await apiFetch<Record<string, unknown>>(
+    `/api/contracts/${id}`,
+  )
   return unwrapItem<ContractRow>(payload, "contract")
 }
 

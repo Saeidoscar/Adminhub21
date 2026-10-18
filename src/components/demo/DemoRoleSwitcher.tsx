@@ -23,12 +23,10 @@ export function DemoRoleSwitcher({
       <span className="px-2.5 text-[10px] font-bold uppercase tracking-wider text-[#94a3b8]">
         {isFa ? "پیش‌نمایش" : "Preview"}
       </span>
-      {(
-        [
-          { id: "employer", label: isFa ? "کارفرما" : "Employer" },
-          { id: "admin", label: isFa ? "ادمین" : "Admin" },
-        ] as const
-      ).map((item) => {
+      {([
+        { id: "employer", label: isFa ? "کارفرما" : "Employer" },
+        { id: "admin", label: isFa ? "ادمین" : "Admin" },
+      ] as const).map((item) => {
         const active = role === item.id
         return (
           <button

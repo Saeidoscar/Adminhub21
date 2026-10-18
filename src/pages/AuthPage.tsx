@@ -22,13 +22,9 @@ interface AuthPageProps {
   setLang: (lang: Lang) => void
 }
 
-export default function AuthPage({
-  lang,
-  tr,
-  dir,
-  setLang,
-}: AuthPageProps) {
-  const { user, login, register, sendOtp, loginWithOtp, isLoading, loginDemo } = useAuth()
+export default function AuthPage({ lang, tr, dir, setLang }: AuthPageProps) {
+  const { user, login, register, sendOtp, loginWithOtp, isLoading, loginDemo } =
+    useAuth()
   const navigate = useNavigate()
 
   const [tab, setTab] = useState<"login" | "register">("login")
@@ -167,7 +163,9 @@ export default function AuthPage({
       const user = await loginWithOtp(result.data.phone, result.data.code)
       navigate("/dashboard")
     } catch (err) {
-      setLocalError(err instanceof Error ? err.message : "OTP verification failed")
+      setLocalError(
+        err instanceof Error ? err.message : "OTP verification failed",
+      )
     } finally {
       setIsSubmitting(false)
     }
@@ -197,7 +195,9 @@ export default function AuthPage({
           <h1 className="text-4xl font-bold leading-tight mb-4">
             {tr.auth.heroTitle}
           </h1>
-          <p className="text-blue-200 text-lg leading-relaxed">{tr.auth.heroSub}</p>
+          <p className="text-blue-200 text-lg leading-relaxed">
+            {tr.auth.heroSub}
+          </p>
         </div>
 
         <div className="relative z-10 space-y-4">
@@ -220,7 +220,7 @@ export default function AuthPage({
                 <Icon name={item.icon} size={16} className="text-white" />
               </div>
               <span className="text-blue-100 text-sm">
-                {tr.auth[item.textKey as keyof typeof tr.auth]}
+                {tr.auth[(item.textKey as keyof typeof tr.auth)]}
               </span>
             </div>
           ))}
@@ -346,7 +346,9 @@ export default function AuthPage({
                         className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] bg-white text-sm text-[#0f172a] placeholder-[#94a3b8] focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all"
                       />
                       {errors.nameEn && (
-                        <p className="text-xs text-rose-600 mt-1">{errors.nameEn}</p>
+                        <p className="text-xs text-rose-600 mt-1">
+                          {errors.nameEn}
+                        </p>
                       )}
                     </div>
                   )}
@@ -363,7 +365,9 @@ export default function AuthPage({
                       dir="ltr"
                     />
                     {errors.email && (
-                      <p className="text-xs text-rose-600 mt-1">{errors.email}</p>
+                      <p className="text-xs text-rose-600 mt-1">
+                        {errors.email}
+                      </p>
                     )}
                   </div>
                   <div>
@@ -386,7 +390,9 @@ export default function AuthPage({
                       dir="ltr"
                     />
                     {errors.password && (
-                      <p className="text-xs text-rose-600 mt-1">{errors.password}</p>
+                      <p className="text-xs text-rose-600 mt-1">
+                        {errors.password}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -398,13 +404,17 @@ export default function AuthPage({
                 )}
 
                 <button
-                  onClick={tab === "login" ? handleEmailLogin : handleEmailRegister}
+                  onClick={
+                    tab === "login" ? handleEmailLogin : handleEmailRegister
+                  }
                   disabled={isSubmitting}
                   className="w-full py-3.5 rounded-xl bg-[#1e3a5f] text-white font-bold text-sm hover:bg-[#122435] transition-colors shadow-md btn-press mb-4 disabled:opacity-60"
                 >
                   {isSubmitting
                     ? tr.auth.processing
-                    : (tab === "login" ? tr.auth.login : tr.auth.register)}
+                    : tab === "login"
+                      ? tr.auth.login
+                      : tr.auth.register}
                 </button>
 
                 <button
@@ -484,7 +494,9 @@ export default function AuthPage({
                       dir="ltr"
                     />
                     {errors.code && (
-                      <p className="text-xs text-rose-600 mt-1">{errors.code}</p>
+                      <p className="text-xs text-rose-600 mt-1">
+                        {errors.code}
+                      </p>
                     )}
                   </div>
                 )}
@@ -503,9 +515,7 @@ export default function AuthPage({
                     disabled={isSubmitting || !phone}
                     className="w-full py-3.5 rounded-xl bg-[#1e3a5f] text-white font-bold text-sm hover:bg-[#122435] transition-colors shadow-md btn-press disabled:opacity-60"
                   >
-                    {isSubmitting
-                      ? tr.auth.otp.sending
-                      : tr.auth.otp.sendCode}
+                    {isSubmitting ? tr.auth.otp.sending : tr.auth.otp.sendCode}
                   </button>
                 ) : (
                   <button

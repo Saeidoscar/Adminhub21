@@ -103,21 +103,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
-  const handleDemoLogin = useCallback((role: DemoRole = "employer") => {
-    if (!isDemoMode) return
+  const handleDemoLogin = useCallback(
+    (role: DemoRole = "employer") => {
+      if (!isDemoMode) return
 
-    const demoUser = DEMO_USERS[role] ?? DEMO_USERS.employer
+      const demoUser = DEMO_USERS[role] ?? DEMO_USERS.employer
 
-    if (typeof window !== "undefined") {
-      window.localStorage.setItem(DEMO_ROLE_KEY, role)
-      window.localStorage.removeItem(DEMO_SIGNED_OUT_KEY)
-    }
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem(DEMO_ROLE_KEY, role)
+        window.localStorage.removeItem(DEMO_SIGNED_OUT_KEY)
+      }
 
-    setTokens(DEMO_TOKEN)
-    setUser(demoUser)
-    setIsLoading(false)
-    setError(null)
-  }, [setTokens])
+      setTokens(DEMO_TOKEN)
+      setUser(demoUser)
+      setIsLoading(false)
+      setError(null)
+    },
+    [setTokens],
+  )
 
   const handleRefresh = useCallback(async () => {
     try {
@@ -272,7 +275,5 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     loginDemo: handleDemoLogin,
   }
 
-  return (
-    <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
-  )
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }

@@ -24,9 +24,7 @@ export function MCPConnectorStatus({
         {connected ? "MCP Connected" : "Disconnected"}
       </span>
       {lastSync && (
-        <span className="text-xs text-muted/60">
-          Synced: {lastSync}
-        </span>
+        <span className="text-xs text-muted/60">Synced: {lastSync}</span>
       )}
     </div>
   )

@@ -29,5 +29,3 @@ export function contractStatusLabel(status: string, lang: "en" | "fa"): string {
 export function contractStatusColor(status: string): string {
   return CONTRACT_STATUS_COLORS[status] || "bg-gray-100 text-gray-700"
 }
-
-

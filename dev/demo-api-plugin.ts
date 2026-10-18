@@ -28,21 +28,24 @@ export function demoApiPlugin(): Plugin {
         if (isSpaRoute || !/^\/(api|ai)([/?]|$)/.test(url)) return next()
 
         try {
-          const body = req.method === "GET" || req.method === "HEAD"
-            ? ""
-            : await readBody(req)
-          const result = await handleDemoRequest(
-            req.method ?? "GET",
-            url,
-            body,
-          )
+          const body =
+            req.method === "GET" || req.method === "HEAD"
+              ? ""
+              : await readBody(req)
+          const result = await handleDemoRequest(req.method ?? "GET", url, body)
 
           res.statusCode = result.status
           res.setHeader("Content-Type", "application/json; charset=utf-8")
           res.setHeader("Cache-Control", "no-store")
           res.setHeader("Access-Control-Allow-Origin", "*")
-          res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE,OPTIONS")
-          res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization")
+          res.setHeader(
+            "Access-Control-Allow-Methods",
+            "GET,POST,PUT,PATCH,DELETE,OPTIONS",
+          )
+          res.setHeader(
+            "Access-Control-Allow-Headers",
+            "Content-Type, Authorization",
+          )
 
           if (!result.body || result.status === 204) {
             res.end()

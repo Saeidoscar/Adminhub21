@@ -33,9 +33,7 @@ export default function ContractDetailView({
           <span className="rtl:rotate-180">←</span>
           {tr.common?.back || "Back"}
         </button>
-        <h1 className="text-2xl font-bold text-[#0f172a]">
-          {contract.code}
-        </h1>
+        <h1 className="text-2xl font-bold text-[#0f172a]">{contract.code}</h1>
         <p className="text-[#64748b] mt-1">
           {isFa ? "جزئیات قرارداد" : "Contract Details"}
         </p>
@@ -94,8 +92,12 @@ export default function ContractDetailView({
             </div>
             <div className="text-sm font-semibold text-[#0f172a]">
               {contract.hasInsurance
-                ? isFa ? "بله" : "Yes"
-                : isFa ? "خیر" : "No"}
+                ? isFa
+                  ? "بله"
+                  : "Yes"
+                : isFa
+                  ? "خیر"
+                  : "No"}
             </div>
           </div>
           <div>
@@ -104,8 +106,12 @@ export default function ContractDetailView({
             </div>
             <div className="text-sm font-semibold text-[#0f172a]">
               {contract.hasSubstitute
-                ? isFa ? "بله" : "خیر"
-                : isFa ? "خیر" : "No"}
+                ? isFa
+                  ? "بله"
+                  : "خیر"
+                : isFa
+                  ? "خیر"
+                  : "No"}
             </div>
           </div>
           {contract.startDate && (

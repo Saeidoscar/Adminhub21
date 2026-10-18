@@ -32,7 +32,10 @@ export interface AiContextValue {
   isLoading: boolean
   isSending: boolean
   error: string | null
-  createConversation: (modelId: string, title?: string) => Promise<AiConversationRow>
+  createConversation: (
+    modelId: string,
+    title?: string,
+  ) => Promise<AiConversationRow>
   selectConversation: (id: string) => Promise<void>
   sendMessage: (content: string) => Promise<void>
   switchModel: (modelId: string) => Promise<void>
@@ -50,11 +53,19 @@ const AiContext = createContext<AiContextValue>({
   isLoading: true,
   isSending: false,
   error: null,
-  createConversation: async () => { throw new Error("AiProvider is required") },
+  createConversation: async () => {
+    throw new Error("AiProvider is required")
+  },
   selectConversation: async () => {},
-  sendMessage: async () => { throw new Error("AiProvider is required") },
-  switchModel: async () => { throw new Error("AiProvider is required") },
-  renameConversation: async () => { throw new Error("AiProvider is required") },
+  sendMessage: async () => {
+    throw new Error("AiProvider is required")
+  },
+  switchModel: async () => {
+    throw new Error("AiProvider is required")
+  },
+  renameConversation: async () => {
+    throw new Error("AiProvider is required")
+  },
   deleteConversation: async () => {},
   refreshConversations: async () => {},
   clearError: () => {},
@@ -324,7 +335,5 @@ export function AiProvider({ children }: { children: ReactNode }) {
     clearError,
   }
 
-  return (
-    <AiContext.Provider value={value}>{children}</AiContext.Provider>
-  )
+  return <AiContext.Provider value={value}>{children}</AiContext.Provider>
 }

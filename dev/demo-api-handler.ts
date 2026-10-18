@@ -8,7 +8,7 @@
 import { demoDb } from "./demo-data"
 
 type Json = Record<string, unknown>
-type Result = { status: number; body?: Json | null }
+type Result = { status: number body?: Json | null }
 
 const db = demoDb()
 
@@ -18,7 +18,7 @@ const nextId = (prefix: string) => `${prefix}-${++sequence}`
 
 const asArray = (value: unknown): any[] => (Array.isArray(value) ? value : [])
 const asRecord = (value: unknown): Json =>
-  value && typeof value === "object" ? (value as Json) : {}
+  value && typeof value === "object" ? value as Json : {}
 
 function ok(body: Json): Result {
   return { status: 200, body }
@@ -72,7 +72,11 @@ function currentUser() {
 function replyText(message: string): string {
   const text = message.toLowerCase()
 
-  if (text.includes("price") || text.includes("budget") || text.includes("cost")) {
+  if (
+    text.includes("price") ||
+    text.includes("budget") ||
+    text.includes("cost")
+  ) {
     return [
       "Here is how I would frame the budget for this hire:",
       "",
@@ -84,7 +88,11 @@ function replyText(message: string): string {
     ].join("\n")
   }
 
-  if (text.includes("contract") || text.includes("clause") || text.includes("legal")) {
+  if (
+    text.includes("contract") ||
+    text.includes("clause") ||
+    text.includes("legal")
+  ) {
     return [
       "For the contract, I would tighten three clauses before signing:",
       "",
@@ -96,7 +104,11 @@ function replyText(message: string): string {
     ].join("\n")
   }
 
-  if (text.includes("instagram") || text.includes("telegram") || text.includes("market")) {
+  if (
+    text.includes("instagram") ||
+    text.includes("telegram") ||
+    text.includes("market")
+  ) {
     return [
       "A quick way to narrow the shortlist:",
       "",
@@ -156,12 +168,18 @@ export async function handleDemoRequest(
       path === "/api/auth/otp/verify")
   ) {
     const role = body.role === "admin" ? "admin" : "employer"
-    const user = role === "admin" ? db.users.find((u) => u.role === "admin") : currentUser()
+    const user =
+      role === "admin"
+        ? db.users.find((u) => u.role === "admin")
+        : currentUser()
     return ok({ user, accessToken: "demo-access-token" })
   }
 
   if (method === "POST" && path === "/api/auth/otp/request") {
-    return ok({ message: "Demo code sent", phone: body.phone ?? "+98 912 345 6789" })
+    return ok({
+      message: "Demo code sent",
+      phone: body.phone ?? "+98 912 345 6789",
+    })
   }
 
   if (method === "POST" && path === "/api/auth/logout") {
@@ -175,7 +193,9 @@ export async function handleDemoRequest(
     if (platforms) {
       const wanted = platforms.split(",").filter(Boolean)
       rows = rows.filter((profile) =>
-        wanted.some((platform) => asArray(profile.platforms).includes(platform)),
+        wanted.some((platform) =>
+          asArray(profile.platforms).includes(platform),
+        ),
       )
     }
     if (params.get("verified") === "true") {
@@ -188,15 +208,22 @@ export async function handleDemoRequest(
     return ok({ profiles: rows })
   }
 
-  if (segments[0] === "api" && segments[1] === "profiles" && segments.length === 3) {
+  if (
+    segments[0] === "api" &&
+    segments[1] === "profiles" &&
+    segments.length === 3
+  ) {
     const profile = byId(db.profiles, segments[2])
-    if (method === "GET") return profile ? ok({ profile }) : notFound("Profile not found")
+    if (method === "GET")
+      return profile ? ok({ profile }) : notFound("Profile not found")
   }
 
   if (path === "/api/profile/me" && (method === "PUT" || method === "PATCH")) {
     const profile = byId(db.profiles, "ap-sarah") ?? db.profiles[0]
     const updated = withDates({ ...profile, ...body, updatedAt: now() })
-    db.profiles = db.profiles.map((row) => (row.id === profile.id ? updated : row))
+    db.profiles = db.profiles.map((row) =>
+      row.id === profile.id ? updated : row,
+    )
     return ok({ profile: updated })
   }
 
@@ -213,7 +240,8 @@ export async function handleDemoRequest(
     const type = params.get("type")
     if (type) rows = rows.filter((pkgRow) => pkgRow.type === type)
     const billingCycle = params.get("billingCycle")
-    if (billingCycle) rows = rows.filter((pkgRow) => pkgRow.billingCycle === billingCycle)
+    if (billingCycle)
+      rows = rows.filter((pkgRow) => pkgRow.billingCycle === billingCycle)
     if (params.get("featured") === "true") {
       rows = rows.filter((pkgRow) => pkgRow.featured === true)
     }
@@ -239,13 +267,19 @@ export async function handleDemoRequest(
     return created({ package: packageRow })
   }
 
-  if (segments[0] === "api" && segments[1] === "packages" && segments.length === 3) {
+  if (
+    segments[0] === "api" &&
+    segments[1] === "packages" &&
+    segments.length === 3
+  ) {
     const packageRow = byId(db.packages, segments[2])
     if (!packageRow) return notFound("Package not found")
     if (method === "GET") return ok({ package: packageRow })
     if (method === "PUT" || method === "PATCH") {
       const updated = withDates({ ...packageRow, ...body, updatedAt: now() })
-      db.packages = db.packages.map((row) => (row.id === packageRow.id ? updated : row))
+      db.packages = db.packages.map((row) =>
+        row.id === packageRow.id ? updated : row,
+      )
       return ok({ package: updated })
     }
     if (method === "DELETE") {
@@ -307,13 +341,19 @@ export async function handleDemoRequest(
     return created({ contract })
   }
 
-  if (segments[0] === "api" && segments[1] === "contracts" && segments.length === 3) {
+  if (
+    segments[0] === "api" &&
+    segments[1] === "contracts" &&
+    segments.length === 3
+  ) {
     const contract = byId(db.contracts, segments[2])
     if (!contract) return notFound("Contract not found")
     if (method === "GET") return ok({ contract })
     if (method === "PUT" || method === "PATCH") {
       const updated = withDates({ ...contract, ...body, updatedAt: now() })
-      db.contracts = db.contracts.map((row) => (row.id === contract.id ? updated : row))
+      db.contracts = db.contracts.map((row) =>
+        row.id === contract.id ? updated : row,
+      )
       return ok({ contract: updated })
     }
   }
@@ -323,10 +363,16 @@ export async function handleDemoRequest(
     return ok({ favorites: db.favorites })
   }
 
-  if (segments[0] === "api" && segments[1] === "favorites" && segments.length === 3) {
+  if (
+    segments[0] === "api" &&
+    segments[1] === "favorites" &&
+    segments.length === 3
+  ) {
     const adminId = segments[2]
     if (method === "POST") {
-      const existing = db.favorites.find((favorite) => favorite.adminId === adminId)
+      const existing = db.favorites.find(
+        (favorite) => favorite.adminId === adminId,
+      )
       if (existing) return ok({ favorite: existing })
       const favorite = {
         id: nextId("fav"),
@@ -338,7 +384,9 @@ export async function handleDemoRequest(
       return created({ favorite })
     }
     if (method === "DELETE") {
-      db.favorites = db.favorites.filter((favorite) => favorite.adminId !== adminId)
+      db.favorites = db.favorites.filter(
+        (favorite) => favorite.adminId !== adminId,
+      )
       return ok({ success: true })
     }
   }
@@ -411,20 +459,26 @@ export async function handleDemoRequest(
   if (path === "/api/catalog/tools" && method === "GET") {
     let rows = db.tools
     rows = filterByParam(rows, params, "category", "category")
-    if (params.get("popular") === "true") rows = rows.filter((tool) => tool.popular === true)
+    if (params.get("popular") === "true")
+      rows = rows.filter((tool) => tool.popular === true)
     const minRating = Number(params.get("minRating") ?? 0)
-    if (minRating) rows = rows.filter((tool) => Number(tool.rating) >= minRating)
+    if (minRating)
+      rows = rows.filter((tool) => Number(tool.rating) >= minRating)
     const search = params.get("search") ?? ""
-    rows = rows.filter((tool) => matchesSearch(tool, search, ["name", "descEn", "descFa"]))
+    rows = rows.filter((tool) =>
+      matchesSearch(tool, search, ["name", "descEn", "descFa"]),
+    )
     return ok({ tools: rows })
   }
 
   if (path === "/api/catalog/editors" && method === "GET") {
     let rows = db.editors
     const specialty = params.get("specialty")
-    if (specialty) rows = rows.filter((editor) => editor.specialty === specialty)
+    if (specialty)
+      rows = rows.filter((editor) => editor.specialty === specialty)
     const minRating = Number(params.get("minRating") ?? 0)
-    if (minRating) rows = rows.filter((editor) => Number(editor.rating) >= minRating)
+    if (minRating)
+      rows = rows.filter((editor) => Number(editor.rating) >= minRating)
     const search = params.get("search") ?? ""
     rows = rows.filter((editor) =>
       matchesSearch(editor, search, ["nameEn", "nameFa", "bioEn", "bioFa"]),
@@ -435,10 +489,17 @@ export async function handleDemoRequest(
   if (path === "/api/catalog/vibe-coders" && method === "GET") {
     let rows = db.vibeCoders
     const stack = params.get("stack")
-    if (stack) rows = rows.filter((coder) => String(coder.stack).includes(stack))
+    if (stack)
+      rows = rows.filter((coder) => String(coder.stack).includes(stack))
     const search = params.get("search") ?? ""
     rows = rows.filter((coder) =>
-      matchesSearch(coder, search, ["nameEn", "nameFa", "stack", "bioEn", "bioFa"]),
+      matchesSearch(coder, search, [
+        "nameEn",
+        "nameFa",
+        "stack",
+        "bioEn",
+        "bioFa",
+      ]),
     )
     return ok({ "vibe-coders": rows })
   }
@@ -466,13 +527,19 @@ export async function handleDemoRequest(
     return created({ ticket })
   }
 
-  if (segments[0] === "api" && segments[1] === "tickets" && segments.length >= 3) {
+  if (
+    segments[0] === "api" &&
+    segments[1] === "tickets" &&
+    segments.length >= 3
+  ) {
     const ticket = byId(db.tickets, segments[2])
     if (!ticket) return notFound("Ticket not found")
     if (segments.length === 4 && segments[3] === "messages") {
       if (method === "GET") {
         return ok({
-          messages: db.ticketMessages.filter((message) => message.ticketId === ticket.id),
+          messages: db.ticketMessages.filter(
+            (message) => message.ticketId === ticket.id,
+          ),
         })
       }
       if (method === "POST") {
@@ -492,7 +559,9 @@ export async function handleDemoRequest(
     if (method === "GET") return ok({ ticket })
     if (method === "PATCH" || method === "PUT") {
       const updated = { ...ticket, ...body, updatedAt: now() }
-      db.tickets = db.tickets.map((row) => (row.id === ticket.id ? updated : row))
+      db.tickets = db.tickets.map((row) =>
+        row.id === ticket.id ? updated : row,
+      )
       return ok({ ticket: updated })
     }
   }
@@ -531,7 +600,11 @@ export async function handleDemoRequest(
     return created({ case: caseRow })
   }
 
-  if (segments[0] === "api" && segments[1] === "cases" && segments.length === 3) {
+  if (
+    segments[0] === "api" &&
+    segments[1] === "cases" &&
+    segments.length === 3
+  ) {
     const caseRow = byId(db.cases, segments[2])
     if (!caseRow) return notFound("Case not found")
     if (method === "GET") return ok({ case: caseRow })
@@ -642,7 +715,9 @@ export async function handleDemoRequest(
     const endedAt = String(body.endedAt ?? now())
     const durationMinutes = Math.max(
       0,
-      Math.round((new Date(endedAt).getTime() - new Date(startedAt).getTime()) / 60000),
+      Math.round(
+        (new Date(endedAt).getTime() - new Date(startedAt).getTime()) / 60000,
+      ),
     )
     const log = {
       id: nextId("log"),
@@ -675,17 +750,23 @@ export async function handleDemoRequest(
   if (segments[0] === "api" && segments[1] === "portfolio") {
     if (segments[2] === "item" && segments.length === 4 && method === "GET") {
       const item = byId(db.portfolio, segments[3])
-      return item ? ok({ portfolio: item }) : notFound("Portfolio item not found")
+      return item
+        ? ok({ portfolio: item })
+        : notFound("Portfolio item not found")
     }
     if (segments.length === 3 && method === "GET") {
       const adminId = segments[2]
-      return ok({ portfolio: db.portfolio.filter((item) => item.adminId === adminId) })
+      return ok({
+        portfolio: db.portfolio.filter((item) => item.adminId === adminId),
+      })
     }
     if (segments.length === 3 && (method === "PATCH" || method === "PUT")) {
       const item = byId(db.portfolio, segments[2])
       if (!item) return notFound("Portfolio item not found")
       const updated = { ...item, ...body, updatedAt: now() }
-      db.portfolio = db.portfolio.map((row) => (row.id === item.id ? updated : row))
+      db.portfolio = db.portfolio.map((row) =>
+        row.id === item.id ? updated : row,
+      )
       return ok({ portfolio: updated })
     }
     if (segments.length === 3 && method === "DELETE") {
@@ -730,18 +811,29 @@ export async function handleDemoRequest(
     return ok({ comments: rows })
   }
 
-  if (segments[0] === "api" && segments[1] === "comments" && segments.length === 3 && method === "DELETE") {
+  if (
+    segments[0] === "api" &&
+    segments[1] === "comments" &&
+    segments.length === 3 &&
+    method === "DELETE"
+  ) {
     db.comments = db.comments.filter((comment) => comment.id !== segments[2])
     return ok({ success: true })
   }
 
-  if (segments[0] === "api" && segments[1] === "stories" && segments.length === 3) {
+  if (
+    segments[0] === "api" &&
+    segments[1] === "stories" &&
+    segments.length === 3
+  ) {
     const story = byId(db.stories, segments[2])
     if (!story) return notFound("Story not found")
     if (method === "GET") return ok({ story })
     if (method === "PUT" || method === "PATCH") {
       const updated = { ...story, ...body, updatedAt: now() }
-      db.stories = db.stories.map((row) => (row.id === story.id ? updated : row))
+      db.stories = db.stories.map((row) =>
+        row.id === story.id ? updated : row,
+      )
       return ok({ story: updated })
     }
     if (method === "DELETE") {
@@ -750,7 +842,11 @@ export async function handleDemoRequest(
     }
   }
 
-  if (segments[0] === "api" && segments[1] === "blogs" && segments.length === 3) {
+  if (
+    segments[0] === "api" &&
+    segments[1] === "blogs" &&
+    segments.length === 3
+  ) {
     const blog = byId(db.blogs, segments[2])
     if (!blog) return notFound("Blog not found")
     if (method === "GET") return ok({ blog })
@@ -776,7 +872,12 @@ export async function handleDemoRequest(
     return ok({ users: rows })
   }
 
-  if (segments[0] === "api" && segments[1] === "admin" && segments[2] === "users" && segments.length === 4) {
+  if (
+    segments[0] === "api" &&
+    segments[1] === "admin" &&
+    segments[2] === "users" &&
+    segments.length === 4
+  ) {
     const user = byId(db.users, segments[3])
     if (!user) return notFound("User not found")
     if (method === "GET") return ok({ user })
@@ -816,7 +917,9 @@ export async function handleDemoRequest(
     if (method === "GET") return ok({ ticket })
     if (method === "PATCH" || method === "PUT") {
       const updated = { ...ticket, ...body, updatedAt: now() }
-      db.tickets = db.tickets.map((row) => (row.id === ticket.id ? updated : row))
+      db.tickets = db.tickets.map((row) =>
+        row.id === ticket.id ? updated : row,
+      )
       return ok({ ticket: updated })
     }
   }
@@ -826,7 +929,9 @@ export async function handleDemoRequest(
     let rows = db.stories
     rows = filterByParam(rows, params, "status", "status")
     const search = params.get("search") ?? ""
-    rows = rows.filter((story) => matchesSearch(story, search, ["title", "content"]))
+    rows = rows.filter((story) =>
+      matchesSearch(story, search, ["title", "content"]),
+    )
     return ok({ stories: rows })
   }
 
@@ -834,7 +939,9 @@ export async function handleDemoRequest(
     let rows = db.blogs
     rows = filterByParam(rows, params, "status", "status")
     const search = params.get("search") ?? ""
-    rows = rows.filter((blog) => matchesSearch(blog, search, ["title", "content"]))
+    rows = rows.filter((blog) =>
+      matchesSearch(blog, search, ["title", "content"]),
+    )
     return ok({ blogs: rows })
   }
 
@@ -857,7 +964,11 @@ export async function handleDemoRequest(
     if (!item) return notFound("Content not found")
     const action = body.action
     const status =
-      action === "approve" ? "published" : action === "reject" ? "rejected" : "archived"
+      action === "approve"
+        ? "published"
+        : action === "reject"
+          ? "rejected"
+          : "archived"
     const updated = { ...item, status, updatedAt: now() }
     if (kind === "blogs") {
       db.blogs = db.blogs.map((row) => (row.id === item.id ? updated : row))
@@ -902,7 +1013,11 @@ export async function handleDemoRequest(
     return created({ conversation })
   }
 
-  if (segments[0] === "ai" && segments[1] === "conversations" && segments.length >= 3) {
+  if (
+    segments[0] === "ai" &&
+    segments[1] === "conversations" &&
+    segments.length >= 3
+  ) {
     const conversation = byId(db.aiConversations, segments[2])
     if (!conversation) return notFound("Conversation not found")
 
@@ -942,8 +1057,15 @@ export async function handleDemoRequest(
       }
     }
 
-    if (segments.length === 4 && segments[3] === "model" && method === "PATCH") {
-      const updated = { ...conversation, modelId: body.modelId ?? conversation.modelId }
+    if (
+      segments.length === 4 &&
+      segments[3] === "model" &&
+      method === "PATCH"
+    ) {
+      const updated = {
+        ...conversation,
+        modelId: body.modelId ?? conversation.modelId,
+      }
       db.aiConversations = db.aiConversations.map((row) =>
         row.id === conversation.id ? updated : row,
       )
@@ -963,7 +1085,9 @@ export async function handleDemoRequest(
     }
 
     if (segments.length === 3 && method === "DELETE") {
-      db.aiConversations = db.aiConversations.filter((row) => row.id !== conversation.id)
+      db.aiConversations = db.aiConversations.filter(
+        (row) => row.id !== conversation.id,
+      )
       db.aiMessages = db.aiMessages.filter(
         (message) => message.conversationId !== conversation.id,
       )

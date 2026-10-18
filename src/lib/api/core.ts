@@ -41,13 +41,15 @@ export function getApiBaseUrl() {
     return ""
   }
 
-  return (import.meta.env.VITE_API_BASE_URL?.trim() || DEFAULT_API_BASE_URL)
-    .replace(/\/+$/, "")
+  return (
+    import.meta.env.VITE_API_BASE_URL?.trim() || DEFAULT_API_BASE_URL
+  ).replace(/\/+$/, "")
 }
 
 export function getApiBaseUrlLaravel() {
-  return (import.meta.env.VITE_API_BASE_URL_LARAVEL?.trim() || getApiBaseUrl())
-    .replace(/\/+$/, "")
+  return (
+    import.meta.env.VITE_API_BASE_URL_LARAVEL?.trim() || getApiBaseUrl()
+  ).replace(/\/+$/, "")
 }
 
 export function getAuthToken() {
@@ -68,7 +70,10 @@ export function setAuthToken(token: string) {
   }
 }
 
-export async function apiFetch<T>(path: string, init: RequestInit = {}): Promise<T> {
+export async function apiFetch<T>(
+  path: string,
+  init: RequestInit = {},
+): Promise<T> {
   const token = getAuthToken()
 
   const response = await fetch(`${getApiBaseUrl()}${path}`, {

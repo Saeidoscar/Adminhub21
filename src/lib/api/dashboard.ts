@@ -1,4 +1,8 @@
-import type { DashboardStats, WalletRow, WalletTransactionRow } from "@adminhub/shared"
+import type {
+  DashboardStats,
+  WalletRow,
+  WalletTransactionRow,
+} from "@adminhub/shared"
 import { apiFetch, unwrapItem, unwrapList } from "./core"
 
 export type { DashboardStats, WalletRow, WalletTransactionRow }

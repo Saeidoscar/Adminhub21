@@ -63,10 +63,16 @@ const PackageContext = createContext<PackageContextValue>({
   pkg: (id: string) => undefined,
   packagesForPlatform: () => [],
   refresh: async () => {},
-  addPackage: async () => { throw new Error("PackageProvider is required") },
-  updatePackage: async () => { throw new Error("PackageProvider is required") },
+  addPackage: async () => {
+    throw new Error("PackageProvider is required")
+  },
+  updatePackage: async () => {
+    throw new Error("PackageProvider is required")
+  },
   deletePackage: async () => {},
-  submitOffer: async () => { throw new Error("PackageProvider is required") },
+  submitOffer: async () => {
+    throw new Error("PackageProvider is required")
+  },
   offers: [],
   comparison: {
     selected: new Set(),
@@ -176,10 +182,7 @@ export function PackageProvider({ children }: { children: ReactNode }) {
       admins.find((item) => String(item.id) === String(id)),
     [admins],
   )
-  const pkg = useCallback(
-    (id: string) => findPackage(packages, id),
-    [packages],
-  )
+  const pkg = useCallback((id: string) => findPackage(packages, id), [packages])
   const packagesForAdmin = useCallback(
     (adminId: string) => packagesByAdmin(packages, adminId),
     [packages],

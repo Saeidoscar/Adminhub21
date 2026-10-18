@@ -39,7 +39,7 @@ export default function AdminWorkspacePage({
   const isFa = lang === "fa"
   const [activeTab, setActiveTab] = useState<TabKey>("cases")
 
-  const tabs: { key: TabKey; label: string }[] = [
+  const tabs: { key: TabKey label: string }[] = [
     { key: "cases", label: tr.adminWorkspace.cases },
     { key: "tasks", label: tr.adminWorkspace.tasks },
     { key: "events", label: tr.adminWorkspace.events },
@@ -71,15 +71,9 @@ export default function AdminWorkspacePage({
         ))}
       </div>
 
-      {activeTab === "cases" && (
-        <CasesTab tr={tr} lang={lang} isFa={isFa} />
-      )}
-      {activeTab === "tasks" && (
-        <TasksTab tr={tr} lang={lang} isFa={isFa} />
-      )}
-      {activeTab === "events" && (
-        <EventsTab tr={tr} lang={lang} isFa={isFa} />
-      )}
+      {activeTab === "cases" && <CasesTab tr={tr} lang={lang} isFa={isFa} />}
+      {activeTab === "tasks" && <TasksTab tr={tr} lang={lang} isFa={isFa} />}
+      {activeTab === "events" && <EventsTab tr={tr} lang={lang} isFa={isFa} />}
       {activeTab === "timeLogs" && (
         <TimeLogsTab tr={tr} lang={lang} isFa={isFa} />
       )}

@@ -114,7 +114,8 @@ export function usePackageForm({ onSuccess }: UsePackageFormOptions = {}) {
   const validate = useCallback((): boolean => {
     const fieldErrors: Record<string, string> = {}
     if (!form.name.trim()) fieldErrors.name = "Required"
-    if (form.platforms.length === 0) fieldErrors.platforms = "Select at least one platform"
+    if (form.platforms.length === 0)
+      fieldErrors.platforms = "Select at least one platform"
     if (!form.priceToman.trim() || isNaN(Number(form.priceToman)))
       fieldErrors.priceToman = "Valid price required"
     if (!form.priceUSD.trim() || isNaN(Number(form.priceUSD)))
@@ -156,11 +157,18 @@ export function usePackageForm({ onSuccess }: UsePackageFormOptions = {}) {
     } catch {
       setErrors({ submit: "Failed to save package" })
     }
-  }, [editingId, form, validate, addPackage, updatePackage, resetForm, onSuccess])
+  }, [
+    editingId,
+    form,
+    validate,
+    addPackage,
+    updatePackage,
+    resetForm,
+    onSuccess,
+  ])
 
   const setF = useCallback(
-    (k: string, v: string | boolean) =>
-      setForm((f) => ({ ...f, [k]: v })),
+    (k: string, v: string | boolean) => setForm((f) => ({ ...f, [k]: v })),
     [],
   )
 

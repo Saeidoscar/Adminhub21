@@ -12,7 +12,7 @@ import {
 import { ListSkeleton } from "../../components/ui/Skeleton"
 import { CASE_STATUS, PRIORITY, fmtDate } from "./utils"
 
-function CasesTab({ tr, lang, isFa }: { tr: Tr; lang: Lang; isFa: boolean }) {
+function CasesTab({ tr, lang, isFa }: { tr: Tr lang: Lang isFa: boolean }) {
   const [cases, setCases] = useState<CaseRow[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -57,17 +57,23 @@ function CasesTab({ tr, lang, isFa }: { tr: Tr; lang: Lang; isFa: boolean }) {
   }, [])
 
   const employerLabel = (caseRow: CaseRow) => {
-    const match = employers.find((employer) => employer.id === caseRow.employerId)
+    const match = employers.find(
+      (employer) => employer.id === caseRow.employerId,
+    )
     if (match) {
-      return isFa
-        ? match.nameFa || match.nameEn
-        : match.nameEn || match.nameFa
+      return isFa ? match.nameFa || match.nameEn : match.nameEn || match.nameFa
     }
     return caseRow.employerName || caseRow.employerId
   }
 
   const resetForm = () => {
-    setForm({ title: "", description: "", priority: "medium", employerId: "", tags: "" })
+    setForm({
+      title: "",
+      description: "",
+      priority: "medium",
+      employerId: "",
+      tags: "",
+    })
   }
 
   const handleCreate = async (e: React.FormEvent) => {
@@ -141,7 +147,9 @@ function CasesTab({ tr, lang, isFa }: { tr: Tr; lang: Lang; isFa: boolean }) {
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-bold text-[#0f172a]">{tr.adminWorkspace.cases}</h2>
+        <h2 className="text-lg font-bold text-[#0f172a]">
+          {tr.adminWorkspace.cases}
+        </h2>
         <button
           onClick={() => {
             setShowForm((v) => !v)
@@ -181,7 +189,9 @@ function CasesTab({ tr, lang, isFa }: { tr: Tr; lang: Lang; isFa: boolean }) {
             </label>
             <textarea
               value={form.description}
-              onChange={(e) => setForm({ ...form, description: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, description: e.target.value })
+              }
               rows={3}
               className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all resize-none"
             />
@@ -196,19 +206,27 @@ function CasesTab({ tr, lang, isFa }: { tr: Tr; lang: Lang; isFa: boolean }) {
               </label>
               <select
                 value={form.employerId}
-                onChange={(e) => setForm({ ...form, employerId: e.target.value })}
+                onChange={(e) =>
+                  setForm({ ...form, employerId: e.target.value })
+                }
                 required
                 className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all bg-white"
               >
-                <option value="">{isFa ? "کارفرما را انتخاب کنید" : "Select an employer"}</option>
+                <option value="">
+                  {isFa ? "کارفرما را انتخاب کنید" : "Select an employer"}
+                </option>
                 {employers.map((employer) => (
                   <option key={employer.id} value={employer.id}>
-                    {isFa ? employer.nameFa || employer.nameEn : employer.nameEn || employer.nameFa}
+                    {isFa
+                      ? employer.nameFa || employer.nameEn
+                      : employer.nameEn || employer.nameFa}
                   </option>
                 ))}
               </select>
               {errors.employerId && (
-                <p className="text-xs text-rose-600 mt-1">{errors.employerId}</p>
+                <p className="text-xs text-rose-600 mt-1">
+                  {errors.employerId}
+                </p>
               )}
             </div>
             <div>
@@ -281,7 +299,10 @@ function CasesTab({ tr, lang, isFa }: { tr: Tr; lang: Lang; isFa: boolean }) {
                     <textarea
                       value={editForm.description}
                       onChange={(e) =>
-                        setEditForm({ ...editForm, description: e.target.value })
+                        setEditForm({
+                          ...editForm,
+                          description: e.target.value,
+                        })
                       }
                       rows={3}
                       className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all resize-none"

@@ -57,7 +57,9 @@ export function createDefaultContractForm(
   }
 }
 
-export function validateContractForm(form: ContractFormValues): Record<string, string> {
+export function validateContractForm(
+  form: ContractFormValues,
+): Record<string, string> {
   const errors: Record<string, string> = {}
   if (!form.employerName.trim()) errors.employerName = "Required"
   if (!form.projectTitle.trim()) errors.projectTitle = "Required"

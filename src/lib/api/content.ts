@@ -46,10 +46,12 @@ export interface CreateStoryInput {
   status?: "draft" | "published" | "archived"
 }
 
-export async function listStories(query: {
-  status?: string
-  search?: string
-} = {}): Promise<StoryRow[]> {
+export async function listStories(
+  query: {
+    status?: string
+    search?: string
+  } = {},
+): Promise<StoryRow[]> {
   const params = new URLSearchParams()
   if (query.status) params.set("status", query.status)
   if (query.search) params.set("search", query.search)
@@ -81,10 +83,13 @@ export async function updateStory(
   id: string,
   input: Partial<CreateStoryInput>,
 ): Promise<StoryRow> {
-  const payload = await apiFetch<Record<string, unknown>>(`/api/stories/${id}`, {
-    method: "PATCH",
-    body: JSON.stringify(input),
-  })
+  const payload = await apiFetch<Record<string, unknown>>(
+    `/api/stories/${id}`,
+    {
+      method: "PATCH",
+      body: JSON.stringify(input),
+    },
+  )
   const story = unwrapItem<StoryRow>(payload, "story")
   if (!story) {
     throw new Error("Update story response was empty")
@@ -105,10 +110,12 @@ export interface CreateBlogInput {
   status?: "draft" | "published" | "archived"
 }
 
-export async function listBlogs(query: {
-  status?: string
-  search?: string
-} = {}): Promise<BlogRow[]> {
+export async function listBlogs(
+  query: {
+    status?: string
+    search?: string
+  } = {},
+): Promise<BlogRow[]> {
   const params = new URLSearchParams()
   if (query.status) params.set("status", query.status)
   if (query.search) params.set("search", query.search)
@@ -183,7 +190,9 @@ export async function getComment(id: string): Promise<CommentRow | null> {
   return unwrapItem<CommentRow>(payload, "comment")
 }
 
-export async function createComment(input: CreateCommentInput): Promise<CommentRow> {
+export async function createComment(
+  input: CreateCommentInput,
+): Promise<CommentRow> {
   const payload = await apiFetch<Record<string, unknown>>("/api/comments", {
     method: "POST",
     body: JSON.stringify(input),

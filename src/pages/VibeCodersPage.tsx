@@ -9,7 +9,7 @@ import { photoUrl } from "../lib/photo"
 
 type Stack = "webApp" | "automation" | "bots" | "landing" | "frontend"
 
-const STACK_LABELS: Record<Stack, { en: string; fa: string }> = {
+const STACK_LABELS: Record<Stack, { en: string fa: string }> = {
   webApp: { en: "Web Apps", fa: "وب‌اپلیکیشن" },
   automation: { en: "Automation", fa: "اتوماسیون" },
   bots: { en: "Bots & Integrations", fa: "بات و اتصالات" },
@@ -112,7 +112,7 @@ export default function VibeCodersPage({
               <div className="flex items-start gap-3 mb-4">
                 <img
                   src={photoUrl(coder.photo, 64)}
-            onError={(e) => (e.currentTarget.style.visibility = "hidden")}
+                  onError={(e) => (e.currentTarget.style.visibility = "hidden")}
                   alt={isFa ? coder.nameFa : coder.nameEn}
                   className="w-14 h-14 rounded-2xl object-cover bg-[#f2f5fa] flex-shrink-0"
                 />
