@@ -127,4 +127,18 @@ jobs:
           php artisan package:discover --ansi
 
       - name: Run test suite
-        run: php artisan test --colors=always
+        shell: bash
+        run: |
+          set -o pipefail
+          php artisan test --colors=always 2>&1 | tee /tmp/phpunit.log
+
+      - name: Surface failures
+        if: failure()
+        shell: bash
+        run: |
+          tail -c 6000 /tmp/phpunit.log > /tmp/tail.log 2>/dev/null || true
+          python3 - <<'PY'
+          data = open('/tmp/tail.log', errors='replace').read()
+          escaped = data.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
+          print('::error title=phpunit::' + escaped)
+          PY

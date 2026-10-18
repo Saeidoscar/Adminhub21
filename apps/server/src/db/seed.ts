@@ -671,19 +671,17 @@ async function seed() {
     },
   ])
 
-  await db
-    .insert(schema.timeLogs)
-    .values([
-      {
-        userId: adminUser.id,
-        caseId: case1.id,
-        taskId: null,
-        description: "Content calendar design",
-        startedAt: "2025-01-20T09:00:00Z",
-        endedAt: "2025-01-20T12:00:00Z",
-        durationMinutes: 180,
-      },
-    ])
+  await db.insert(schema.timeLogs).values([
+    {
+      userId: adminUser.id,
+      caseId: case1.id,
+      taskId: null,
+      description: "Content calendar design",
+      startedAt: "2025-01-20T09:00:00Z",
+      endedAt: "2025-01-20T12:00:00Z",
+      durationMinutes: 180,
+    },
+  ])
 
   console.log("[seed] inserting portfolio...")
   await db.insert(schema.portfolioItems).values([
@@ -717,15 +715,13 @@ async function seed() {
     })
     .returning()
 
-  await db
-    .insert(schema.ticketMessages)
-    .values([
-      {
-        ticketId: ticket1.id,
-        senderId: employerUser.id,
-        body: "I was charged twice for the same contract. Please investigate.",
-      },
-    ])
+  await db.insert(schema.ticketMessages).values([
+    {
+      ticketId: ticket1.id,
+      senderId: employerUser.id,
+      body: "I was charged twice for the same contract. Please investigate.",
+    },
+  ])
 
   console.log("[seed] inserting stories and blogs...")
   const [story1] = await db
@@ -853,33 +849,29 @@ async function seed() {
     })
     .returning()
 
-  await db
-    .insert(schema.affiliateCommissions)
-    .values([
-      {
-        codeId: affiliateCode.id,
-        referrerId: employerUser.id,
-        referredId: adminUser.id,
-        amountToman: 500000,
-        amountUSD: 0,
-        status: "pending",
-      },
-    ])
+  await db.insert(schema.affiliateCommissions).values([
+    {
+      codeId: affiliateCode.id,
+      referrerId: employerUser.id,
+      referredId: adminUser.id,
+      amountToman: 500000,
+      amountUSD: 0,
+      status: "pending",
+    },
+  ])
 
   console.log("[seed] inserting payouts...")
-  await db
-    .insert(schema.payouts)
-    .values([
-      {
-        userId: adminUser.id,
-        amountToman: 0,
-        amountUSD: 500,
-        currency: "USD",
-        method: "paypal",
-        accountDetails: { email: "sarah@example.com" },
-        status: "pending",
-      },
-    ])
+  await db.insert(schema.payouts).values([
+    {
+      userId: adminUser.id,
+      amountToman: 0,
+      amountUSD: 500,
+      currency: "USD",
+      method: "paypal",
+      accountDetails: { email: "sarah@example.com" },
+      status: "pending",
+    },
+  ])
 
   console.log("[seed] done.")
 }
