@@ -69,10 +69,10 @@ class PaymentCallbackTest extends TestCase
 
     private function callbackHeaders(string $body, int $timestamp, string $signature): array
     {
-        return [
+        return $this->transformHeadersToServerVars([
             'Content-Type' => 'application/json',
             'X-Payment-Timestamp' => (string) $timestamp,
             'X-Payment-Signature' => $signature,
-        ];
+        ]);
     }
 }

@@ -39,11 +39,17 @@ class SecurityTest extends TestCase
         $this->withToken($this->makeToken($user));
     }
 
-    public function test_non_admin_cannot_view_any_contracts(): void
+    public function test_non_admin_only_sees_their_own_contracts(): void
     {
-        $user = $this->makeUser();
-        $this->actingWithToken($user);
-        $this->getJson('/api/v1/contracts')->assertStatus(403);
+        $owner = $this->makeUser();
+        $someoneElse = $this->makeUser();
+        Contract::create(['user_id' => $owner->id, 'client_id' => $owner->id, 'title' => 'Other', 'amount' => 100, 'currency' => 'USD']);
+
+        $this->actingWithToken($someoneElse);
+        $this->getJson('/api/v1/contracts')
+            ->assertStatus(200)
+            ->assertJsonPath('total', 0)
+            ->assertJsonCount(0, 'data');
     }
 
     public function test_admin_can_view_any_contracts(): void
@@ -76,7 +82,7 @@ class SecurityTest extends TestCase
         $cr = $this->makeUser();
         $s = $this->makeUser();
         $this->actingWithToken($s);
-        $t = Ticket::create(['user_id' => $cr->id, 'assigned_to' => $cr->id, 'subject' => 'T', 'description' => 'D', 'priority' => 'normal', 'status' => 'open']);
+        $t = Ticket::create(['user_id' => $cr->id, 'assigned_to' => $cr->id, 'subject' => 'T', 'description' => 'D', 'priority' => 'medium', 'status' => 'open']);
         $this->getJson('/api/v1/tickets/' . $t->id)->assertStatus(403);
     }
 
@@ -84,7 +90,7 @@ class SecurityTest extends TestCase
     {
         $user = $this->makeUser();
         $this->actingWithToken($user);
-        $t = Ticket::create(['user_id' => $user->id, 'assigned_to' => $user->id, 'subject' => 'T', 'description' => 'D', 'priority' => 'normal', 'status' => 'open']);
+        $t = Ticket::create(['user_id' => $user->id, 'assigned_to' => $user->id, 'subject' => 'T', 'description' => 'D', 'priority' => 'medium', 'status' => 'open']);
         $this->getJson('/api/v1/tickets/' . $t->id)->assertStatus(200);
     }
 
