@@ -23,11 +23,7 @@ export function Input({
 }: InputProps) {
   return (
     <div className={className}>
-      {label && (
-        <label className="block text-sm font-semibold text-text mb-1.5">
-          {label}
-        </label>
-      )}
+      {label && <label className="block text-sm font-semibold text-text mb-1.5">{label}</label>}
       <input
         type={type}
         value={value}
@@ -63,11 +59,7 @@ export function Textarea({
 }: TextareaProps) {
   return (
     <div className={className}>
-      {label && (
-        <label className="block text-sm font-semibold text-text mb-1.5">
-          {label}
-        </label>
-      )}
+      {label && <label className="block text-sm font-semibold text-text mb-1.5">{label}</label>}
       <textarea
         value={value}
         onChange={(e) => onChange(e.target.value)}
@@ -90,20 +82,10 @@ interface SelectProps {
   className?: string
 }
 
-export function Select({
-  value,
-  onChange,
-  options,
-  label,
-  className = "",
-}: SelectProps) {
+export function Select({ value, onChange, options, label, className = "" }: SelectProps) {
   return (
     <div className={className}>
-      {label && (
-        <label className="block text-sm font-semibold text-text mb-1.5">
-          {label}
-        </label>
-      )}
+      {label && <label className="block text-sm font-semibold text-text mb-1.5">{label}</label>}
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}

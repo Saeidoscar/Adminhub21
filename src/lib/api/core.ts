@@ -41,15 +41,11 @@ export function getApiBaseUrl() {
     return ""
   }
 
-  return (
-    import.meta.env.VITE_API_BASE_URL?.trim() || DEFAULT_API_BASE_URL
-  ).replace(/\/+$/, "")
+  return (import.meta.env.VITE_API_BASE_URL?.trim() || DEFAULT_API_BASE_URL).replace(/\/+$/, "")
 }
 
 export function getApiBaseUrlLaravel() {
-  return (
-    import.meta.env.VITE_API_BASE_URL_LARAVEL?.trim() || getApiBaseUrl()
-  ).replace(/\/+$/, "")
+  return (import.meta.env.VITE_API_BASE_URL_LARAVEL?.trim() || getApiBaseUrl()).replace(/\/+$/, "")
 }
 
 export function getAuthToken() {
@@ -70,10 +66,7 @@ export function setAuthToken(token: string) {
   }
 }
 
-export async function apiFetch<T>(
-  path: string,
-  init: RequestInit = {},
-): Promise<T> {
+export async function apiFetch<T>(path: string, init: RequestInit = {}): Promise<T> {
   const token = getAuthToken()
 
   const response = await fetch(`${getApiBaseUrl()}${path}`, {
@@ -91,9 +84,7 @@ export async function apiFetch<T>(
   if (!response.ok) {
     const message = await response.text()
 
-    const error = new Error(
-      message || `Request failed with status ${response.status}`,
-    )
+    const error = new Error(message || `Request failed with status ${response.status}`)
     ;(error as Error & { status: number }).status = response.status
     throw error
   }
@@ -105,18 +96,12 @@ export async function apiFetch<T>(
   return (await response.json()) as T
 }
 
-export function unwrapList<T>(
-  payload: Record<string, unknown> | null | undefined,
-  key: string,
-) {
+export function unwrapList<T>(payload: Record<string, unknown> | null | undefined, key: string) {
   const maybe = payload?.[key]
 
-  return Array.isArray(maybe) ? maybe as T[] : []
+  return Array.isArray(maybe) ? (maybe as T[]) : []
 }
 
-export function unwrapItem<T>(
-  payload: Record<string, unknown> | null | undefined,
-  key: string,
-) {
-  return payload?.[key] as T | undefined ?? null
+export function unwrapItem<T>(payload: Record<string, unknown> | null | undefined, key: string) {
+  return (payload?.[key] as T | undefined) ?? null
 }

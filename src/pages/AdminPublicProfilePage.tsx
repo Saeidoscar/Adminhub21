@@ -66,8 +66,9 @@ export default function AdminPublicProfilePage() {
   const navigate = useNavigate()
   const { packages, comparison, submitOffer, admin: findAdmin } = usePackages()
   const [lang, setLang] = useState<Lang>("fa")
-  const [activeTab, setActiveTab] =
-    useState<"profile" | "packages" | "custom" | "reviews">("profile")
+  const [activeTab, setActiveTab] = useState<"profile" | "packages" | "custom" | "reviews">(
+    "profile",
+  )
   const [offerSent, setOfferSent] = useState(false)
   const [reviews, setReviews] = useState<ReviewRow[]>([])
   const [reviewsLoading, setReviewsLoading] = useState(true)
@@ -77,9 +78,7 @@ export default function AdminPublicProfilePage() {
   const isFa = lang === "fa"
   const tr = t[lang]
   const admin = adminId ? findAdmin(adminId) : null
-  const adminPackages = packages.filter(
-    (p) => p.adminId === adminId && p.active !== false,
-  )
+  const adminPackages = packages.filter((p) => p.adminId === adminId && p.active !== false)
 
   const platformPackages = adminPackages.filter((p) => p.type === "platform")
   const bundlePackages = adminPackages.filter((p) => p.type === "bundle")
@@ -88,9 +87,7 @@ export default function AdminPublicProfilePage() {
     comparison.toggle(pkgId)
   }
 
-  const handleSubmitOffer = async (
-    offerData: Omit<CustomOffer, "id" | "createdAt">,
-  ) => {
+  const handleSubmitOffer = async (offerData: Omit<CustomOffer, "id" | "createdAt">) => {
     await submitOffer(offerData)
     setOfferSent(true)
     setTimeout(() => setOfferSent(false), 3000)
@@ -184,9 +181,7 @@ export default function AdminPublicProfilePage() {
                 </h1>
                 <div className="flex items-center gap-2 mb-2">
                   <Stars rating={admin.rating} />
-                  <span className="text-sm font-bold text-[#0f172a]">
-                    {admin.rating}
-                  </span>
+                  <span className="text-sm font-bold text-[#0f172a]">{admin.rating}</span>
                   <span className="text-xs text-[#94a3b8]">
                     ({admin.reviews} {tr.market.reviews})
                   </span>
@@ -247,11 +242,7 @@ export default function AdminPublicProfilePage() {
         ].map((tab) => (
           <button
             key={tab.id}
-            onClick={() =>
-              setActiveTab(
-                tab.id as "profile" | "packages" | "custom" | "reviews",
-              )
-            }
+            onClick={() => setActiveTab(tab.id as "profile" | "packages" | "custom" | "reviews")}
             className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all btn-press ${
               activeTab === tab.id
                 ? "bg-[#1e3a5f] text-white shadow-sm"
@@ -284,9 +275,7 @@ export default function AdminPublicProfilePage() {
         </div>
       )}
 
-      {activeTab === "profile" && (
-        <ProfileTab admin={admin!} lang={lang} tr={tr} />
-      )}
+      {activeTab === "profile" && <ProfileTab admin={admin!} lang={lang} tr={tr} />}
 
       {activeTab === "packages" && (
         <PackagesTab

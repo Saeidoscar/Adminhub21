@@ -1,11 +1,5 @@
 import { useState, useEffect, createContext, useContext } from "react"
-import {
-  useLocation,
-  useNavigate,
-  Navigate,
-  Routes,
-  Route,
-} from "react-router-dom"
+import { useLocation, useNavigate, Navigate, Routes, Route } from "react-router-dom"
 import { t, type Lang } from "./i18n"
 import { Icon } from "./components/layout/Icon"
 import { Sidebar } from "./components/layout/Sidebar"
@@ -40,7 +34,25 @@ import { isDemoMode } from "./lib/demo-mode"
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 type Role = "employer" | "admin" | "super_admin"
-type Page = "dashboard" | "marketplace" | "toolsRental" | "editors" | "vibeCoders" | "skills" | "contracts" | "contractsHistory" | "tickets" | "ai" | "profile" | "packages" | "compare" | "adminUsers" | "adminContent" | "adminTickets" | "adminWorkspace" | "adminPortfolio"
+type Page =
+  | "dashboard"
+  | "marketplace"
+  | "toolsRental"
+  | "editors"
+  | "vibeCoders"
+  | "skills"
+  | "contracts"
+  | "contractsHistory"
+  | "tickets"
+  | "ai"
+  | "profile"
+  | "packages"
+  | "compare"
+  | "adminUsers"
+  | "adminContent"
+  | "adminTickets"
+  | "adminWorkspace"
+  | "adminPortfolio"
 
 interface AppCtx {
   lang: Lang
@@ -48,7 +60,7 @@ interface AppCtx {
   role: Role
   page: Page
   setPage: (p: Page) => void
-  tr: typeof t["en"]
+  tr: (typeof t)["en"]
   dir: "ltr" | "rtl"
 }
 
@@ -65,17 +77,14 @@ export const useApp = () => useContext(Ctx)
 
 // ─── Route metadata ──────────────────────────────────────────────────────────
 
-const ROUTE_META: Record<string, { page: Page titleKey?: string }> = {
+const ROUTE_META: Record<string, { page: Page; titleKey?: string }> = {
   "/marketplace": { page: "marketplace", titleKey: "marketplace" },
   "/tools-rental": { page: "toolsRental", titleKey: "toolsRental" },
   "/editors": { page: "editors", titleKey: "editors" },
   "/vibe-coders": { page: "vibeCoders", titleKey: "vibeCoders" },
   "/skills": { page: "skills", titleKey: "skills" },
   "/contracts": { page: "contracts", titleKey: "contracts" },
-  "/contracts/history": {
-    page: "contractsHistory",
-    titleKey: "contractsHistory",
-  },
+  "/contracts/history": { page: "contractsHistory", titleKey: "contractsHistory" },
   "/tickets": { page: "tickets", titleKey: "tickets" },
   "/packages": { page: "packages", titleKey: "packages" },
   "/admin-users": { page: "adminUsers", titleKey: "adminUsers" },
@@ -92,13 +101,13 @@ const ROUTE_META: Record<string, { page: Page titleKey?: string }> = {
 function getPageMeta(
   pathname: string,
   lang: Lang,
-  tr: typeof t["en"],
-): { page: Page title: string } {
+  tr: (typeof t)["en"],
+): { page: Page; title: string } {
   const exactMatch = ROUTE_META[pathname]
   if (exactMatch) {
     const meta = exactMatch
     const title = meta.titleKey
-      ? tr.nav[(meta.titleKey as keyof typeof tr.nav)] || tr.nav.dashboard
+      ? tr.nav[meta.titleKey as keyof typeof tr.nav] || tr.nav.dashboard
       : tr.nav.dashboard
     return { page: meta.page, title }
   }
@@ -158,7 +167,7 @@ export default function App() {
 
   const dir = lang === "fa" ? "rtl" : "ltr"
   const tr = t[lang]
-  const role = user?.role as Role || "employer"
+  const role = (user?.role as Role) || "employer"
 
   const { page, title: pageTitle } = getPageMeta(pathname, lang, tr)
 
@@ -177,31 +186,11 @@ export default function App() {
     ...(role === "admin"
       ? [
           { id: "packages" as Page, icon: "package", label: tr.nav.packages },
-          {
-            id: "adminUsers" as Page,
-            icon: "users",
-            label: tr.adminUsers.title,
-          },
-          {
-            id: "adminContent" as Page,
-            icon: "edit",
-            label: tr.adminContent.title,
-          },
-          {
-            id: "adminTickets" as Page,
-            icon: "tickets",
-            label: tr.adminTickets.title,
-          },
-          {
-            id: "adminWorkspace" as Page,
-            icon: "dashboard",
-            label: tr.adminWorkspace.title,
-          },
-          {
-            id: "adminPortfolio" as Page,
-            icon: "image",
-            label: tr.adminPortfolio.title,
-          },
+          { id: "adminUsers" as Page, icon: "users", label: tr.adminUsers.title },
+          { id: "adminContent" as Page, icon: "edit", label: tr.adminContent.title },
+          { id: "adminTickets" as Page, icon: "tickets", label: tr.adminTickets.title },
+          { id: "adminWorkspace" as Page, icon: "dashboard", label: tr.adminWorkspace.title },
+          { id: "adminPortfolio" as Page, icon: "image", label: tr.adminPortfolio.title },
         ]
       : []),
     ...(role === "employer"
@@ -295,13 +284,9 @@ export default function App() {
               lang={lang}
               onToggleLang={() => setLang(lang === "fa" ? "en" : "fa")}
               onToggleMobileMenu={() => setMobileMenuOpen(true)}
-              userName={
-                lang === "fa" ? user?.nameFa || "علی" : user?.nameEn || "Ali"
-              }
+              userName={lang === "fa" ? user?.nameFa || "علی" : user?.nameEn || "Ali"}
               userInitial={
-                lang === "fa"
-                  ? user?.nameFa?.charAt(0) || "ع"
-                  : user?.nameEn?.charAt(0) || "A"
+                lang === "fa" ? user?.nameFa?.charAt(0) || "ع" : user?.nameEn?.charAt(0) || "A"
               }
               theme={theme}
               onToggleTheme={toggleTheme}

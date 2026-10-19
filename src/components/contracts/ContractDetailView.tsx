@@ -34,17 +34,13 @@ export default function ContractDetailView({
           {tr.common?.back || "Back"}
         </button>
         <h1 className="text-2xl font-bold text-[#0f172a]">{contract.code}</h1>
-        <p className="text-[#64748b] mt-1">
-          {isFa ? "جزئیات قرارداد" : "Contract Details"}
-        </p>
+        <p className="text-[#64748b] mt-1">{isFa ? "جزئیات قرارداد" : "Contract Details"}</p>
       </div>
 
       <div className="bg-white rounded-2xl border border-[#e2e8f0] p-6 mb-6">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <div className="text-sm text-[#64748b]">
-              {isFa ? "وضعیت" : "Status"}
-            </div>
+            <div className="text-sm text-[#64748b]">{isFa ? "وضعیت" : "Status"}</div>
             <span
               className={`inline-block mt-1 px-3 py-1 rounded-full text-xs font-semibold ${contractStatusColor(contract.status)}`}
             >
@@ -52,9 +48,7 @@ export default function ContractDetailView({
             </span>
           </div>
           <div className="text-left">
-            <div className="text-sm text-[#64748b]">
-              {isFa ? "مبلغ" : "Amount"}
-            </div>
+            <div className="text-sm text-[#64748b]">{isFa ? "مبلغ" : "Amount"}</div>
             <div className="text-base font-bold text-[#1e3a5f]">
               {contractAmountDisplay(contract, lang)}
             </div>
@@ -63,55 +57,29 @@ export default function ContractDetailView({
 
         <div className="grid sm:grid-cols-2 gap-4 mb-4">
           <div>
-            <div className="text-xs text-[#64748b] mb-1">
-              {isFa ? "کارفرما" : "Employer"}
-            </div>
-            <div className="text-sm font-semibold text-[#0f172a]">
-              {contract.employerName}
-            </div>
+            <div className="text-xs text-[#64748b] mb-1">{isFa ? "کارفرما" : "Employer"}</div>
+            <div className="text-sm font-semibold text-[#0f172a]">{contract.employerName}</div>
           </div>
           <div>
-            <div className="text-xs text-[#64748b] mb-1">
-              {isFa ? "ادمین" : "Admin"}
-            </div>
-            <div className="text-sm font-semibold text-[#0f172a]">
-              {contract.adminNameEn}
-            </div>
+            <div className="text-xs text-[#64748b] mb-1">{isFa ? "ادمین" : "Admin"}</div>
+            <div className="text-sm font-semibold text-[#0f172a]">{contract.adminNameEn}</div>
           </div>
           <div>
-            <div className="text-xs text-[#64748b] mb-1">
-              {isFa ? "پلتفرم" : "Platform"}
-            </div>
+            <div className="text-xs text-[#64748b] mb-1">{isFa ? "پلتفرم" : "Platform"}</div>
             <div className="text-sm font-semibold text-[#0f172a] capitalize">
               {contract.platform}
             </div>
           </div>
           <div>
-            <div className="text-xs text-[#64748b] mb-1">
-              {isFa ? "بیمه" : "Insurance"}
-            </div>
+            <div className="text-xs text-[#64748b] mb-1">{isFa ? "بیمه" : "Insurance"}</div>
             <div className="text-sm font-semibold text-[#0f172a]">
-              {contract.hasInsurance
-                ? isFa
-                  ? "بله"
-                  : "Yes"
-                : isFa
-                  ? "خیر"
-                  : "No"}
+              {contract.hasInsurance ? (isFa ? "بله" : "Yes") : isFa ? "خیر" : "No"}
             </div>
           </div>
           <div>
-            <div className="text-xs text-[#64748b] mb-1">
-              {isFa ? "جایگزین" : "Substitute"}
-            </div>
+            <div className="text-xs text-[#64748b] mb-1">{isFa ? "جایگزین" : "Substitute"}</div>
             <div className="text-sm font-semibold text-[#0f172a]">
-              {contract.hasSubstitute
-                ? isFa
-                  ? "بله"
-                  : "خیر"
-                : isFa
-                  ? "خیر"
-                  : "No"}
+              {contract.hasSubstitute ? (isFa ? "بله" : "خیر") : isFa ? "خیر" : "No"}
             </div>
           </div>
           {contract.startDate && (
@@ -119,19 +87,13 @@ export default function ContractDetailView({
               <div className="text-xs text-[#64748b] mb-1">
                 {isFa ? "تاریخ شروع" : "Start Date"}
               </div>
-              <div className="text-sm font-semibold text-[#0f172a]">
-                {contract.startDate}
-              </div>
+              <div className="text-sm font-semibold text-[#0f172a]">{contract.startDate}</div>
             </div>
           )}
           {contract.endDate && (
             <div>
-              <div className="text-xs text-[#64748b] mb-1">
-                {isFa ? "تاریخ پایان" : "End Date"}
-              </div>
-              <div className="text-sm font-semibold text-[#0f172a]">
-                {contract.endDate}
-              </div>
+              <div className="text-xs text-[#64748b] mb-1">{isFa ? "تاریخ پایان" : "End Date"}</div>
+              <div className="text-sm font-semibold text-[#0f172a]">{contract.endDate}</div>
             </div>
           )}
         </div>

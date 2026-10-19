@@ -7,12 +7,7 @@ interface CardProps {
   padding?: "none" | "sm" | "md" | "lg"
 }
 
-export function Card({
-  children,
-  className = "",
-  hover = false,
-  padding = "md",
-}: CardProps) {
+export function Card({ children, className = "", hover = false, padding = "md" }: CardProps) {
   const paddingClasses = {
     none: "",
     sm: "p-4",

@@ -59,15 +59,11 @@ export interface ListToolsQuery {
 export async function listTools(query: ListToolsQuery = {}): Promise<Tool[]> {
   const params = new URLSearchParams()
   if (query.category) params.set("category", query.category)
-  if (typeof query.popular === "boolean")
-    params.set("popular", String(query.popular))
-  if (typeof query.minRating === "number")
-    params.set("minRating", String(query.minRating))
+  if (typeof query.popular === "boolean") params.set("popular", String(query.popular))
+  if (typeof query.minRating === "number") params.set("minRating", String(query.minRating))
   if (query.search) params.set("search", query.search)
   const qs = params.toString()
-  const payload = await apiFetch<Record<string, unknown>>(
-    `/api/catalog/tools${qs ? `?${qs}` : ""}`,
-  )
+  const payload = await apiFetch<Record<string, unknown>>(`/api/catalog/tools${qs ? `?${qs}` : ""}`)
   return unwrapList<Tool>(payload, "tools")
 }
 
@@ -77,13 +73,10 @@ export interface ListEditorsQuery {
   search?: string
 }
 
-export async function listEditors(
-  query: ListEditorsQuery = {},
-): Promise<Editor[]> {
+export async function listEditors(query: ListEditorsQuery = {}): Promise<Editor[]> {
   const params = new URLSearchParams()
   if (query.specialty) params.set("specialty", query.specialty)
-  if (typeof query.minRating === "number")
-    params.set("minRating", String(query.minRating))
+  if (typeof query.minRating === "number") params.set("minRating", String(query.minRating))
   if (query.search) params.set("search", query.search)
   const qs = params.toString()
   const payload = await apiFetch<Record<string, unknown>>(
@@ -98,13 +91,10 @@ export interface ListVibeCodersQuery {
   search?: string
 }
 
-export async function listVibeCoders(
-  query: ListVibeCodersQuery = {},
-): Promise<VibeCoder[]> {
+export async function listVibeCoders(query: ListVibeCodersQuery = {}): Promise<VibeCoder[]> {
   const params = new URLSearchParams()
   if (query.stack) params.set("stack", query.stack)
-  if (typeof query.minRating === "number")
-    params.set("minRating", String(query.minRating))
+  if (typeof query.minRating === "number") params.set("minRating", String(query.minRating))
   if (query.search) params.set("search", query.search)
   const qs = params.toString()
   const payload = await apiFetch<Record<string, unknown>>(

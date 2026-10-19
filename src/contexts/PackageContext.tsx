@@ -1,11 +1,4 @@
-import {
-  createContext,
-  useContext,
-  ReactNode,
-  useState,
-  useCallback,
-  useEffect,
-} from "react"
+import { createContext, useContext, ReactNode, useState, useCallback, useEffect } from "react"
 import type {
   AdminProfile,
   ContractPackage,
@@ -23,11 +16,7 @@ import {
   listPackages,
   updatePackage as updatePackageApi,
 } from "../lib/api"
-import {
-  findPackage,
-  packagesByAdmin,
-  packagesByPlatform,
-} from "../domain/package"
+import { findPackage, packagesByAdmin, packagesByPlatform } from "../domain/package"
 
 export interface PackageContextValue {
   admins: AdminProfile[]
@@ -42,9 +31,7 @@ export interface PackageContextValue {
   ) => Promise<ContractPackage>
   updatePackage: (pkg: ContractPackage) => Promise<ContractPackage>
   deletePackage: (id: string) => Promise<void>
-  submitOffer: (
-    offer: Omit<CustomOffer, "id" | "createdAt">,
-  ) => Promise<CustomOffer>
+  submitOffer: (offer: Omit<CustomOffer, "id" | "createdAt">) => Promise<CustomOffer>
   offers: CustomOffer[]
   comparison: {
     selected: Set<string>
@@ -95,10 +82,7 @@ export function PackageProvider({ children }: { children: ReactNode }) {
 
   const refresh = useCallback(async () => {
     try {
-      const [nextAdmins, nextPackages] = await Promise.all([
-        listAdminProfiles(),
-        listPackages(),
-      ])
+      const [nextAdmins, nextPackages] = await Promise.all([listAdminProfiles(), listPackages()])
       setAdmins(nextAdmins)
       setPackages(nextPackages)
     } catch (error) {
@@ -135,16 +119,11 @@ export function PackageProvider({ children }: { children: ReactNode }) {
     [],
   )
 
-  const updatePackage = useCallback(
-    async (pkg: ContractPackage): Promise<ContractPackage> => {
-      const updated = await updatePackageApi(pkg.id, pkg)
-      setPackages((list) =>
-        list.map((item) => (item.id === pkg.id ? updated : item)),
-      )
-      return updated
-    },
-    [],
-  )
+  const updatePackage = useCallback(async (pkg: ContractPackage): Promise<ContractPackage> => {
+    const updated = await updatePackageApi(pkg.id, pkg)
+    setPackages((list) => list.map((item) => (item.id === pkg.id ? updated : item)))
+    return updated
+  }, [])
 
   const deletePackage = useCallback(async (id: string): Promise<void> => {
     await deletePackageApi(id)
@@ -152,9 +131,7 @@ export function PackageProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const submitOffer = useCallback(
-    async (
-      input: Omit<CustomOffer, "id" | "createdAt">,
-    ): Promise<CustomOffer> => {
+    async (input: Omit<CustomOffer, "id" | "createdAt">): Promise<CustomOffer> => {
       const offer = await createOffer(input)
       setOffers((list) => [offer, ...list])
       return offer
@@ -172,14 +149,10 @@ export function PackageProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const clear = useCallback(() => setSelected(new Set()), [])
-  const add = useCallback(
-    (id: string) => setSelected((prev) => new Set(prev).add(id)),
-    [],
-  )
+  const add = useCallback((id: string) => setSelected((prev) => new Set(prev).add(id)), [])
   const has = useCallback((id: string) => selected.has(id), [selected])
   const admin = useCallback(
-    (id: string | number) =>
-      admins.find((item) => String(item.id) === String(id)),
+    (id: string | number) => admins.find((item) => String(item.id) === String(id)),
     [admins],
   )
   const pkg = useCallback((id: string) => findPackage(packages, id), [packages])
@@ -208,7 +181,5 @@ export function PackageProvider({ children }: { children: ReactNode }) {
     comparison: { selected, toggle, clear, add, has },
   }
 
-  return (
-    <PackageContext.Provider value={value}>{children}</PackageContext.Provider>
-  )
+  return <PackageContext.Provider value={value}>{children}</PackageContext.Provider>
 }

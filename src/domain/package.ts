@@ -1,9 +1,4 @@
-import type {
-  ContractPackage,
-  PlatformKey,
-  PlatformConfig,
-  AdminProfile,
-} from "@adminhub/shared"
+import type { ContractPackage, PlatformKey, PlatformConfig, AdminProfile } from "@adminhub/shared"
 import { TOMAN_PER_MILLION } from "../lib/constants"
 
 export function filterPackagesForAdmin(
@@ -17,9 +12,7 @@ export function filterPackagesForPlatform(
   packages: ContractPackage[],
   platform: PlatformKey,
 ): ContractPackage[] {
-  return packages.filter(
-    (p) => p.platforms.includes(platform) && p.active !== false,
-  )
+  return packages.filter((p) => p.platforms.includes(platform) && p.active !== false)
 }
 
 export function filterPackagesByType(
@@ -60,10 +53,7 @@ export function getPackageAdmin(
 
 export { getPackageAdmin as findAdmin }
 
-export function findPackage(
-  packages: ContractPackage[],
-  id: string,
-): ContractPackage | undefined {
+export function findPackage(packages: ContractPackage[], id: string): ContractPackage | undefined {
   return packages.find((p) => p.id === id)
 }
 
@@ -80,7 +70,7 @@ export function getPlatformConfig(
 export function computeContractAmounts(
   amount: string,
   currency: "toman" | "usd",
-): { amountToman: number amountUSD: number } {
+): { amountToman: number; amountUSD: number } {
   const amountVal = Number(amount)
   if (isNaN(amountVal) || amountVal < 0) {
     return { amountToman: 0, amountUSD: 0 }
@@ -91,9 +81,6 @@ export function computeContractAmounts(
   }
 }
 
-export function computeDeliveryTime(
-  durationMonths: string,
-  lang: "en" | "fa",
-): string {
+export function computeDeliveryTime(durationMonths: string, lang: "en" | "fa"): string {
   return `${durationMonths} ${lang === "fa" ? "ماه" : "months"}`
 }

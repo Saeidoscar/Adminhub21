@@ -27,9 +27,7 @@ export class ErrorBoundary extends Component<Props, State> {
           <div className="p-6 lg:p-8 max-w-6xl mx-auto fade-in">
             <div className="bg-white rounded-2xl border border-[#e2e8f0] p-12 text-center">
               <div className="text-4xl mb-4">⚠️</div>
-              <div className="font-bold text-[#0f172a] mb-1 text-lg">
-                Something went wrong
-              </div>
+              <div className="font-bold text-[#0f172a] mb-1 text-lg">Something went wrong</div>
               <div className="text-sm text-[#64748b] mb-4">
                 Please refresh the page or try again later.
               </div>

@@ -1,11 +1,4 @@
-import {
-  createContext,
-  useContext,
-  ReactNode,
-  useState,
-  useCallback,
-  useEffect,
-} from "react"
+import { createContext, useContext, ReactNode, useState, useCallback, useEffect } from "react"
 import type { SafeUser } from "@adminhub/shared"
 import {
   getAuthToken,
@@ -204,8 +197,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     async function bootstrap() {
       if (isDemoMode) {
         const signedOut =
-          typeof window !== "undefined" &&
-          window.localStorage.getItem(DEMO_SIGNED_OUT_KEY) === "1"
+          typeof window !== "undefined" && window.localStorage.getItem(DEMO_SIGNED_OUT_KEY) === "1"
 
         if (signedOut) {
           if (!cancelled) setIsLoading(false)

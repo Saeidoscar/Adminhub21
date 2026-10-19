@@ -297,8 +297,7 @@ export const en = {
     loading: "Loading AI...",
     loadingConversation: "Loading conversation...",
     noModelsTitle: "No models available",
-    noModelsSub:
-      "There are no AI models configured. Please contact an administrator.",
+    noModelsSub: "There are no AI models configured. Please contact an administrator.",
     noMessages: "No messages yet. Start the conversation below.",
     inputPlaceholder: "Type a message...",
     dismiss: "Dismiss",
@@ -306,8 +305,7 @@ export const en = {
     rename: "Rename",
     deleteConfirm: "Delete this conversation?",
     delete: "Delete",
-    placeholder:
-      "Ask anything about hiring, contracts, or growing your services...",
+    placeholder: "Ask anything about hiring, contracts, or growing your services...",
     send: "Send",
     suggestions: "Try asking:",
     clearChat: "Clear Chat",
@@ -329,8 +327,7 @@ export const en = {
     title: "My Profile",
     sub: "Build your specialist profile to attract employers",
     bio: "Bio",
-    bioPh:
-      "Tell employers about your experience, expertise, and what makes you unique...",
+    bioPh: "Tell employers about your experience, expertise, and what makes you unique...",
     skills: "Skills & Expertise",
     platforms: "Platforms I Manage",
     portfolio: "Portfolio & Samples",
@@ -433,8 +430,7 @@ export const en = {
     selectAdmin: "Select Admin",
     selectPackage: "Select Package",
     noComparison: "No packages selected for comparison",
-    noComparisonSub:
-      "Select packages from the admin page or marketplace to compare.",
+    noComparisonSub: "Select packages from the admin page or marketplace to compare.",
     browsePackages: "Browse Packages",
   },
   customOffer: {
@@ -459,12 +455,10 @@ export const en = {
     priceUSD: "Proposed Price (USD)",
     priceUSDPh: "e.g. 108",
     message: "Message",
-    messagePh:
-      "Describe your requirements, ask questions, or request additional customizations...",
+    messagePh: "Describe your requirements, ask questions, or request additional customizations...",
     sendOffer: "Send Custom Offer",
     offerSent: "Offer Sent Successfully",
-    offerSentSub:
-      "The admin will review your custom offer and respond shortly.",
+    offerSentSub: "The admin will review your custom offer and respond shortly.",
     sendAnother: "Send Another Offer",
   },
   adminPage: {

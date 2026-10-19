@@ -131,12 +131,7 @@ export const profilesSeed = [
       "Brand designer and content creator focused on premium visual identities. I design feeds that convert browsers into loyal customers.",
     bioFa:
       "طراح برند و تولیدکننده محتوا با تمرکز بر هویت بصری لوکس. فیدهایی طراحی می‌کنم که بازدیدکننده را به مشتری وفادار تبدیل می‌کند.",
-    skillsEn: [
-      "brand identity",
-      "visual design",
-      "motion graphics",
-      "copywriting",
-    ],
+    skillsEn: ["brand identity", "visual design", "motion graphics", "copywriting"],
     skillsFa: ["هویت برند", "طراحی بصری", "موشن گرافیک", "کپی‌رایتینگ"],
   },
   {
@@ -155,12 +150,7 @@ export const profilesSeed = [
       "Performance marketer running paid campaigns on Instagram and Torob. Every campaign starts with a clear funnel and ends with a weekly profit report.",
     bioFa:
       "مارکتر عملکردی با کمپین‌های تبلیغاتی در اینستاگرام و ترب. هر کمپین با قیف فروش مشخص شروع می‌شود و با گزارش سود هفتگی پایان می‌یابد.",
-    skillsEn: [
-      "paid ads",
-      "conversion funnels",
-      "marketplace SEO",
-      "reporting",
-    ],
+    skillsEn: ["paid ads", "conversion funnels", "marketplace SEO", "reporting"],
     skillsFa: ["تبلیغات پولی", "قیف تبدیل", "سئوی مارکت‌پلیس", "گزارش‌دهی"],
   },
   {
@@ -179,12 +169,7 @@ export const profilesSeed = [
       "Community builder for Telegram channels and WhatsApp commerce. I automate support flows, grow engaged members and keep response times under 10 minutes.",
     bioFa:
       "سازنده جامعه برای کانال‌های تلگرام و تجارت واتساپ. جریان‌های پشتیبانی را خودکار می‌کنم، اعضای فعال را رشد می‌دهم و زمان پاسخ را زیر ۱۰ دقیقه نگه می‌دارم.",
-    skillsEn: [
-      "telegram bots",
-      "whatsapp business",
-      "chat support",
-      "broadcasts",
-    ],
+    skillsEn: ["telegram bots", "whatsapp business", "chat support", "broadcasts"],
     skillsFa: ["ربات تلگرام", "واتساپ بیزینس", "پشتیبانی چت", "ارسال گروهی"],
   },
   {
@@ -222,12 +207,7 @@ export const profilesSeed = [
       "B2B content strategist on LinkedIn. I turn founder expertise into a repeatable content engine that generates qualified inbound leads.",
     bioFa:
       "استراتژیست محتوای B2B در لینکدین. تخصص بنیان‌گذاران را به یک موتور محتوای تکرارپذیر تبدیل می‌کنم که سرنخ‌های واجد شرایط جذب می‌کند.",
-    skillsEn: [
-      "linkedin growth",
-      "thought leadership",
-      "lead generation",
-      "B2B copy",
-    ],
+    skillsEn: ["linkedin growth", "thought leadership", "lead generation", "B2B copy"],
     skillsFa: ["رشد لینکدین", "رهبری فکری", "جذب سرنخ", "کپی B2B"],
   },
   {
@@ -246,12 +226,7 @@ export const profilesSeed = [
       "Full-funnel social media support for small businesses. From catalogue setup to daily stories, I keep every channel active and on-brand.",
     bioFa:
       "پشتیبانی کامل شبکه‌های اجتماعی برای کسب‌وکارهای کوچک. از راه‌اندازی کاتالوگ تا استوری روزانه، همه کانال‌ها را فعال و هم‌راستا نگه می‌دارم.",
-    skillsEn: [
-      "whatsapp catalog",
-      "story design",
-      "customer support",
-      "scheduling",
-    ],
+    skillsEn: ["whatsapp catalog", "story design", "customer support", "scheduling"],
     skillsFa: ["کاتالوگ واتساپ", "طراحی استوری", "پشتیبانی مشتری", "زمان‌بندی"],
   },
   {
@@ -270,18 +245,8 @@ export const profilesSeed = [
       "Marketplace growth lead for established Iranian brands. I combine catalogue intelligence with Instagram storytelling to lift repeat purchases.",
     bioFa:
       "مدیر رشد مارکت‌پلیس برای برندهای شناخته‌شده ایرانی. هوشمندی کاتالوگ را با روایت اینستاگرام ترکیب می‌کنم تا خرید تکراری افزایش یابد.",
-    skillsEn: [
-      "marketplace strategy",
-      "catalog intelligence",
-      "retention",
-      "brand storytelling",
-    ],
-    skillsFa: [
-      "استراتژی مارکت‌پلیس",
-      "هوشمندی کاتالوگ",
-      "حفظ مشتری",
-      "روایت برند",
-    ],
+    skillsEn: ["marketplace strategy", "catalog intelligence", "retention", "brand storytelling"],
+    skillsFa: ["استراتژی مارکت‌پلیس", "هوشمندی کاتالوگ", "حفظ مشتری", "روایت برند"],
   },
 ]
 
@@ -359,7 +324,7 @@ const pkg = (
   description: string,
   type: "platform" | "bundle",
   platforms: string[],
-  platformConfigs: { platform: string settings: Record<string, unknown> }[],
+  platformConfigs: { platform: string; settings: Record<string, unknown> }[],
   priceToman: number,
   priceUSD: number,
   billingCycle: "monthly" | "project" | "hourly",
@@ -566,11 +531,7 @@ export const packagesSeed = [
     [
       {
         platform: "instagram",
-        settings: {
-          adManagement: true,
-          analyticsReport: true,
-          postsPerMonth: 0,
-        },
+        settings: { adManagement: true, analyticsReport: true, postsPerMonth: 0 },
       },
     ],
     21000000,
@@ -599,8 +560,7 @@ export const offersSeed = [
     deliveryTime: "6 hours",
     startDate: "2026-11-01",
     endDate: "2027-05-01",
-    message:
-      "We are launching a new collection in November and need the full team aligned.",
+    message: "We are launching a new collection in November and need the full team aligned.",
     createdAt: "2026-10-11T10:24:00.000Z",
   },
 ]
@@ -674,8 +634,7 @@ export const contractsSeed = [
     hasSubstitute: true,
     termClause:
       "Three-month Telegram community care contract. Payments settled monthly in advance.",
-    substituteClause:
-      "Substitute coverage available within 24 hours for planned absences.",
+    substituteClause: "Substitute coverage available within 24 hours for planned absences.",
     startDate: "2026-05-01",
     endDate: "2026-08-01",
     signedByEmployerAt: "2026-04-28T10:00:00.000Z",
@@ -760,8 +719,7 @@ export const reviewsSeed = [
     employerName: "Hamid Karami",
     contractId: null,
     rating: 4,
-    comment:
-      "Great strategy work. Would love even more frequent reporting during busy campaigns.",
+    comment: "Great strategy work. Would love even more frequent reporting during busy campaigns.",
     createdAt: "2026-08-27T17:45:00.000Z",
   },
   {
@@ -773,8 +731,7 @@ export const reviewsSeed = [
     employerName: "Ali Rezaei",
     contractId: null,
     rating: 5,
-    comment:
-      "The feed makeover gave our brand a completely new personality. Highly recommended.",
+    comment: "The feed makeover gave our brand a completely new personality. Highly recommended.",
     createdAt: "2026-09-30T10:05:00.000Z",
   },
   {
@@ -786,8 +743,7 @@ export const reviewsSeed = [
     employerName: "Ali Rezaei",
     contractId: "contract-3",
     rating: 5,
-    comment:
-      "Our Telegram support time dropped from hours to minutes. Parvin is a machine.",
+    comment: "Our Telegram support time dropped from hours to minutes. Parvin is a machine.",
     createdAt: "2026-08-04T09:35:00.000Z",
   },
 ]
@@ -1009,8 +965,7 @@ export const tasksSeed = [
     id: "task-1",
     caseId: "case-1",
     title: "Finalise teaser storyboard",
-    description:
-      "Lock the 7-day teaser storyboard and share it with the client for approval.",
+    description: "Lock the 7-day teaser storyboard and share it with the client for approval.",
     assignedTo: "user-admin-1",
     status: "done",
     priority: "high",
@@ -1022,8 +977,7 @@ export const tasksSeed = [
     id: "task-2",
     caseId: "case-1",
     title: "Shoot launch reels",
-    description:
-      "Two-day studio shoot for six launch reels and product stills.",
+    description: "Two-day studio shoot for six launch reels and product stills.",
     assignedTo: "user-admin-1",
     status: "in_progress",
     priority: "urgent",
@@ -1035,8 +989,7 @@ export const tasksSeed = [
     id: "task-3",
     caseId: "case-1",
     title: "Schedule launch-day posts",
-    description:
-      "Queue the launch-day carousel, stories and Telegram announcement.",
+    description: "Queue the launch-day carousel, stories and Telegram announcement.",
     assignedTo: null,
     status: "todo",
     priority: "high",
@@ -1061,8 +1014,7 @@ export const tasksSeed = [
     id: "task-5",
     caseId: "case-2",
     title: "Rewrite top 20 product titles",
-    description:
-      "Rewrite the 20 highest-impression titles using the new keyword sheet.",
+    description: "Rewrite the 20 highest-impression titles using the new keyword sheet.",
     assignedTo: "user-admin-2",
     status: "blocked",
     priority: "high",
@@ -1074,8 +1026,7 @@ export const tasksSeed = [
     id: "task-6",
     caseId: "case-3",
     title: "Train support team on quick replies",
-    description:
-      "Run a 60-minute onboarding session and hand over the reply playbook.",
+    description: "Run a 60-minute onboarding session and hand over the reply playbook.",
     assignedTo: "user-admin-1",
     status: "in_progress",
     priority: "medium",
@@ -1429,8 +1380,7 @@ export const aiModelsSeed = [
     provider: "openai",
     code: "gpt-4o",
     name: "GPT-4o",
-    description:
-      "Balanced reasoning and writing quality for proposals and contract drafts.",
+    description: "Balanced reasoning and writing quality for proposals and contract drafts.",
     inputCost: 0.0025,
     outputCost: 0.01,
     contextWindow: 128000,
@@ -1519,8 +1469,7 @@ export const aiMessagesSeed = [
     id: "aim-3",
     conversationId: "conv-1",
     role: "user",
-    content:
-      "What budget should I reserve for paid promotion on top of the retainer?",
+    content: "What budget should I reserve for paid promotion on top of the retainer?",
     createdAt: "2026-10-14T09:08:00.000Z",
   },
   {
@@ -1542,8 +1491,7 @@ export const aiMessagesSeed = [
     id: "aim-5",
     conversationId: "conv-2",
     role: "user",
-    content:
-      "Does this substitute clause protect me if the specialist disappears mid-campaign?",
+    content: "Does this substitute clause protect me if the specialist disappears mid-campaign?",
     createdAt: "2026-10-10T15:30:00.000Z",
   },
   {
@@ -1567,8 +1515,7 @@ export const toolsSeed = [
   {
     id: "tool-1",
     name: "Later",
-    descEn:
-      "Visual planner and auto-publisher for Instagram, TikTok and Pinterest.",
+    descEn: "Visual planner and auto-publisher for Instagram, TikTok and Pinterest.",
     descFa: "برنامه‌ریز بصری و انتشار خودکار برای اینستاگرام، تیک‌تاک و پینترست.",
     category: "scheduling",
     icon: "calendar",
@@ -1596,8 +1543,7 @@ export const toolsSeed = [
   {
     id: "tool-3",
     name: "Metricool",
-    descEn:
-      "Cross-channel analytics, competitor tracking and automated reports.",
+    descEn: "Cross-channel analytics, competitor tracking and automated reports.",
     descFa: "تحلیل چندکاناله، رصد رقبا و گزارش‌های خودکار.",
     category: "analytics",
     icon: "chart",
@@ -1611,8 +1557,7 @@ export const toolsSeed = [
   {
     id: "tool-4",
     name: "ManyChat",
-    descEn:
-      "Automated DM flows that turn comments into conversations and sales.",
+    descEn: "Automated DM flows that turn comments into conversations and sales.",
     descFa: "جریان‌های خودکار دایرکت که کامنت را به مکالمه و فروش تبدیل می‌کند.",
     category: "automation",
     icon: "bot",
@@ -1668,8 +1613,7 @@ export const editorsSeed = [
     rateUSD: 430,
     bioEn:
       "Reels editor for lifestyle and beauty brands. Captions, sound design and colour included.",
-    bioFa:
-      "تدوینگر ریلز برای برندهای سبک زندگی و زیبایی. زیرنویس، طراحی صدا و رنگ‌بندی شامل خدمات.",
+    bioFa: "تدوینگر ریلز برای برندهای سبک زندگی و زیبایی. زیرنویس، طراحی صدا و رنگ‌بندی شامل خدمات.",
     createdAt,
   },
   {
@@ -1700,8 +1644,7 @@ export const editorsSeed = [
     delivery: "72 hours",
     rateToman: 14000000,
     rateUSD: 335,
-    bioEn:
-      "Podcast editing, chaptering and clip packages for social distribution.",
+    bioEn: "Podcast editing, chaptering and clip packages for social distribution.",
     bioFa: "تدوین پادکست، فصل‌بندی و بسته کلیپ برای انتشار در شبکه‌های اجتماعی.",
     createdAt,
   },
@@ -1752,8 +1695,7 @@ export const vibeCodersSeed = [
     rateToman: 84000000,
     rateUSD: 2000,
     delivery: "10 days",
-    bioEn:
-      "Product engineer focused on fast MVP delivery and clean design systems.",
+    bioEn: "Product engineer focused on fast MVP delivery and clean design systems.",
     bioFa: "مهندس محصول با تمرکز بر تحویل سریع MVP و سیستم طراحی تمیز.",
     createdAt,
   },
@@ -1769,8 +1711,7 @@ export const vibeCodersSeed = [
     rateToman: 68000000,
     rateUSD: 1620,
     delivery: "3 weeks",
-    bioEn:
-      "Backend specialist for payment flows, admin panels and integrations.",
+    bioEn: "Backend specialist for payment flows, admin panels and integrations.",
     bioFa: "متخصص بک‌اند برای جریان پرداخت، پنل مدیریت و یکپارچه‌سازی.",
     createdAt,
   },

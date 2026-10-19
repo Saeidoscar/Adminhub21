@@ -21,9 +21,7 @@ export function buildContractPdfLines(form: {
     "CONTRACT",
     "=".repeat(40),
     "",
-    `Employer: ${form.employerName}${
-      form.employerCo ? ` (${form.employerCo})` : ""
-    }`,
+    `Employer: ${form.employerName}${form.employerCo ? ` (${form.employerCo})` : ""}`,
     `Admin: ${admin}`,
     `Platform: ${form.platform}`,
     `Project: ${form.projectTitle}`,

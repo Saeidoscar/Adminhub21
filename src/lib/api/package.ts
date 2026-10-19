@@ -12,9 +12,7 @@ export interface ListPackagesQuery {
   search?: string
 }
 
-export async function listPackages(
-  query: ListPackagesQuery = {},
-): Promise<ContractPackage[]> {
+export async function listPackages(query: ListPackagesQuery = {}): Promise<ContractPackage[]> {
   const params = new URLSearchParams()
 
   if (query.platforms && query.platforms.length > 0) {
@@ -79,18 +77,15 @@ export async function updatePackage(
 
   input: Partial<Omit<ContractPackage, "id" | "createdAt" | "updatedAt">>,
 ): Promise<ContractPackage> {
-  const payload = await apiFetch<Record<string, unknown>>(
-    `/api/packages/${id}`,
-    {
-      method: "PUT",
+  const payload = await apiFetch<Record<string, unknown>>(`/api/packages/${id}`, {
+    method: "PUT",
 
-      body: JSON.stringify({
-        ...input,
+    body: JSON.stringify({
+      ...input,
 
-        adminId: undefined,
-      }),
-    },
-  )
+      adminId: undefined,
+    }),
+  })
 
   const pkg = unwrapItem<ContractPackage>(payload, "package")
 

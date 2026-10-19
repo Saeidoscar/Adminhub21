@@ -17,14 +17,13 @@ export type Role = "employer" | "admin" | "super_admin"
 
 interface AuthPageProps {
   lang: Lang
-  tr: typeof t["en"] & typeof t["fa"]
+  tr: (typeof t)["en"] & (typeof t)["fa"]
   dir: "ltr" | "rtl"
   setLang: (lang: Lang) => void
 }
 
 export default function AuthPage({ lang, tr, dir, setLang }: AuthPageProps) {
-  const { user, login, register, sendOtp, loginWithOtp, isLoading, loginDemo } =
-    useAuth()
+  const { user, login, register, sendOtp, loginWithOtp, isLoading, loginDemo } = useAuth()
   const navigate = useNavigate()
 
   const [tab, setTab] = useState<"login" | "register">("login")
@@ -163,9 +162,7 @@ export default function AuthPage({ lang, tr, dir, setLang }: AuthPageProps) {
       const user = await loginWithOtp(result.data.phone, result.data.code)
       navigate("/dashboard")
     } catch (err) {
-      setLocalError(
-        err instanceof Error ? err.message : "OTP verification failed",
-      )
+      setLocalError(err instanceof Error ? err.message : "OTP verification failed")
     } finally {
       setIsSubmitting(false)
     }
@@ -180,8 +177,7 @@ export default function AuthPage({ lang, tr, dir, setLang }: AuthPageProps) {
         <div
           className="absolute inset-0 opacity-10"
           style={{
-            backgroundImage:
-              "radial-gradient(circle at 20% 50%, #fff 1px, transparent 1px)",
+            backgroundImage: "radial-gradient(circle at 20% 50%, #fff 1px, transparent 1px)",
             backgroundSize: "32px 32px",
           }}
         />
@@ -192,12 +188,8 @@ export default function AuthPage({ lang, tr, dir, setLang }: AuthPageProps) {
             </div>
             <span className="text-xl font-bold">{tr.brand}</span>
           </div>
-          <h1 className="text-4xl font-bold leading-tight mb-4">
-            {tr.auth.heroTitle}
-          </h1>
-          <p className="text-blue-200 text-lg leading-relaxed">
-            {tr.auth.heroSub}
-          </p>
+          <h1 className="text-4xl font-bold leading-tight mb-4">{tr.auth.heroTitle}</h1>
+          <p className="text-blue-200 text-lg leading-relaxed">{tr.auth.heroSub}</p>
         </div>
 
         <div className="relative z-10 space-y-4">
@@ -220,7 +212,7 @@ export default function AuthPage({ lang, tr, dir, setLang }: AuthPageProps) {
                 <Icon name={item.icon} size={16} className="text-white" />
               </div>
               <span className="text-blue-100 text-sm">
-                {tr.auth[(item.textKey as keyof typeof tr.auth)]}
+                {tr.auth[item.textKey as keyof typeof tr.auth]}
               </span>
             </div>
           ))}
@@ -323,9 +315,7 @@ export default function AuthPage({ lang, tr, dir, setLang }: AuthPageProps) {
                           {r === "employer" ? tr.auth.employer : tr.auth.admin}
                         </div>
                         <div className="text-xs text-[#64748b] leading-snug">
-                          {r === "employer"
-                            ? tr.auth.employerDesc
-                            : tr.auth.adminDesc}
+                          {r === "employer" ? tr.auth.employerDesc : tr.auth.adminDesc}
                         </div>
                       </button>
                     ))}
@@ -346,9 +336,7 @@ export default function AuthPage({ lang, tr, dir, setLang }: AuthPageProps) {
                         className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] bg-white text-sm text-[#0f172a] placeholder-[#94a3b8] focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all"
                       />
                       {errors.nameEn && (
-                        <p className="text-xs text-rose-600 mt-1">
-                          {errors.nameEn}
-                        </p>
+                        <p className="text-xs text-rose-600 mt-1">{errors.nameEn}</p>
                       )}
                     </div>
                   )}
@@ -364,11 +352,7 @@ export default function AuthPage({ lang, tr, dir, setLang }: AuthPageProps) {
                       className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] bg-white text-sm text-[#0f172a] placeholder-[#94a3b8] focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all"
                       dir="ltr"
                     />
-                    {errors.email && (
-                      <p className="text-xs text-rose-600 mt-1">
-                        {errors.email}
-                      </p>
-                    )}
+                    {errors.email && <p className="text-xs text-rose-600 mt-1">{errors.email}</p>}
                   </div>
                   <div>
                     <div className="flex items-center justify-between mb-1.5">
@@ -390,9 +374,7 @@ export default function AuthPage({ lang, tr, dir, setLang }: AuthPageProps) {
                       dir="ltr"
                     />
                     {errors.password && (
-                      <p className="text-xs text-rose-600 mt-1">
-                        {errors.password}
-                      </p>
+                      <p className="text-xs text-rose-600 mt-1">{errors.password}</p>
                     )}
                   </div>
                 </div>
@@ -404,9 +386,7 @@ export default function AuthPage({ lang, tr, dir, setLang }: AuthPageProps) {
                 )}
 
                 <button
-                  onClick={
-                    tab === "login" ? handleEmailLogin : handleEmailRegister
-                  }
+                  onClick={tab === "login" ? handleEmailLogin : handleEmailRegister}
                   disabled={isSubmitting}
                   className="w-full py-3.5 rounded-xl bg-[#1e3a5f] text-white font-bold text-sm hover:bg-[#122435] transition-colors shadow-md btn-press mb-4 disabled:opacity-60"
                 >
@@ -450,12 +430,8 @@ export default function AuthPage({ lang, tr, dir, setLang }: AuthPageProps) {
           {/* Phone / OTP tab */}
           {authMode === "phone" && (
             <div className="fade-in">
-              <h2 className="text-2xl font-bold text-[#0f172a] mb-1">
-                {tr.auth.otp.phoneTitle}
-              </h2>
-              <p className="text-[#64748b] text-sm mb-8">
-                {tr.auth.otp.phoneSub}
-              </p>
+              <h2 className="text-2xl font-bold text-[#0f172a] mb-1">{tr.auth.otp.phoneTitle}</h2>
+              <p className="text-[#64748b] text-sm mb-8">{tr.auth.otp.phoneSub}</p>
 
               <div className="space-y-4 mb-6">
                 <div>
@@ -471,9 +447,7 @@ export default function AuthPage({ lang, tr, dir, setLang }: AuthPageProps) {
                     dir="ltr"
                     disabled={otpSent}
                   />
-                  {errors.phone && (
-                    <p className="text-xs text-rose-600 mt-1">{errors.phone}</p>
-                  )}
+                  {errors.phone && <p className="text-xs text-rose-600 mt-1">{errors.phone}</p>}
                 </div>
 
                 {otpSent && (
@@ -484,20 +458,12 @@ export default function AuthPage({ lang, tr, dir, setLang }: AuthPageProps) {
                     <input
                       type="text"
                       value={otpCode}
-                      onChange={(e) =>
-                        setOtpCode(
-                          e.target.value.replace(/\D/g, "").slice(0, 6),
-                        )
-                      }
+                      onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
                       placeholder={tr.auth.otp.codePh}
                       className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] bg-white text-sm text-[#0f172a] placeholder-[#94a3b8] focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all"
                       dir="ltr"
                     />
-                    {errors.code && (
-                      <p className="text-xs text-rose-600 mt-1">
-                        {errors.code}
-                      </p>
-                    )}
+                    {errors.code && <p className="text-xs text-rose-600 mt-1">{errors.code}</p>}
                   </div>
                 )}
 
@@ -523,9 +489,7 @@ export default function AuthPage({ lang, tr, dir, setLang }: AuthPageProps) {
                     disabled={isSubmitting || otpCode.length !== 6}
                     className="w-full py-3.5 rounded-xl bg-[#1e3a5f] text-white font-bold text-sm hover:bg-[#122435] transition-colors shadow-md btn-press disabled:opacity-60"
                   >
-                    {isSubmitting
-                      ? tr.auth.otp.verifying
-                      : tr.auth.otp.verifyCode}
+                    {isSubmitting ? tr.auth.otp.verifying : tr.auth.otp.verifyCode}
                   </button>
                 )}
 

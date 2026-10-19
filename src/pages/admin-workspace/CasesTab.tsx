@@ -12,7 +12,7 @@ import {
 import { ListSkeleton } from "../../components/ui/Skeleton"
 import { CASE_STATUS, PRIORITY, fmtDate } from "./utils"
 
-function CasesTab({ tr, lang, isFa }: { tr: Tr lang: Lang isFa: boolean }) {
+function CasesTab({ tr, lang, isFa }: { tr: Tr; lang: Lang; isFa: boolean }) {
   const [cases, setCases] = useState<CaseRow[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -57,9 +57,7 @@ function CasesTab({ tr, lang, isFa }: { tr: Tr lang: Lang isFa: boolean }) {
   }, [])
 
   const employerLabel = (caseRow: CaseRow) => {
-    const match = employers.find(
-      (employer) => employer.id === caseRow.employerId,
-    )
+    const match = employers.find((employer) => employer.id === caseRow.employerId)
     if (match) {
       return isFa ? match.nameFa || match.nameEn : match.nameEn || match.nameFa
     }
@@ -67,13 +65,7 @@ function CasesTab({ tr, lang, isFa }: { tr: Tr lang: Lang isFa: boolean }) {
   }
 
   const resetForm = () => {
-    setForm({
-      title: "",
-      description: "",
-      priority: "medium",
-      employerId: "",
-      tags: "",
-    })
+    setForm({ title: "", description: "", priority: "medium", employerId: "", tags: "" })
   }
 
   const handleCreate = async (e: React.FormEvent) => {
@@ -147,9 +139,7 @@ function CasesTab({ tr, lang, isFa }: { tr: Tr lang: Lang isFa: boolean }) {
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-bold text-[#0f172a]">
-          {tr.adminWorkspace.cases}
-        </h2>
+        <h2 className="text-lg font-bold text-[#0f172a]">{tr.adminWorkspace.cases}</h2>
         <button
           onClick={() => {
             setShowForm((v) => !v)
@@ -189,9 +179,7 @@ function CasesTab({ tr, lang, isFa }: { tr: Tr lang: Lang isFa: boolean }) {
             </label>
             <textarea
               value={form.description}
-              onChange={(e) =>
-                setForm({ ...form, description: e.target.value })
-              }
+              onChange={(e) => setForm({ ...form, description: e.target.value })}
               rows={3}
               className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all resize-none"
             />
@@ -206,27 +194,19 @@ function CasesTab({ tr, lang, isFa }: { tr: Tr lang: Lang isFa: boolean }) {
               </label>
               <select
                 value={form.employerId}
-                onChange={(e) =>
-                  setForm({ ...form, employerId: e.target.value })
-                }
+                onChange={(e) => setForm({ ...form, employerId: e.target.value })}
                 required
                 className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all bg-white"
               >
-                <option value="">
-                  {isFa ? "کارفرما را انتخاب کنید" : "Select an employer"}
-                </option>
+                <option value="">{isFa ? "کارفرما را انتخاب کنید" : "Select an employer"}</option>
                 {employers.map((employer) => (
                   <option key={employer.id} value={employer.id}>
-                    {isFa
-                      ? employer.nameFa || employer.nameEn
-                      : employer.nameEn || employer.nameFa}
+                    {isFa ? employer.nameFa || employer.nameEn : employer.nameEn || employer.nameFa}
                   </option>
                 ))}
               </select>
               {errors.employerId && (
-                <p className="text-xs text-rose-600 mt-1">
-                  {errors.employerId}
-                </p>
+                <p className="text-xs text-rose-600 mt-1">{errors.employerId}</p>
               )}
             </div>
             <div>
@@ -268,16 +248,11 @@ function CasesTab({ tr, lang, isFa }: { tr: Tr lang: Lang isFa: boolean }) {
       {loading ? (
         <ListSkeleton count={3} />
       ) : cases.length === 0 ? (
-        <div className="text-center py-16 text-[#64748b]">
-          {tr.adminWorkspace.noCases}
-        </div>
+        <div className="text-center py-16 text-[#64748b]">{tr.adminWorkspace.noCases}</div>
       ) : (
         <div className="space-y-3">
           {cases.map((c) => (
-            <div
-              key={c.id}
-              className="bg-white rounded-2xl border border-[#e2e8f0] p-5"
-            >
+            <div key={c.id} className="bg-white rounded-2xl border border-[#e2e8f0] p-5">
               {editingId === c.id ? (
                 <div className="space-y-4">
                   <div>
@@ -286,9 +261,7 @@ function CasesTab({ tr, lang, isFa }: { tr: Tr lang: Lang isFa: boolean }) {
                     </label>
                     <input
                       value={editForm.title}
-                      onChange={(e) =>
-                        setEditForm({ ...editForm, title: e.target.value })
-                      }
+                      onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
                       className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all"
                     />
                   </div>
@@ -298,12 +271,7 @@ function CasesTab({ tr, lang, isFa }: { tr: Tr lang: Lang isFa: boolean }) {
                     </label>
                     <textarea
                       value={editForm.description}
-                      onChange={(e) =>
-                        setEditForm({
-                          ...editForm,
-                          description: e.target.value,
-                        })
-                      }
+                      onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
                       rows={3}
                       className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all resize-none"
                     />
@@ -315,9 +283,7 @@ function CasesTab({ tr, lang, isFa }: { tr: Tr lang: Lang isFa: boolean }) {
                       </label>
                       <select
                         value={editForm.priority}
-                        onChange={(e) =>
-                          setEditForm({ ...editForm, priority: e.target.value })
-                        }
+                        onChange={(e) => setEditForm({ ...editForm, priority: e.target.value })}
                         className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] transition-all bg-white"
                       >
                         {Object.entries(PRIORITY).map(([key, val]) => (
@@ -333,9 +299,7 @@ function CasesTab({ tr, lang, isFa }: { tr: Tr lang: Lang isFa: boolean }) {
                       </label>
                       <select
                         value={editForm.status}
-                        onChange={(e) =>
-                          setEditForm({ ...editForm, status: e.target.value })
-                        }
+                        onChange={(e) => setEditForm({ ...editForm, status: e.target.value })}
                         className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] transition-all bg-white"
                       >
                         {Object.entries(CASE_STATUS).map(([key, val]) => (
@@ -351,9 +315,7 @@ function CasesTab({ tr, lang, isFa }: { tr: Tr lang: Lang isFa: boolean }) {
                       </label>
                       <input
                         value={editForm.tags}
-                        onChange={(e) =>
-                          setEditForm({ ...editForm, tags: e.target.value })
-                        }
+                        onChange={(e) => setEditForm({ ...editForm, tags: e.target.value })}
                         className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all"
                       />
                     </div>
@@ -377,9 +339,7 @@ function CasesTab({ tr, lang, isFa }: { tr: Tr lang: Lang isFa: boolean }) {
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-2 flex-wrap">
-                      <span className="font-bold text-sm text-[#0f172a] truncate">
-                        {c.title}
-                      </span>
+                      <span className="font-bold text-sm text-[#0f172a] truncate">{c.title}</span>
                       <span
                         className={`px-2 py-0.5 rounded-full text-xs font-semibold ${CASE_STATUS[c.status]?.color || "bg-gray-100 text-gray-700"}`}
                       >
@@ -410,9 +370,7 @@ function CasesTab({ tr, lang, isFa }: { tr: Tr lang: Lang isFa: boolean }) {
                         ))}
                       </div>
                     )}
-                    <div className="text-xs text-[#64748b] mt-2">
-                      {fmtDate(c.createdAt)}
-                    </div>
+                    <div className="text-xs text-[#64748b] mt-2">{fmtDate(c.createdAt)}</div>
                   </div>
                   <button
                     onClick={() => startEdit(c)}

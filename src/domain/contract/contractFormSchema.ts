@@ -32,10 +32,7 @@ export function createDefaultContractForm(
     employerCo: lang === "fa" ? "استارتاپ پارسه" : "Parseh Startup",
     adminId: "",
     platform: "instagram",
-    projectTitle:
-      lang === "fa"
-        ? "مدیریت صفحه اینستاگرام برند"
-        : "Brand Instagram Page Management",
+    projectTitle: lang === "fa" ? "مدیریت صفحه اینستاگرام برند" : "Brand Instagram Page Management",
     startDate: "2026-09-01",
     endDate: "2026-12-01",
     description:
@@ -57,9 +54,7 @@ export function createDefaultContractForm(
   }
 }
 
-export function validateContractForm(
-  form: ContractFormValues,
-): Record<string, string> {
+export function validateContractForm(form: ContractFormValues): Record<string, string> {
   const errors: Record<string, string> = {}
   if (!form.employerName.trim()) errors.employerName = "Required"
   if (!form.projectTitle.trim()) errors.projectTitle = "Required"

@@ -58,9 +58,7 @@ export default function WalletPage() {
       setWallet(w)
       setTransactions(txs)
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to load wallet data",
-      )
+      setError(err instanceof Error ? err.message : "Failed to load wallet data")
     } finally {
       setLoading(false)
     }
@@ -84,9 +82,7 @@ export default function WalletPage() {
         currency,
         note: note.trim() || undefined,
       })
-      setSuccess(
-        txType === "deposit" ? tr.dash.depositSuccess : tr.dash.withdrawSuccess,
-      )
+      setSuccess(txType === "deposit" ? tr.dash.depositSuccess : tr.dash.withdrawSuccess)
       setAmountToman("")
       setAmountUSD("")
       setNote("")
@@ -100,9 +96,7 @@ export default function WalletPage() {
   }
 
   const fmtMoney = (toman: number, usd: number) =>
-    isFa
-      ? `${(toman / TOMAN_PER_MILLION).toFixed(1)}M ${tr.common.toman}`
-      : `$${usd}`
+    isFa ? `${(toman / TOMAN_PER_MILLION).toFixed(1)}M ${tr.common.toman}` : `$${usd}`
 
   return (
     <div className="p-6 lg:p-8 max-w-5xl mx-auto fade-in">
@@ -130,9 +124,7 @@ export default function WalletPage() {
       )}
 
       {loading ? (
-        <div className="text-center py-12 text-[#64748b]">
-          {tr.common.loading}
-        </div>
+        <div className="text-center py-12 text-[#64748b]">{tr.common.loading}</div>
       ) : (
         <>
           {/* Balance Cards */}
@@ -142,19 +134,14 @@ export default function WalletPage() {
                 {tr.common.toman} {tr.dash.balance}
               </div>
               <div className="text-3xl font-bold">
-                {wallet
-                  ? (wallet.balanceToman / TOMAN_PER_MILLION).toFixed(1)
-                  : "0"}
-                M
+                {wallet ? (wallet.balanceToman / TOMAN_PER_MILLION).toFixed(1) : "0"}M
               </div>
             </div>
             <div className="bg-gradient-to-br from-emerald-600 to-emerald-800 rounded-2xl p-6 text-white">
               <div className="text-emerald-100 text-xs font-semibold mb-2">
                 {tr.common.usd} {tr.dash.balance}
               </div>
-              <div className="text-3xl font-bold">
-                {wallet ? `$${wallet.balanceUSD}` : "$0"}
-              </div>
+              <div className="text-3xl font-bold">{wallet ? `$${wallet.balanceUSD}` : "$0"}</div>
             </div>
           </div>
 
@@ -183,9 +170,7 @@ export default function WalletPage() {
           {showForm && (
             <div className="bg-white rounded-2xl border border-[#e2e8f0] p-6 mb-6 fade-in">
               <h2 className="font-bold text-[#0f172a] text-lg mb-4">
-                {txType === "deposit"
-                  ? tr.dash.makeDeposit
-                  : tr.dash.makeWithdrawal}
+                {txType === "deposit" ? tr.dash.makeDeposit : tr.dash.makeWithdrawal}
               </h2>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid sm:grid-cols-2 gap-4">
@@ -236,21 +221,10 @@ export default function WalletPage() {
                   />
                 </div>
                 <div className="flex gap-3 pt-2">
-                  <Button
-                    type="submit"
-                    disabled={submitting || (!amountToman && !amountUSD)}
-                  >
-                    {submitting
-                      ? tr.common.loading
-                      : isFa
-                        ? "ثبت تراکنش"
-                        : "Submit Transaction"}
+                  <Button type="submit" disabled={submitting || (!amountToman && !amountUSD)}>
+                    {submitting ? tr.common.loading : isFa ? "ثبت تراکنش" : "Submit Transaction"}
                   </Button>
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    onClick={() => setShowForm(false)}
-                  >
+                  <Button type="button" variant="secondary" onClick={() => setShowForm(false)}>
                     {tr.common.cancel}
                   </Button>
                 </div>
@@ -261,19 +235,13 @@ export default function WalletPage() {
           {/* Transactions */}
           <div className="bg-white rounded-2xl border border-[#e2e8f0] overflow-hidden">
             <div className="px-6 py-4 border-b border-[#e2e8f0]">
-              <h2 className="font-bold text-[#0f172a]">
-                {tr.dash.transactionHistory}
-              </h2>
+              <h2 className="font-bold text-[#0f172a]">{tr.dash.transactionHistory}</h2>
             </div>
             {transactions.length === 0 ? (
               <div className="p-12 text-center">
                 <div className="text-4xl mb-3">📋</div>
-                <div className="font-bold text-[#0f172a] mb-1">
-                  {tr.dash.noTransactions}
-                </div>
-                <div className="text-sm text-[#64748b]">
-                  {tr.dash.noTransactionsSub}
-                </div>
+                <div className="font-bold text-[#0f172a] mb-1">{tr.dash.noTransactions}</div>
+                <div className="text-sm text-[#64748b]">{tr.dash.noTransactionsSub}</div>
               </div>
             ) : (
               <div className="divide-y divide-[#e2e8f0]">
@@ -291,10 +259,7 @@ export default function WalletPage() {
                             : "bg-[#f2f5fa] text-[#64748b]"
                       }`}
                     >
-                      <Icon
-                        name={tx.type === "deposit" ? "arrowDown" : "arrowUp"}
-                        size={18}
-                      />
+                      <Icon name={tx.type === "deposit" ? "arrowDown" : "arrowUp"} size={18} />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-0.5">
@@ -303,27 +268,18 @@ export default function WalletPage() {
                         </span>
                         <span
                           className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
-                            TRANSACTION_STATUS_CLASSES[tx.status] ||
-                            "bg-gray-100 text-gray-600"
+                            TRANSACTION_STATUS_CLASSES[tx.status] || "bg-gray-100 text-gray-600"
                           }`}
                         >
-                          {tr.dash.status[
-                            (tx.status as keyof typeof tr.dash.status)
-                          ] || tx.status}
+                          {tr.dash.status[tx.status as keyof typeof tr.dash.status] || tx.status}
                         </span>
                       </div>
-                      {tx.note && (
-                        <div className="text-xs text-[#64748b] truncate">
-                          {tx.note}
-                        </div>
-                      )}
+                      {tx.note && <div className="text-xs text-[#64748b] truncate">{tx.note}</div>}
                     </div>
                     <div className="text-end">
                       <div
                         className={`text-sm font-bold ${
-                          tx.type === "deposit"
-                            ? "text-emerald-600"
-                            : "text-rose-600"
+                          tx.type === "deposit" ? "text-emerald-600" : "text-rose-600"
                         }`}
                       >
                         {tx.type === "deposit" ? "+" : "-"}
@@ -334,9 +290,7 @@ export default function WalletPage() {
                           : `$${tx.amountUSD}`}
                       </div>
                       <div className="text-xs text-[#94a3b8]">
-                        {new Date(tx.createdAt).toLocaleDateString(
-                          isFa ? "fa-IR" : "en-US",
-                        )}
+                        {new Date(tx.createdAt).toLocaleDateString(isFa ? "fa-IR" : "en-US")}
                       </div>
                     </div>
                   </div>

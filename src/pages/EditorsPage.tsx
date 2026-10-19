@@ -9,20 +9,14 @@ import { photoUrl } from "../lib/photo"
 
 type Specialty = "video" | "photo" | "motion" | "thumbnail"
 
-const SPECIALTY_LABELS: Record<Specialty, { en: string fa: string }> = {
+const SPECIALTY_LABELS: Record<Specialty, { en: string; fa: string }> = {
   video: { en: "Video Editing", fa: "ادیت ویدئو" },
   photo: { en: "Photo Editing", fa: "ادیت عکس" },
   motion: { en: "Motion Graphics", fa: "موشن گرافیک" },
   thumbnail: { en: "Thumbnails", fa: "تامبنیل" },
 }
 
-export default function EditorsPage({
-  tr,
-  lang,
-}: {
-  tr: typeof t["en"]
-  lang: Lang
-}) {
+export default function EditorsPage({ tr, lang }: { tr: (typeof t)["en"]; lang: Lang }) {
   const [editors, setEditors] = useState<Editor[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState("")
@@ -67,9 +61,7 @@ export default function EditorsPage({
   return (
     <div className="p-6 lg:p-8 max-w-6xl mx-auto fade-in">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-[#0f172a]">
-          {tr.editors.title}
-        </h1>
+        <h1 className="text-2xl font-bold text-[#0f172a]">{tr.editors.title}</h1>
         <p className="text-[#64748b] mt-1">{tr.editors.sub}</p>
       </div>
 
@@ -121,12 +113,8 @@ export default function EditorsPage({
                   </span>
                   <div className="flex items-center gap-1.5 mt-1">
                     <Stars rating={editor.rating} />
-                    <span className="text-xs font-bold text-[#0f172a]">
-                      {editor.rating}
-                    </span>
-                    <span className="text-xs text-[#94a3b8]">
-                      ({editor.reviews})
-                    </span>
+                    <span className="text-xs font-bold text-[#0f172a]">{editor.rating}</span>
+                    <span className="text-xs text-[#94a3b8]">({editor.reviews})</span>
                   </div>
                   <span className="inline-flex mt-1.5 px-2.5 py-0.5 rounded-full bg-sky-50 text-sky-700 text-xs font-semibold">
                     {specialtyKey(editor.specialty)}
@@ -151,9 +139,7 @@ export default function EditorsPage({
 
               <div className="border-t border-[#f2f5fa] pt-4 flex items-center justify-between">
                 <div>
-                  <div className="text-xs text-[#64748b]">
-                    {tr.editors.starting}
-                  </div>
+                  <div className="text-xs text-[#64748b]">{tr.editors.starting}</div>
                   <div className="text-base font-bold text-[#1e3a5f]">
                     {isFa
                       ? `${(editor.rateToman / TOMAN_PER_MILLION).toFixed(1)}M ${tr.common.toman}`
@@ -175,9 +161,7 @@ export default function EditorsPage({
       {!loading && filtered.length === 0 && (
         <div className="text-center py-16 text-[#64748b]">
           <div className="text-4xl mb-3">🎬</div>
-          <div className="font-semibold">
-            {isFa ? "نتیجه‌ای یافت نشد" : "No results found"}
-          </div>
+          <div className="font-semibold">{isFa ? "نتیجه‌ای یافت نشد" : "No results found"}</div>
           <div className="text-sm mt-1">
             {isFa ? "فیلترها را تغییر دهید" : "Try adjusting your filters"}
           </div>

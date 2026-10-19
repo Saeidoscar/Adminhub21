@@ -23,19 +23,19 @@ export function DemoRoleSwitcher({
       <span className="px-2.5 text-[10px] font-bold uppercase tracking-wider text-[#94a3b8]">
         {isFa ? "پیش‌نمایش" : "Preview"}
       </span>
-      {([
-        { id: "employer", label: isFa ? "کارفرما" : "Employer" },
-        { id: "admin", label: isFa ? "ادمین" : "Admin" },
-      ] as const).map((item) => {
+      {(
+        [
+          { id: "employer", label: isFa ? "کارفرما" : "Employer" },
+          { id: "admin", label: isFa ? "ادمین" : "Admin" },
+        ] as const
+      ).map((item) => {
         const active = role === item.id
         return (
           <button
             key={item.id}
             onClick={() => loginDemo(item.id)}
             className={`rounded-full px-3 py-1.5 text-xs font-bold transition-colors ${
-              active
-                ? "bg-[#1e3a5f] text-white shadow-sm"
-                : "text-[#64748b] hover:bg-[#f2f5fa]"
+              active ? "bg-[#1e3a5f] text-white shadow-sm" : "text-[#64748b] hover:bg-[#f2f5fa]"
             }`}
           >
             {item.label}

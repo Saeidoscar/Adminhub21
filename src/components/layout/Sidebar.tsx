@@ -17,14 +17,7 @@ interface SidebarProps {
   navItems?: NavItem[]
 }
 
-export function Sidebar({
-  role,
-  onLogout,
-  mobile,
-  onClose,
-  children,
-  navItems,
-}: SidebarProps) {
+export function Sidebar({ role, onLogout, mobile, onClose, children, navItems }: SidebarProps) {
   const location = useLocation()
   const currentPath = location.pathname
 
@@ -43,9 +36,7 @@ export function Sidebar({
   const items = navItems || defaultNavItems
 
   return (
-    <div
-      className={`flex flex-col bg-navy h-full ${mobile ? "w-full" : "w-64"}`}
-    >
+    <div className={`flex flex-col bg-navy h-full ${mobile ? "w-full" : "w-64"}`}>
       <div className="flex items-center justify-between px-6 py-6 border-b border-white/10">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-amber flex items-center justify-center flex-shrink-0">
@@ -63,15 +54,10 @@ export function Sidebar({
       <div className="px-6 py-3 border-b border-white/10">
         <span
           className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${
-            role === "employer"
-              ? "bg-amber/20 text-amber"
-              : "bg-emerald/20 text-emerald"
+            role === "employer" ? "bg-amber/20 text-amber" : "bg-emerald/20 text-emerald"
           }`}
         >
-          <Icon
-            name={role === "employer" ? "marketplace" : "profile"}
-            size={11}
-          />
+          <Icon name={role === "employer" ? "marketplace" : "profile"} size={11} />
           {role === "employer" ? "Employer" : "Admin"}
         </span>
       </div>
@@ -79,9 +65,7 @@ export function Sidebar({
       <nav className="flex-1 px-3 py-4 space-y-1">
         {items.map((item) => {
           const to = `/${item.id === "dashboard" ? "" : item.id}`
-          const isActive =
-            currentPath === to ||
-            (item.id === "dashboard" && currentPath === "/")
+          const isActive = currentPath === to || (item.id === "dashboard" && currentPath === "/")
           return (
             <Link
               key={item.id}
@@ -93,11 +77,7 @@ export function Sidebar({
                   : "text-blue-200 hover:bg-white/10 hover:text-white"
               }`}
             >
-              <div
-                className={`flex-shrink-0 ${
-                  isActive ? "text-amber" : "text-blue-300"
-                }`}
-              >
+              <div className={`flex-shrink-0 ${isActive ? "text-amber" : "text-blue-300"}`}>
                 <Icon name={item.icon} size={18} />
               </div>
               <span className="text-start">{item.label}</span>

@@ -22,16 +22,12 @@ export async function listAdminUsers(query: {
   if (query.role) params.set("role", query.role)
   if (query.search) params.set("search", query.search)
   const qs = params.toString()
-  const payload = await apiFetch<Record<string, unknown>>(
-    `/api/admin/users${qs ? `?${qs}` : ""}`,
-  )
+  const payload = await apiFetch<Record<string, unknown>>(`/api/admin/users${qs ? `?${qs}` : ""}`)
   return unwrapList<AdminUserRow>(payload, "users")
 }
 
 export async function getAdminUser(id: string): Promise<AdminUserRow | null> {
-  const payload = await apiFetch<Record<string, unknown>>(
-    `/api/admin/users/${id}`,
-  )
+  const payload = await apiFetch<Record<string, unknown>>(`/api/admin/users/${id}`)
   return unwrapItem<AdminUserRow>(payload, "user")
 }
 
@@ -45,13 +41,10 @@ export async function updateAdminUser(
     phoneVerified: boolean
   }>,
 ): Promise<AdminUserRow> {
-  const payload = await apiFetch<Record<string, unknown>>(
-    `/api/admin/users/${id}`,
-    {
-      method: "PATCH",
-      body: JSON.stringify(data),
-    },
-  )
+  const payload = await apiFetch<Record<string, unknown>>(`/api/admin/users/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(data),
+  })
   const user = unwrapItem<AdminUserRow>(payload, "user")
   if (!user) {
     throw new Error("Update user response was empty")
@@ -136,13 +129,10 @@ export async function moderateStoryAdmin(
   id: string,
   action: "approve" | "reject" | "archive",
 ): Promise<StoryRow> {
-  const payload = await apiFetch<Record<string, unknown>>(
-    `/api/admin/content/stories/${id}`,
-    {
-      method: "PATCH",
-      body: JSON.stringify({ action }),
-    },
-  )
+  const payload = await apiFetch<Record<string, unknown>>(`/api/admin/content/stories/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify({ action }),
+  })
   const story = unwrapItem<StoryRow>(payload, "story")
   if (!story) {
     throw new Error("Moderate story response was empty")
@@ -154,13 +144,10 @@ export async function moderateBlogAdmin(
   id: string,
   action: "approve" | "reject" | "archive",
 ): Promise<BlogRow> {
-  const payload = await apiFetch<Record<string, unknown>>(
-    `/api/admin/content/blogs/${id}`,
-    {
-      method: "PATCH",
-      body: JSON.stringify({ action }),
-    },
-  )
+  const payload = await apiFetch<Record<string, unknown>>(`/api/admin/content/blogs/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify({ action }),
+  })
   const blog = unwrapItem<BlogRow>(payload, "blog")
   if (!blog) {
     throw new Error("Moderate blog response was empty")
@@ -168,9 +155,7 @@ export async function moderateBlogAdmin(
   return blog
 }
 
-export async function listAdminComments(query: {
-  postType?: string
-}): Promise<CommentRow[]> {
+export async function listAdminComments(query: { postType?: string }): Promise<CommentRow[]> {
   const params = new URLSearchParams()
   if (query.postType) params.set("postType", query.postType)
   const qs = params.toString()
@@ -196,16 +181,12 @@ export async function listAdminTickets(query: {
   if (query.category) params.set("category", query.category)
   if (query.priority) params.set("priority", query.priority)
   const qs = params.toString()
-  const payload = await apiFetch<Record<string, unknown>>(
-    `/api/admin/tickets${qs ? `?${qs}` : ""}`,
-  )
+  const payload = await apiFetch<Record<string, unknown>>(`/api/admin/tickets${qs ? `?${qs}` : ""}`)
   return unwrapList<TicketRow>(payload, "tickets")
 }
 
 export async function getAdminTicket(id: string): Promise<TicketRow | null> {
-  const payload = await apiFetch<Record<string, unknown>>(
-    `/api/admin/tickets/${id}`,
-  )
+  const payload = await apiFetch<Record<string, unknown>>(`/api/admin/tickets/${id}`)
   return unwrapItem<TicketRow>(payload, "ticket")
 }
 
@@ -216,13 +197,10 @@ export async function updateAdminTicket(
     priority?: "low" | "medium" | "high" | "urgent"
   },
 ): Promise<TicketRow> {
-  const payload = await apiFetch<Record<string, unknown>>(
-    `/api/admin/tickets/${id}`,
-    {
-      method: "PATCH",
-      body: JSON.stringify(data),
-    },
-  )
+  const payload = await apiFetch<Record<string, unknown>>(`/api/admin/tickets/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(data),
+  })
   const ticket = unwrapItem<TicketRow>(payload, "ticket")
   if (!ticket) {
     throw new Error("Update ticket response was empty")

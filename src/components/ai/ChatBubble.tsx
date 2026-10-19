@@ -69,10 +69,7 @@ export function ChatBubble({ message }: { message: AiMessageRow }) {
               aria-label={messageCopied ? "Copied" : "Copy message"}
               className="inline-flex items-center gap-1 rounded-full bg-surface px-2 py-0.5 hover:opacity-80"
             >
-              <Icon
-                name={messageCopied ? "check" : "copy"}
-                className="h-3 w-3"
-              />
+              <Icon name={messageCopied ? "check" : "copy"} className="h-3 w-3" />
               {messageCopied ? "Copied" : "Copy"}
             </button>
             {message.provider && (
@@ -82,9 +79,7 @@ export function ChatBubble({ message }: { message: AiMessageRow }) {
               </span>
             )}
             {message.modelCode && (
-              <span className="rounded-full bg-surface px-2 py-0.5">
-                {message.modelCode}
-              </span>
+              <span className="rounded-full bg-surface px-2 py-0.5">{message.modelCode}</span>
             )}
             {message.promptTokens !== undefined && (
               <span className="rounded-full bg-surface px-2 py-0.5">

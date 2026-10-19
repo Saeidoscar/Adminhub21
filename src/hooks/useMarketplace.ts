@@ -1,10 +1,5 @@
 import { useState, useEffect, useCallback } from "react"
-import type {
-  ContractRow,
-  Contract,
-  FavoriteRow,
-  AdminProfile,
-} from "@adminhub/shared"
+import type { ContractRow, Contract, FavoriteRow, AdminProfile } from "@adminhub/shared"
 import {
   listContracts,
   getContract,
@@ -43,37 +38,22 @@ export function useContracts() {
     void loadContracts()
   }, [loadContracts])
 
-  const updateStatus = useCallback(
-    async (contractId: string, status: string) => {
-      const validStatuses = [
-        "active",
-        "pending",
-        "completed",
-        "disputed",
-      ] as const
-      const safeStatus = validStatuses.includes(
-        status as typeof validStatuses[number],
-      )
-        ? status as typeof validStatuses[number]
-        : undefined
-      const updated = await updateContractStatus(contractId, {
-        status: safeStatus,
-      })
-      setContracts((prev) =>
-        prev.map((c) => (c.id === contractId ? updated : c)),
-      )
-      return updated
-    },
-    [],
-  )
+  const updateStatus = useCallback(async (contractId: string, status: string) => {
+    const validStatuses = ["active", "pending", "completed", "disputed"] as const
+    const safeStatus = validStatuses.includes(status as (typeof validStatuses)[number])
+      ? (status as (typeof validStatuses)[number])
+      : undefined
+    const updated = await updateContractStatus(contractId, {
+      status: safeStatus,
+    })
+    setContracts((prev) => prev.map((c) => (c.id === contractId ? updated : c)))
+    return updated
+  }, [])
 
-  const viewContract = useCallback(
-    async (id: string): Promise<Contract | null> => {
-      const contract = await getContract(id)
-      return contract
-    },
-    [],
-  )
+  const viewContract = useCallback(async (id: string): Promise<Contract | null> => {
+    const contract = await getContract(id)
+    return contract
+  }, [])
 
   return {
     contracts,
@@ -135,8 +115,7 @@ export function useFavorites() {
 export function useMarketplace(filters: MarketplaceFilters) {
   const [admins, setAdmins] = useState<AdminProfile[]>([])
   const [loading, setLoading] = useState(true)
-  const { loadFavorites, favorites, favLoading, toggleFavorite, isFavorite } =
-    useFavorites()
+  const { loadFavorites, favorites, favLoading, toggleFavorite, isFavorite } = useFavorites()
 
   useEffect(() => {
     let cancelled = false

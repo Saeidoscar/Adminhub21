@@ -17,11 +17,7 @@ export function photoUrl(
   if (!photo) return undefined
   const value = photo.trim()
   if (!value) return undefined
-  if (
-    /^(https?:)?\/\//i.test(value) ||
-    value.startsWith("data:") ||
-    value.startsWith("/")
-  ) {
+  if (/^(https?:)?\/\//i.test(value) || value.startsWith("data:") || value.startsWith("/")) {
     return value
   }
   return `${UNSPLASH_HOST}/${value.replace(/^\/+/, "")}?w=${width}&h=${height}&fit=crop&auto=format`

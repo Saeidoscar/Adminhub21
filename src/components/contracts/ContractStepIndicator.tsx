@@ -6,11 +6,7 @@ interface ContractStepIndicatorProps {
   steps: string[]
 }
 
-export function ContractStepIndicator({
-  step,
-  totalSteps,
-  steps,
-}: ContractStepIndicatorProps) {
+export function ContractStepIndicator({ step, totalSteps, steps }: ContractStepIndicatorProps) {
   return (
     <div className="flex items-center mb-8">
       {steps.map((label, i) => (
@@ -36,11 +32,7 @@ export function ContractStepIndicator({
             </div>
           </div>
           {i < steps.length - 1 && (
-            <div
-              className={`step-connector mx-1 mt-0 sm:-mt-4 ${
-                i + 1 < step ? "active" : ""
-              }`}
-            />
+            <div className={`step-connector mx-1 mt-0 sm:-mt-4 ${i + 1 < step ? "active" : ""}`} />
           )}
         </div>
       ))}

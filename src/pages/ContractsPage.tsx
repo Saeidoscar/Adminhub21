@@ -11,19 +11,10 @@ import ContractDetailView from "../components/contracts/ContractDetailView"
 
 const STATUS_OPTIONS = ["active", "pending", "completed", "disputed"] as const
 
-export default function ContractsPage({
-  tr,
-  lang,
-}: {
-  tr: typeof t["en"]
-  lang: Lang
-}) {
-  const { contracts, loading, error, updateStatus, viewContract } =
-    useContracts()
+export default function ContractsPage({ tr, lang }: { tr: (typeof t)["en"]; lang: Lang }) {
+  const { contracts, loading, error, updateStatus, viewContract } = useContracts()
   const [updatingId, setUpdatingId] = useState<string | null>(null)
-  const [selectedContract, setSelectedContract] = useState<Contract | null>(
-    null,
-  )
+  const [selectedContract, setSelectedContract] = useState<Contract | null>(null)
 
   const isFa = lang === "fa"
 
@@ -68,9 +59,7 @@ export default function ContractsPage({
           {isFa ? "قراردادهای من" : "My Contracts"}
         </h1>
         <p className="text-[#64748b] mt-1">
-          {isFa
-            ? "مشاهده و مدیریت قراردادهای خود"
-            : "View and manage your contracts"}
+          {isFa ? "مشاهده و مدیریت قراردادهای خود" : "View and manage your contracts"}
         </p>
       </div>
 
@@ -87,13 +76,9 @@ export default function ContractsPage({
       ) : contracts.length === 0 ? (
         <div className="text-center py-16 text-[#64748b]">
           <div className="text-4xl mb-3">📄</div>
-          <div className="font-semibold">
-            {isFa ? "هنوز قراردادی ندارید" : "No contracts yet"}
-          </div>
+          <div className="font-semibold">{isFa ? "هنوز قراردادی ندارید" : "No contracts yet"}</div>
           <div className="text-sm mt-1">
-            {isFa
-              ? "قرارداد خود را ایجاد کنید"
-              : "Create a contract to get started"}
+            {isFa ? "قرارداد خود را ایجاد کنید" : "Create a contract to get started"}
           </div>
         </div>
       ) : (
@@ -130,25 +115,17 @@ export default function ContractsPage({
                     className="border-b border-[#f2f5fa] hover:bg-[#f8fafc] transition-colors"
                   >
                     <td className="px-4 py-3">
-                      <span className="font-mono font-bold text-[#0f172a]">
-                        {contract.code}
-                      </span>
+                      <span className="font-mono font-bold text-[#0f172a]">{contract.code}</span>
                     </td>
-                    <td className="px-4 py-3 text-[#0f172a]">
-                      {contract.adminNameEn}
-                    </td>
-                    <td className="px-4 py-3 capitalize text-[#0f172a]">
-                      {contract.platform}
-                    </td>
+                    <td className="px-4 py-3 text-[#0f172a]">{contract.adminNameEn}</td>
+                    <td className="px-4 py-3 capitalize text-[#0f172a]">{contract.platform}</td>
                     <td className="px-4 py-3 text-[#0f172a]">
                       {contractAmountDisplay(contract, lang)}
                     </td>
                     <td className="px-4 py-3">
                       <select
                         value={contract.status}
-                        onChange={(e) =>
-                          handleStatusChange(contract.id, e.target.value)
-                        }
+                        onChange={(e) => handleStatusChange(contract.id, e.target.value)}
                         disabled={updatingId === contract.id}
                         className={`px-2 py-1 rounded-lg text-xs font-semibold border-0 cursor-pointer disabled:cursor-wait ${contractStatusColor(contract.status)}`}
                       >

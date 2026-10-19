@@ -2,11 +2,7 @@ import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { t, type Lang } from "../i18n"
 import { Icon } from "../components/layout/Icon"
-import {
-  createContract,
-  listAdminProfiles,
-  type AdminProfile,
-} from "../lib/api"
+import { createContract, listAdminProfiles, type AdminProfile } from "../lib/api"
 import {
   contractFormSchema,
   createDefaultContractForm,
@@ -31,7 +27,7 @@ export default function ContractGenerator({
   lang,
   initialContract,
 }: {
-  tr: typeof t["en"] & typeof t["fa"]
+  tr: (typeof t)["en"] & (typeof t)["fa"]
   lang: Lang
   initialContract?: {
     id: string
@@ -63,9 +59,7 @@ export default function ContractGenerator({
     return (
       <div className="p-6 lg:p-8 max-w-3xl mx-auto fade-in">
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-[#0f172a]">
-            {tr.contract.title}
-          </h1>
+          <h1 className="text-2xl font-bold text-[#0f172a]">{tr.contract.title}</h1>
           <p className="text-[#64748b] mt-1">{tr.contract.sub}</p>
         </div>
 
@@ -73,9 +67,7 @@ export default function ContractGenerator({
           <div className="flex items-center justify-between mb-6">
             <div>
               <div className="text-sm text-[#64748b]">Contract Code</div>
-              <div className="text-lg font-bold text-[#0f172a]">
-                {initialContract.code}
-              </div>
+              <div className="text-lg font-bold text-[#0f172a]">{initialContract.code}</div>
             </div>
             <span
               className={`px-3 py-1 rounded-full text-xs font-semibold ${
@@ -163,9 +155,7 @@ export default function ContractGenerator({
 
           {initialContract.termClause && (
             <div className="mb-4">
-              <div className="text-xs text-[#64748b] mb-1">
-                {tr.contract.termClause}
-              </div>
+              <div className="text-xs text-[#64748b] mb-1">{tr.contract.termClause}</div>
               <p className="text-sm text-[#0f172a] bg-[#f8fafc] rounded-lg p-3">
                 {initialContract.termClause}
               </p>
@@ -174,9 +164,7 @@ export default function ContractGenerator({
 
           {initialContract.substituteClause && (
             <div className="mb-4">
-              <div className="text-xs text-[#64748b] mb-1">
-                {tr.contract.subClause}
-              </div>
+              <div className="text-xs text-[#64748b] mb-1">{tr.contract.subClause}</div>
               <p className="text-sm text-[#0f172a] bg-emerald-50 rounded-lg p-3">
                 {initialContract.substituteClause}
               </p>
@@ -205,11 +193,7 @@ export default function ContractGenerator({
   const [step, setStep] = useState(1)
   const totalSteps = 5
   const [form, setForm] = useState(() =>
-    createDefaultContractForm(
-      lang,
-      tr.contract.termDefault,
-      tr.contract.subDefault,
-    ),
+    createDefaultContractForm(lang, tr.contract.termDefault, tr.contract.subDefault),
   )
 
   useEffect(() => {
@@ -241,8 +225,7 @@ export default function ContractGenerator({
     }
   }, [])
 
-  const setF = (k: string, v: string | boolean) =>
-    setForm((f) => ({ ...f, [k]: v }))
+  const setF = (k: string, v: string | boolean) => setForm((f) => ({ ...f, [k]: v }))
   const steps = [
     tr.contract.step1,
     tr.contract.step2,
@@ -297,9 +280,7 @@ export default function ContractGenerator({
             {lang === "fa" ? "قرارداد با موفقیت ایجاد شد" : "Contract Created"}
           </div>
           <div className="text-sm text-[#64748b]">
-            {lang === "fa"
-              ? "در حال انتقال به لیست قراردادها..."
-              : "Redirecting to contracts..."}
+            {lang === "fa" ? "در حال انتقال به لیست قراردادها..." : "Redirecting to contracts..."}
           </div>
         </div>
       </div>
@@ -309,24 +290,16 @@ export default function ContractGenerator({
   return (
     <div className="p-6 lg:p-8 max-w-3xl mx-auto fade-in">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-[#0f172a]">
-          {tr.contract.title}
-        </h1>
+        <h1 className="text-2xl font-bold text-[#0f172a]">{tr.contract.title}</h1>
         <p className="text-[#64748b] mt-1">{tr.contract.sub}</p>
       </div>
 
-      <ContractStepIndicator
-        step={step}
-        totalSteps={totalSteps}
-        steps={steps}
-      />
+      <ContractStepIndicator step={step} totalSteps={totalSteps} steps={steps} />
 
       <div className="bg-white rounded-2xl border border-[#e2e8f0] p-6 mb-6">
         {step === 1 && (
           <div className="space-y-5 fade-in">
-            <h2 className="font-bold text-[#0f172a] text-lg">
-              {tr.contract.step1}
-            </h2>
+            <h2 className="font-bold text-[#0f172a] text-lg">{tr.contract.step1}</h2>
             <div className="grid sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-semibold text-[#0f172a] mb-1.5">
@@ -338,9 +311,7 @@ export default function ContractGenerator({
                   className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all"
                 />
                 {errors.employerName && (
-                  <p className="text-xs text-rose-600 mt-1">
-                    {errors.employerName}
-                  </p>
+                  <p className="text-xs text-rose-600 mt-1">{errors.employerName}</p>
                 )}
               </div>
               <div>
@@ -391,9 +362,7 @@ export default function ContractGenerator({
 
         {step === 2 && (
           <div className="space-y-5 fade-in">
-            <h2 className="font-bold text-[#0f172a] text-lg">
-              {tr.contract.step2}
-            </h2>
+            <h2 className="font-bold text-[#0f172a] text-lg">{tr.contract.step2}</h2>
             <div>
               <label className="block text-sm font-semibold text-[#0f172a] mb-1.5">
                 {tr.contract.projectTitle}
@@ -404,9 +373,7 @@ export default function ContractGenerator({
                 className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all"
               />
               {errors.projectTitle && (
-                <p className="text-xs text-rose-600 mt-1">
-                  {errors.projectTitle}
-                </p>
+                <p className="text-xs text-rose-600 mt-1">{errors.projectTitle}</p>
               )}
             </div>
             <div className="grid sm:grid-cols-2 gap-4">
@@ -447,9 +414,7 @@ export default function ContractGenerator({
                 className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all resize-none"
               />
               {errors.description && (
-                <p className="text-xs text-rose-600 mt-1">
-                  {errors.description}
-                </p>
+                <p className="text-xs text-rose-600 mt-1">{errors.description}</p>
               )}
             </div>
             <div>
@@ -469,9 +434,7 @@ export default function ContractGenerator({
 
         {step === 3 && (
           <div className="space-y-5 fade-in">
-            <h2 className="font-bold text-[#0f172a] text-lg">
-              {tr.contract.step3}
-            </h2>
+            <h2 className="font-bold text-[#0f172a] text-lg">{tr.contract.step3}</h2>
             <div>
               <label className="block text-sm font-semibold text-[#0f172a] mb-2">
                 {tr.contract.payType}
@@ -503,9 +466,7 @@ export default function ContractGenerator({
                   className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all"
                   dir="ltr"
                 />
-                {errors.amount && (
-                  <p className="text-xs text-rose-600 mt-1">{errors.amount}</p>
-                )}
+                {errors.amount && <p className="text-xs text-rose-600 mt-1">{errors.amount}</p>}
               </div>
               <div>
                 <label className="block text-sm font-semibold text-[#0f172a] mb-1.5">
@@ -526,21 +487,19 @@ export default function ContractGenerator({
                 {tr.contract.paySchedule}
               </label>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                {(["weekly", "biweekly", "payMonthly", "upfront"] as const).map(
-                  (ps) => (
-                    <button
-                      key={ps}
-                      onClick={() => setF("paySchedule", ps)}
-                      className={`py-2 rounded-xl text-xs font-semibold border-2 transition-all btn-press ${
-                        form.paySchedule === ps
-                          ? "border-[#1e3a5f] bg-[#1e3a5f]/5 text-[#1e3a5f]"
-                          : "border-[#e2e8f0] text-[#64748b]"
-                      }`}
-                    >
-                      {tr.contract[ps]}
-                    </button>
-                  ),
-                )}
+                {(["weekly", "biweekly", "payMonthly", "upfront"] as const).map((ps) => (
+                  <button
+                    key={ps}
+                    onClick={() => setF("paySchedule", ps)}
+                    className={`py-2 rounded-xl text-xs font-semibold border-2 transition-all btn-press ${
+                      form.paySchedule === ps
+                        ? "border-[#1e3a5f] bg-[#1e3a5f]/5 text-[#1e3a5f]"
+                        : "border-[#e2e8f0] text-[#64748b]"
+                    }`}
+                  >
+                    {tr.contract[ps]}
+                  </button>
+                ))}
               </div>
             </div>
           </div>
@@ -548,9 +507,7 @@ export default function ContractGenerator({
 
         {step === 4 && (
           <div className="space-y-5 fade-in">
-            <h2 className="font-bold text-[#0f172a] text-lg">
-              {tr.contract.step4}
-            </h2>
+            <h2 className="font-bold text-[#0f172a] text-lg">{tr.contract.step4}</h2>
             <div>
               <label className="block text-sm font-semibold text-[#0f172a] mb-1.5">
                 {tr.contract.termClause}

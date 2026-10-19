@@ -12,21 +12,13 @@ export interface PortfolioRow {
   updatedAt: string
 }
 
-export async function listAdminPortfolio(
-  adminId: string,
-): Promise<PortfolioRow[]> {
-  const payload = await apiFetch<Record<string, unknown>>(
-    `/api/portfolio/${adminId}`,
-  )
+export async function listAdminPortfolio(adminId: string): Promise<PortfolioRow[]> {
+  const payload = await apiFetch<Record<string, unknown>>(`/api/portfolio/${adminId}`)
   return unwrapList<PortfolioRow>(payload, "portfolio")
 }
 
-export async function getAdminPortfolio(
-  id: string,
-): Promise<PortfolioRow | null> {
-  const payload = await apiFetch<Record<string, unknown>>(
-    `/api/portfolio/item/${id}`,
-  )
+export async function getAdminPortfolio(id: string): Promise<PortfolioRow | null> {
+  const payload = await apiFetch<Record<string, unknown>>(`/api/portfolio/item/${id}`)
   return unwrapItem<PortfolioRow>(payload, "portfolio")
 }
 
@@ -58,13 +50,10 @@ export async function updateAdminPortfolio(
     tags: string[]
   }>,
 ): Promise<PortfolioRow> {
-  const payload = await apiFetch<Record<string, unknown>>(
-    `/api/portfolio/${id}`,
-    {
-      method: "PATCH",
-      body: JSON.stringify(data),
-    },
-  )
+  const payload = await apiFetch<Record<string, unknown>>(`/api/portfolio/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(data),
+  })
   const portfolio = unwrapItem<PortfolioRow>(payload, "portfolio")
   if (!portfolio) {
     throw new Error("Update portfolio response was empty")

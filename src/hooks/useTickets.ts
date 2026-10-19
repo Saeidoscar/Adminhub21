@@ -16,10 +16,7 @@ export interface UseTicketsOptions {
   onError?: (message: string) => void
 }
 
-export function useTickets({
-  onTicketCreated,
-  onError,
-}: UseTicketsOptions = {}) {
+export function useTickets({ onTicketCreated, onError }: UseTicketsOptions = {}) {
   const [tickets, setTickets] = useState<Ticket[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -34,8 +31,7 @@ export function useTickets({
       const data = await listTickets()
       setTickets(data)
     } catch (err) {
-      const message =
-        err instanceof Error ? err.message : "Failed to load tickets"
+      const message = err instanceof Error ? err.message : "Failed to load tickets"
       setError(message)
       onError?.(message)
     } finally {
@@ -61,8 +57,7 @@ export function useTickets({
           onError?.(message)
         }
       } catch (err) {
-        const message =
-          err instanceof Error ? err.message : "Failed to load ticket"
+        const message = err instanceof Error ? err.message : "Failed to load ticket"
         setError(message)
         onError?.(message)
       } finally {
@@ -94,8 +89,7 @@ export function useTickets({
         onTicketCreated?.(ticket)
         return { success: true as const, ticket }
       } catch (err) {
-        const message =
-          err instanceof Error ? err.message : "Failed to create ticket"
+        const message = err instanceof Error ? err.message : "Failed to create ticket"
         setError(message)
         onError?.(message)
         return { success: false as const, errors: {}, message }
@@ -115,8 +109,7 @@ export function useTickets({
         setMessages((prev) => [...prev, message])
         return message
       } catch (err) {
-        const message =
-          err instanceof Error ? err.message : "Failed to send message"
+        const message = err instanceof Error ? err.message : "Failed to send message"
         setError(message)
         onError?.(message)
         return null
@@ -129,16 +122,9 @@ export function useTickets({
 
   const changeStatus = useCallback(
     async (ticketId: string, status: string) => {
-      const validStatuses = [
-        "open",
-        "in_progress",
-        "resolved",
-        "closed",
-      ] as const
-      const safeStatus = validStatuses.includes(
-        status as typeof validStatuses[number],
-      )
-        ? status as typeof validStatuses[number]
+      const validStatuses = ["open", "in_progress", "resolved", "closed"] as const
+      const safeStatus = validStatuses.includes(status as (typeof validStatuses)[number])
+        ? (status as (typeof validStatuses)[number])
         : undefined
       try {
         const updated = await updateTicket(ticketId, { status: safeStatus })
@@ -148,8 +134,7 @@ export function useTickets({
         }
         return updated
       } catch (err) {
-        const message =
-          err instanceof Error ? err.message : "Failed to update ticket"
+        const message = err instanceof Error ? err.message : "Failed to update ticket"
         setError(message)
         onError?.(message)
         return null

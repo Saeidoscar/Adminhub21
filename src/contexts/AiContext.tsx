@@ -7,11 +7,7 @@ import {
   useEffect,
   useRef,
 } from "react"
-import type {
-  AiConversationRow,
-  AiMessageRow,
-  AiModelRow,
-} from "@adminhub/shared"
+import type { AiConversationRow, AiMessageRow, AiModelRow } from "@adminhub/shared"
 import {
   createConversation as createConversationApi,
   deleteConversation,
@@ -32,10 +28,7 @@ export interface AiContextValue {
   isLoading: boolean
   isSending: boolean
   error: string | null
-  createConversation: (
-    modelId: string,
-    title?: string,
-  ) => Promise<AiConversationRow>
+  createConversation: (modelId: string, title?: string) => Promise<AiConversationRow>
   selectConversation: (id: string) => Promise<void>
   sendMessage: (content: string) => Promise<void>
   switchModel: (modelId: string) => Promise<void>
@@ -77,8 +70,7 @@ export function useAi() {
 
 export function AiProvider({ children }: { children: ReactNode }) {
   const [conversations, setConversations] = useState<AiConversationRow[]>([])
-  const [activeConversation, setActiveConversation] =
-    useState<AiConversationRow | null>(null)
+  const [activeConversation, setActiveConversation] = useState<AiConversationRow | null>(null)
   const [messages, setMessages] = useState<AiMessageRow[]>([])
   const [models, setModels] = useState<AiModelRow[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -128,10 +120,7 @@ export function AiProvider({ children }: { children: ReactNode }) {
 
     async function loadInitialData() {
       try {
-        const [convos, modelList] = await Promise.all([
-          listConversationsApi(),
-          listModels(),
-        ])
+        const [convos, modelList] = await Promise.all([listConversationsApi(), listModels()])
         if (!cancelled) {
           setConversations(convos)
           setModels(modelList)
@@ -224,23 +213,14 @@ export function AiProvider({ children }: { children: ReactNode }) {
       setMessages((list) => [...list, optimisticMessage])
 
       try {
-        const assistantMessage = await sendMessageApi(
-          activeConversation.id,
-          trimmed,
-        )
+        const assistantMessage = await sendMessageApi(activeConversation.id, trimmed)
         if (mountedRef.current) {
           setMessages((list) => [...list, assistantMessage])
         }
       } catch (err) {
         if (mountedRef.current) {
-          setMessages((list) =>
-            list.filter((m) => m.id !== optimisticMessage.id),
-          )
-          setError(
-            err instanceof Error
-              ? err.message
-              : "Failed to send message. Please try again.",
-          )
+          setMessages((list) => list.filter((m) => m.id !== optimisticMessage.id))
+          setError(err instanceof Error ? err.message : "Failed to send message. Please try again.")
         }
         throw err
       } finally {
@@ -257,25 +237,16 @@ export function AiProvider({ children }: { children: ReactNode }) {
       if (!activeConversation) return
 
       try {
-        const conversation = await switchModelApi(
-          activeConversation.id,
-          modelId,
-        )
+        const conversation = await switchModelApi(activeConversation.id, modelId)
         if (mountedRef.current) {
           setActiveConversation(conversation)
           setConversations((list) =>
-            list.map((item) =>
-              item.id === conversation.id ? conversation : item,
-            ),
+            list.map((item) => (item.id === conversation.id ? conversation : item)),
           )
         }
       } catch (err) {
         if (mountedRef.current) {
-          setError(
-            err instanceof Error
-              ? err.message
-              : "Failed to switch model. Please try again.",
-          )
+          setError(err instanceof Error ? err.message : "Failed to switch model. Please try again.")
         }
         throw err
       }
@@ -287,9 +258,7 @@ export function AiProvider({ children }: { children: ReactNode }) {
     async (id: string, title: string): Promise<AiConversationRow> => {
       const conversation = await renameConversation(id, title)
       if (mountedRef.current) {
-        setConversations((list) =>
-          list.map((item) => (item.id === id ? conversation : item)),
-        )
+        setConversations((list) => list.map((item) => (item.id === id ? conversation : item)))
         if (activeConversation?.id === id) {
           setActiveConversation(conversation)
         }
@@ -299,19 +268,16 @@ export function AiProvider({ children }: { children: ReactNode }) {
     [activeConversation?.id],
   )
 
-  const handleDeleteConversation = useCallback(
-    async (id: string): Promise<void> => {
-      await deleteConversation(id)
-      if (mountedRef.current) {
-        setConversations((list) => list.filter((item) => item.id !== id))
-        if (activeConversationIdRef.current === id) {
-          setActiveConversation(null)
-          setMessages([])
-        }
+  const handleDeleteConversation = useCallback(async (id: string): Promise<void> => {
+    await deleteConversation(id)
+    if (mountedRef.current) {
+      setConversations((list) => list.filter((item) => item.id !== id))
+      if (activeConversationIdRef.current === id) {
+        setActiveConversation(null)
+        setMessages([])
       }
-    },
-    [],
-  )
+    }
+  }, [])
 
   const clearError = useCallback(() => {
     setError(null)

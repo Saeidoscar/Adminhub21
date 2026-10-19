@@ -1,8 +1,4 @@
-import type {
-  AiConversationRow,
-  AiMessageRow,
-  AiModelRow,
-} from "@adminhub/shared"
+import type { AiConversationRow, AiMessageRow, AiModelRow } from "@adminhub/shared"
 import { apiFetch, unwrapList, unwrapItem } from "./core"
 
 export type { AiConversationRow, AiMessageRow, AiModelRow }
@@ -24,12 +20,8 @@ export async function listConversations(): Promise<AiConversationRow[]> {
   return unwrapList<AiConversationRow>(payload, "conversations")
 }
 
-export async function getConversation(
-  id: string,
-): Promise<AiConversationRow | null> {
-  const payload = await apiFetch<Record<string, unknown>>(
-    `/ai/conversations/${id}`,
-  )
+export async function getConversation(id: string): Promise<AiConversationRow | null> {
+  const payload = await apiFetch<Record<string, unknown>>(`/ai/conversations/${id}`)
 
   return unwrapItem<AiConversationRow>(payload, "conversation")
 }
@@ -52,9 +44,7 @@ export async function createConversation(
   return conversation
 }
 
-export async function listMessages(
-  conversationId: string,
-): Promise<AiMessageRow[]> {
+export async function listMessages(conversationId: string): Promise<AiMessageRow[]> {
   const payload = await apiFetch<Record<string, unknown>>(
     `/ai/conversations/${conversationId}/messages`,
   )
@@ -62,10 +52,7 @@ export async function listMessages(
   return unwrapList<AiMessageRow>(payload, "messages")
 }
 
-export async function sendMessage(
-  conversationId: string,
-  content: string,
-): Promise<AiMessageRow> {
+export async function sendMessage(conversationId: string, content: string): Promise<AiMessageRow> {
   const payload = await apiFetch<Record<string, unknown>>(
     `/ai/conversations/${conversationId}/messages`,
     {
@@ -106,17 +93,11 @@ export async function switchModel(
   return conversation
 }
 
-export async function renameConversation(
-  id: string,
-  title: string,
-): Promise<AiConversationRow> {
-  const payload = await apiFetch<Record<string, unknown>>(
-    `/ai/conversations/${id}`,
-    {
-      method: "PATCH",
-      body: JSON.stringify({ title }),
-    },
-  )
+export async function renameConversation(id: string, title: string): Promise<AiConversationRow> {
+  const payload = await apiFetch<Record<string, unknown>>(`/ai/conversations/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify({ title }),
+  })
 
   const conversation = unwrapItem<AiConversationRow>(payload, "conversation")
 

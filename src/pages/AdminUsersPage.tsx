@@ -10,11 +10,7 @@ import {
   deleteAdminUser,
   type AdminUserRow,
 } from "../lib/api"
-import {
-  Skeleton,
-  UserCardSkeleton,
-  ListSkeleton,
-} from "../components/ui/Skeleton"
+import { Skeleton, UserCardSkeleton, ListSkeleton } from "../components/ui/Skeleton"
 import { adminUserSchema, type AdminUserInput } from "../lib/validation"
 
 const ROLE_COLORS: Record<string, string> = {
@@ -27,7 +23,7 @@ export default function AdminUsersPage({
   tr,
   lang,
 }: {
-  tr: typeof t["en"] & typeof t["fa"]
+  tr: (typeof t)["en"] & (typeof t)["fa"]
   lang: Lang
 }) {
   const isFa = lang === "fa"
@@ -97,10 +93,7 @@ export default function AdminUsersPage({
     setSaving(true)
     setError(null)
     try {
-      const updated = await updateAdminUser(
-        editingUser.id,
-        result.data as AdminUserInput,
-      )
+      const updated = await updateAdminUser(editingUser.id, result.data as AdminUserInput)
       setUsers((prev) => prev.map((u) => (u.id === updated.id ? updated : u)))
       setEditingUser(null)
     } catch (err) {
@@ -132,20 +125,13 @@ export default function AdminUsersPage({
   return (
     <div className="p-6 lg:p-8 max-w-6xl mx-auto fade-in">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-[#0f172a]">
-          {tr.adminUsers.title}
-        </h1>
+        <h1 className="text-2xl font-bold text-[#0f172a]">{tr.adminUsers.title}</h1>
         <p className="text-[#64748b] mt-1">{tr.adminUsers.sub}</p>
       </div>
 
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
         <div className="flex-1">
-          <Input
-            value={search}
-            onChange={setSearch}
-            placeholder={tr.adminUsers.search}
-            label=""
-          />
+          <Input value={search} onChange={setSearch} placeholder={tr.adminUsers.search} label="" />
         </div>
         <div className="sm:w-48">
           <select
@@ -172,9 +158,7 @@ export default function AdminUsersPage({
       ) : users.length === 0 ? (
         <div className="bg-white rounded-2xl border border-[#e2e8f0] p-12 text-center">
           <div className="text-4xl mb-3">👥</div>
-          <div className="font-bold text-[#0f172a] mb-1">
-            {tr.adminUsers.noUsers}
-          </div>
+          <div className="font-bold text-[#0f172a] mb-1">{tr.adminUsers.noUsers}</div>
         </div>
       ) : (
         <div className="grid sm:grid-cols-2 gap-4">
@@ -210,9 +194,7 @@ export default function AdminUsersPage({
                           </span>
                         )}
                       </div>
-                      <div className="text-xs text-[#64748b] mb-1 truncate">
-                        {user.email}
-                      </div>
+                      <div className="text-xs text-[#64748b] mb-1 truncate">{user.email}</div>
                       {user.phone && (
                         <div className="text-xs text-[#64748b] mb-1">
                           {tr.adminUsers.phone}: {user.phone}
@@ -247,9 +229,7 @@ export default function AdminUsersPage({
       {editingUser && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <div className="bg-white rounded-2xl border border-[#e2e8f0] p-6 w-full max-w-md shadow-xl">
-            <h2 className="font-bold text-[#0f172a] text-lg mb-4">
-              {tr.adminUsers.editUser}
-            </h2>
+            <h2 className="font-bold text-[#0f172a] text-lg mb-4">{tr.adminUsers.editUser}</h2>
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-semibold text-[#0f172a] mb-1.5">
@@ -259,9 +239,7 @@ export default function AdminUsersPage({
                   value={editForm.nameEn}
                   onChange={(v) => setEditForm((f) => ({ ...f, nameEn: v }))}
                 />
-                {errors.nameEn && (
-                  <p className="mt-1 text-xs text-red-600">{errors.nameEn}</p>
-                )}
+                {errors.nameEn && <p className="mt-1 text-xs text-red-600">{errors.nameEn}</p>}
               </div>
               <div>
                 <label className="block text-sm font-semibold text-[#0f172a] mb-1.5">
@@ -271,9 +249,7 @@ export default function AdminUsersPage({
                   value={editForm.nameFa}
                   onChange={(v) => setEditForm((f) => ({ ...f, nameFa: v }))}
                 />
-                {errors.nameFa && (
-                  <p className="mt-1 text-xs text-red-600">{errors.nameFa}</p>
-                )}
+                {errors.nameFa && <p className="mt-1 text-xs text-red-600">{errors.nameFa}</p>}
               </div>
               <div>
                 <label className="block text-sm font-semibold text-[#0f172a] mb-1.5">
@@ -284,9 +260,7 @@ export default function AdminUsersPage({
                   onChange={(v) => setEditForm((f) => ({ ...f, phone: v }))}
                   dir="ltr"
                 />
-                {errors.phone && (
-                  <p className="mt-1 text-xs text-red-600">{errors.phone}</p>
-                )}
+                {errors.phone && <p className="mt-1 text-xs text-red-600">{errors.phone}</p>}
               </div>
               <div>
                 <label className="block text-sm font-semibold text-[#0f172a] mb-1.5">
@@ -294,20 +268,14 @@ export default function AdminUsersPage({
                 </label>
                 <select
                   value={editForm.role}
-                  onChange={(e) =>
-                    setEditForm((f) => ({ ...f, role: e.target.value }))
-                  }
+                  onChange={(e) => setEditForm((f) => ({ ...f, role: e.target.value }))}
                   className="w-full px-4 py-2.5 rounded-xl border border-[#e2e8f0] bg-white text-sm text-[#0f172a] focus:border-[#1e3a5f] transition-all"
                 >
                   <option value="employer">{tr.adminUsers.employer}</option>
                   <option value="admin">{tr.adminUsers.admin}</option>
-                  <option value="super_admin">
-                    {tr.adminUsers.superAdmin}
-                  </option>
+                  <option value="super_admin">{tr.adminUsers.superAdmin}</option>
                 </select>
-                {errors.role && (
-                  <p className="mt-1 text-xs text-red-600">{errors.role}</p>
-                )}
+                {errors.role && <p className="mt-1 text-xs text-red-600">{errors.role}</p>}
               </div>
             </div>
             <div className="flex gap-3 mt-6">

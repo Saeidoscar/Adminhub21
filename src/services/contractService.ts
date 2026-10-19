@@ -45,10 +45,7 @@ export async function fetchAdminsForContract(): Promise<AdminProfile[]> {
   return listAdminProfiles()
 }
 
-export function contractAmountDisplay(
-  contract: Contract,
-  lang: "en" | "fa",
-): string {
+export function contractAmountDisplay(contract: Contract, lang: "en" | "fa"): string {
   if (lang === "fa") {
     return `${(contract.amountToman / TOMAN_PER_MILLION).toFixed(1)}M تومان`
   }
@@ -59,9 +56,10 @@ export function filterActiveContracts(contracts: ContractRow[]): ContractRow[] {
   return contracts.filter((c) => c.status === "active")
 }
 
-export function sumCompletedContractAmounts(
-  contracts: ContractRow[],
-): { toman: number usd: number } {
+export function sumCompletedContractAmounts(contracts: ContractRow[]): {
+  toman: number
+  usd: number
+} {
   return contracts
     .filter((c) => c.status === "completed")
     .reduce(

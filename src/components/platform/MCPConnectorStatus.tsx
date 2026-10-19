@@ -6,26 +6,17 @@ interface MCPConnectorStatusProps {
   lastSync?: string
 }
 
-export function MCPConnectorStatus({
-  connected = true,
-  lastSync,
-}: MCPConnectorStatusProps) {
+export function MCPConnectorStatus({ connected = true, lastSync }: MCPConnectorStatusProps) {
   const { theme } = useTheme()
   const t = theme === "dark" ? darkTokens : lightTokens
 
   return (
     <div className="flex items-center gap-2">
       <div
-        className={`w-2 h-2 rounded-full ${
-          connected ? "bg-emerald animate-pulse" : "bg-rose"
-        }`}
+        className={`w-2 h-2 rounded-full ${connected ? "bg-emerald animate-pulse" : "bg-rose"}`}
       />
-      <span className="text-xs text-muted">
-        {connected ? "MCP Connected" : "Disconnected"}
-      </span>
-      {lastSync && (
-        <span className="text-xs text-muted/60">Synced: {lastSync}</span>
-      )}
+      <span className="text-xs text-muted">{connected ? "MCP Connected" : "Disconnected"}</span>
+      {lastSync && <span className="text-xs text-muted/60">Synced: {lastSync}</span>}
     </div>
   )
 }

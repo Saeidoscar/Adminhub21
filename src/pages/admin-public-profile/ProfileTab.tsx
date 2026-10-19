@@ -12,7 +12,7 @@ export function ProfileTab({
 }: {
   admin: AdminProfile
   lang: Lang
-  tr: typeof t["en"] & typeof t["fa"]
+  tr: (typeof t)["en"] & (typeof t)["fa"]
 }) {
   const isFa = lang === "fa"
   return (
@@ -71,12 +71,8 @@ export function ProfileTab({
             </div>
           </div>
           <div className="bg-[#f8fafc] rounded-xl p-4 border border-[#e2e8f0]">
-            <div className="text-xs text-[#64748b] mb-1">
-              {isFa ? "امتیاز" : "Rating"}
-            </div>
-            <div className="text-lg font-bold text-[#1e3a5f]">
-              {admin.rating} / 5
-            </div>
+            <div className="text-xs text-[#64748b] mb-1">{isFa ? "امتیاز" : "Rating"}</div>
+            <div className="text-lg font-bold text-[#1e3a5f]">{admin.rating} / 5</div>
           </div>
         </div>
         <div className="flex flex-wrap gap-3">

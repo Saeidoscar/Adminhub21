@@ -28,9 +28,7 @@ export interface ListReviewsQuery {
   employerId?: string
 }
 
-export async function listReviews(
-  query: ListReviewsQuery = {},
-): Promise<ReviewRow[]> {
+export async function listReviews(query: ListReviewsQuery = {}): Promise<ReviewRow[]> {
   const params = new URLSearchParams()
 
   if (query.adminId) {

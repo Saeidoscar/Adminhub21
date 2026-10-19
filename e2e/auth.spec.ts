@@ -3,10 +3,7 @@ import { test, expect } from "@playwright/test"
 const uniqueEmail = (prefix: string) =>
   `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@example.com`
 
-async function registerAndLogin(
-  request: any,
-  role: "employer" | "admin" = "employer",
-) {
+async function registerAndLogin(request: any, role: "employer" | "admin" = "employer") {
   const email = uniqueEmail(role)
   const password = "password123"
 

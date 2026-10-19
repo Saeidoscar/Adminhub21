@@ -26,20 +26,15 @@ const PLATFORM_LABELS: Record<string, string> = {
 
 interface AdminDashboardProps {
   lang: Lang
-  tr: typeof t["en"] & typeof t["fa"]
+  tr: (typeof t)["en"] & (typeof t)["fa"]
   adminId?: string
 }
 
-export default function AdminDashboard({
-  lang,
-  tr,
-  adminId,
-}: AdminDashboardProps) {
+export default function AdminDashboard({ lang, tr, adminId }: AdminDashboardProps) {
   const [profile, setProfile] = useState<AdminProfile | null>(null)
   const [packages, setPackages] = useState<ContractPackage[]>([])
   const [loading, setLoading] = useState(true)
-  const [activeTab, setActiveTab] =
-    useState<"profile" | "pricing" | "verification">("profile")
+  const [activeTab, setActiveTab] = useState<"profile" | "pricing" | "verification">("profile")
   const [bio, setBio] = useState("")
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([])
   const [prices, setPrices] = useState({
@@ -50,19 +45,10 @@ export default function AdminDashboard({
   const [saving, setSaving] = useState(false)
   const [saveMsg, setSaveMsg] = useState<string | null>(null)
 
-  const allPlatforms = [
-    "instagram",
-    "telegram",
-    "whatsapp",
-    "torob",
-    "digikala",
-    "linkedin",
-  ]
+  const allPlatforms = ["instagram", "telegram", "whatsapp", "torob", "digikala", "linkedin"]
 
   const togglePlatform = (p: string) => {
-    setSelectedPlatforms((prev) =>
-      prev.includes(p) ? prev.filter((x) => x !== p) : [...prev, p],
-    )
+    setSelectedPlatforms((prev) => (prev.includes(p) ? prev.filter((x) => x !== p) : [...prev, p]))
   }
 
   const fmt = (val: string) =>
@@ -76,10 +62,7 @@ export default function AdminDashboard({
     async function load() {
       setLoading(true)
       try {
-        const [profiles, pkgs] = await Promise.all([
-          listAdminProfiles(),
-          listPackages(),
-        ])
+        const [profiles, pkgs] = await Promise.all([listAdminProfiles(), listPackages()])
 
         if (cancelled) return
 
@@ -93,26 +76,20 @@ export default function AdminDashboard({
           setSelectedPlatforms(currentProfile.platforms)
         }
 
-        const adminPkgs = pkgs.filter(
-          (p) => p.adminId === (currentProfile?.id || pkgs[0]?.adminId),
-        )
+        const adminPkgs = pkgs.filter((p) => p.adminId === (currentProfile?.id || pkgs[0]?.adminId))
         setPackages(adminPkgs)
 
         if (adminPkgs.length > 0) {
           const basic = adminPkgs.find(
-            (p) =>
-              p.name.toLowerCase().includes("basic") ||
-              p.name.toLowerCase().includes("پایه"),
+            (p) => p.name.toLowerCase().includes("basic") || p.name.toLowerCase().includes("پایه"),
           )
           const premium = adminPkgs.find(
             (p) =>
-              p.name.toLowerCase().includes("premium") ||
-              p.name.toLowerCase().includes("ویژه"),
+              p.name.toLowerCase().includes("premium") || p.name.toLowerCase().includes("ویژه"),
           )
           const hourly = adminPkgs.find(
             (p) =>
-              p.name.toLowerCase().includes("hourly") ||
-              p.name.toLowerCase().includes("ساعتی"),
+              p.name.toLowerCase().includes("hourly") || p.name.toLowerCase().includes("ساعتی"),
           )
 
           setPrices({
@@ -204,9 +181,7 @@ export default function AdminDashboard({
         <div className="text-center py-12">
           <div className="text-4xl mb-3">👤</div>
           <div className="font-bold text-[#0f172a] mb-1">
-            {lang === "fa"
-              ? "پروفایل ادمین یافت نشد"
-              : "Admin profile not found"}
+            {lang === "fa" ? "پروفایل ادمین یافت نشد" : "Admin profile not found"}
           </div>
           <div className="text-sm text-[#64748b]">
             {lang === "fa"
@@ -221,9 +196,7 @@ export default function AdminDashboard({
   return (
     <div className="p-6 lg:p-8 max-w-5xl mx-auto fade-in">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-[#0f172a]">
-          {tr.adminProfile.title}
-        </h1>
+        <h1 className="text-2xl font-bold text-[#0f172a]">{tr.adminProfile.title}</h1>
         <p className="text-[#64748b] mt-1">{tr.adminProfile.sub}</p>
       </div>
 
@@ -240,9 +213,7 @@ export default function AdminDashboard({
             key={tab}
             onClick={() => setActiveTab(tab)}
             className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all btn-press ${
-              activeTab === tab
-                ? "bg-[#1e3a5f] text-white"
-                : "text-[#64748b] hover:text-[#1e3a5f]"
+              activeTab === tab ? "bg-[#1e3a5f] text-white" : "text-[#64748b] hover:text-[#1e3a5f]"
             }`}
           >
             {tab === "profile"
@@ -265,9 +236,7 @@ export default function AdminDashboard({
                 <div className="relative">
                   <img
                     src={photoUrl(profile.photo, 80)}
-                    onError={(e) =>
-                      (e.currentTarget.style.visibility = "hidden")
-                    }
+                    onError={(e) => (e.currentTarget.style.visibility = "hidden")}
                     alt="Profile"
                     className="w-16 h-16 rounded-2xl object-cover"
                   />
@@ -305,9 +274,7 @@ export default function AdminDashboard({
 
             {/* Platforms */}
             <div className="bg-white rounded-2xl border border-[#e2e8f0] p-6">
-              <h3 className="font-bold text-[#0f172a] mb-4">
-                {tr.adminProfile.platforms}
-              </h3>
+              <h3 className="font-bold text-[#0f172a] mb-4">{tr.adminProfile.platforms}</h3>
               <div className="flex flex-wrap gap-2">
                 {allPlatforms.map((p) => (
                   <button
@@ -319,9 +286,7 @@ export default function AdminDashboard({
                         : "border-[#e2e8f0] text-[#64748b] hover:border-[#1e3a5f]/40"
                     }`}
                   >
-                    {selectedPlatforms.includes(p) && (
-                      <Icon name="check" size={12} />
-                    )}
+                    {selectedPlatforms.includes(p) && <Icon name="check" size={12} />}
                     {PLATFORM_LABELS[p]}
                   </button>
                 ))}
@@ -330,20 +295,16 @@ export default function AdminDashboard({
 
             {/* Skills */}
             <div className="bg-white rounded-2xl border border-[#e2e8f0] p-6">
-              <h3 className="font-bold text-[#0f172a] mb-4">
-                {tr.adminProfile.skills}
-              </h3>
+              <h3 className="font-bold text-[#0f172a] mb-4">{tr.adminProfile.skills}</h3>
               <div className="flex flex-wrap gap-2">
-                {(lang === "fa" ? profile.skillsFa : profile.skillsEn).map(
-                  (skill) => (
-                    <span
-                      key={skill}
-                      className="px-3 py-1.5 rounded-full bg-[#1e3a5f]/10 text-[#1e3a5f] text-xs font-semibold"
-                    >
-                      {skill}
-                    </span>
-                  ),
-                )}
+                {(lang === "fa" ? profile.skillsFa : profile.skillsEn).map((skill) => (
+                  <span
+                    key={skill}
+                    className="px-3 py-1.5 rounded-full bg-[#1e3a5f]/10 text-[#1e3a5f] text-xs font-semibold"
+                  >
+                    {skill}
+                  </span>
+                ))}
               </div>
             </div>
           </div>
@@ -353,8 +314,7 @@ export default function AdminDashboard({
             <div className="bg-white rounded-2xl border border-[#e2e8f0] p-5">
               {[
                 {
-                  label:
-                    lang === "fa" ? "پروژه تکمیل شده" : "Completed Projects",
+                  label: lang === "fa" ? "پروژه تکمیل شده" : "Completed Projects",
                   value: String(profile.reviews),
                 },
                 {
@@ -375,9 +335,7 @@ export default function AdminDashboard({
                   className="flex items-center justify-between py-2.5 border-b border-[#f2f5fa] last:border-0"
                 >
                   <span className="text-xs text-[#64748b]">{s.label}</span>
-                  <span className="text-sm font-bold text-[#0f172a]">
-                    {s.value}
-                  </span>
+                  <span className="text-sm font-bold text-[#0f172a]">{s.value}</span>
                 </div>
               ))}
             </div>
@@ -421,10 +379,7 @@ export default function AdminDashboard({
                   {
                     key: "hourly",
                     label: tr.adminProfile.hourly,
-                    desc:
-                      lang === "fa"
-                        ? "نرخ ساعتی انعطاف‌پذیر"
-                        : "Flexible hourly rate",
+                    desc: lang === "fa" ? "نرخ ساعتی انعطاف‌پذیر" : "Flexible hourly rate",
                     icon: "⏱️",
                     featured: false,
                   },
@@ -432,10 +387,8 @@ export default function AdminDashboard({
                   <PricingCard
                     key={pkg.key}
                     pkg={pkg}
-                    price={prices[(pkg.key as keyof typeof prices)]}
-                    onSave={(val) =>
-                      setPrices((p) => ({ ...p, [pkg.key]: val }))
-                    }
+                    price={prices[pkg.key as keyof typeof prices]}
+                    onSave={(val) => setPrices((p) => ({ ...p, [pkg.key]: val }))}
                     lang={lang}
                     tr={tr}
                   />
@@ -482,9 +435,7 @@ export default function AdminDashboard({
                 <Icon name="shield" size={20} className="text-[#1e3a5f]" />
               </div>
               <div>
-                <h3 className="font-bold text-[#0f172a]">
-                  {tr.adminProfile.verification}
-                </h3>
+                <h3 className="font-bold text-[#0f172a]">{tr.adminProfile.verification}</h3>
                 <p className="text-xs text-[#64748b] mt-1 leading-relaxed">
                   {tr.adminProfile.verificationDesc}
                 </p>
@@ -500,16 +451,12 @@ export default function AdminDashboard({
                 <Icon name="check" size={20} className="text-emerald-600" />
               </div>
               <div className="flex-1">
-                <h3 className="font-bold text-[#0f172a]">
-                  {tr.adminProfile.insuranceEligibility}
-                </h3>
+                <h3 className="font-bold text-[#0f172a]">{tr.adminProfile.insuranceEligibility}</h3>
                 <p className="text-xs text-[#64748b] mt-1 leading-relaxed">
                   {tr.adminProfile.insuranceDesc}
                 </p>
                 <div className="mt-3 flex items-center gap-2">
-                  <span className="text-xs text-[#64748b]">
-                    {tr.adminProfile.status}:
-                  </span>
+                  <span className="text-xs text-[#64748b]">{tr.adminProfile.status}:</span>
                   <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600">
                     <Icon name="check" size={12} />
                     {tr.adminProfile.eligible}
@@ -541,7 +488,7 @@ function PricingCard({
   price: string
   onSave: (val: string) => void
   lang: Lang
-  tr: typeof t["en"] & typeof t["fa"]
+  tr: (typeof t)["en"] & (typeof t)["fa"]
 }) {
   const [editing, setEditing] = useState(false)
   const [draft, setDraft] = useState(price)
@@ -549,22 +496,16 @@ function PricingCard({
   return (
     <div
       className={`rounded-2xl border-2 p-5 ${
-        pkg.featured
-          ? "border-[#1e3a5f] bg-[#1e3a5f]/5"
-          : "border-[#e2e8f0] bg-white"
+        pkg.featured ? "border-[#1e3a5f] bg-[#1e3a5f]/5" : "border-[#e2e8f0] bg-white"
       }`}
     >
       <div className="text-2xl mb-3">{pkg.icon}</div>
       <div
-        className={`font-bold text-sm mb-1 ${
-          pkg.featured ? "text-[#1e3a5f]" : "text-[#0f172a]"
-        }`}
+        className={`font-bold text-sm mb-1 ${pkg.featured ? "text-[#1e3a5f]" : "text-[#0f172a]"}`}
       >
         {pkg.label}
       </div>
-      <div className="text-xs text-[#64748b] mb-4 leading-relaxed">
-        {pkg.desc}
-      </div>
+      <div className="text-xs text-[#64748b] mb-4 leading-relaxed">{pkg.desc}</div>
       {editing ? (
         <div className="space-y-2">
           <input
@@ -602,9 +543,7 @@ function PricingCard({
             className="flex items-center justify-between cursor-pointer"
             onClick={() => setEditing(true)}
           >
-            <div className="text-base font-bold text-[#1e3a5f]">
-              {fmt(price)}
-            </div>
+            <div className="text-base font-bold text-[#1e3a5f]">{fmt(price)}</div>
             <Icon name="edit" size={14} className="text-[#94a3b8]" />
           </div>
           <div className="text-xs text-[#64748b] mt-2 text-center">

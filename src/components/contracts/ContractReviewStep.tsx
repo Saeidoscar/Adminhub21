@@ -11,7 +11,7 @@ interface ContractReviewStepProps {
   form: ContractFormValues
   admins: AdminProfile[]
   lang: Lang
-  tr: typeof import("../../i18n").t["en"] & typeof import("../../i18n").t["fa"]
+  tr: (typeof import("../../i18n").t)["en"] & (typeof import("../../i18n").t)["fa"]
   error: string | null
   onDownloadPdf: () => void
   onSubmit: () => void
@@ -35,9 +35,7 @@ export function ContractReviewStep({
   return (
     <div className="fade-in">
       <div className="flex items-center justify-between mb-5">
-        <h2 className="font-bold text-[#0f172a] text-lg">
-          {tr.contract.contractPreview}
-        </h2>
+        <h2 className="font-bold text-[#0f172a] text-lg">{tr.contract.contractPreview}</h2>
         <span className="px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold">
           {lang === "fa" ? "آماده برای امضا" : "Ready for Signing"}
         </span>
@@ -48,18 +46,15 @@ export function ContractReviewStep({
         </div>
         <p>
           {tr.contract.between} <strong>{form.employerName}</strong>{" "}
-          {form.employerCo ? `(${form.employerCo})` : ""},{" "}
-          {tr.contract.partyEmployer},<br />
+          {form.employerCo ? `(${form.employerCo})` : ""}, {tr.contract.partyEmployer},<br />
           {tr.contract.and} <strong>{admin?.nameEn || form.adminId}</strong>,{" "}
           {tr.contract.partyAdmin}.
         </p>
         <p>
-          <strong>{lang === "fa" ? "پروژه:" : "Project:"}</strong>{" "}
-          {form.projectTitle}
+          <strong>{lang === "fa" ? "پروژه:" : "Project:"}</strong> {form.projectTitle}
         </p>
         <p>
-          <strong>{lang === "fa" ? "مدت:" : "Duration:"}</strong>{" "}
-          {form.startDate} → {form.endDate}
+          <strong>{lang === "fa" ? "مدت:" : "Duration:"}</strong> {form.startDate} → {form.endDate}
         </p>
         <p>
           <strong>{lang === "fa" ? "توضیحات:" : "Description:"}</strong>
@@ -77,8 +72,7 @@ export function ContractReviewStep({
           ))}
         </p>
         <p>
-          <strong>{lang === "fa" ? "پرداخت:" : "Payment:"}</strong>{" "}
-          {form.amount}{" "}
+          <strong>{lang === "fa" ? "پرداخت:" : "Payment:"}</strong> {form.amount}{" "}
           {form.currency === "toman" ? tr.contract.toman : tr.contract.usd}
         </p>
         <p>
@@ -87,31 +81,17 @@ export function ContractReviewStep({
           {form.termClause}
         </p>
         <p>
-          <strong>
-            {lang === "fa" ? "بیمه و جایگزینی:" : "Substitution & Insurance:"}
-          </strong>
+          <strong>{lang === "fa" ? "بیمه و جایگزینی:" : "Substitution & Insurance:"}</strong>
           <br />
           {form.subClause}
         </p>
         <p>
           <strong>{lang === "fa" ? "بیمه:" : "Insurance:"}</strong>{" "}
-          {form.hasInsurance
-            ? lang === "fa"
-              ? "بله"
-              : "Yes"
-            : lang === "fa"
-              ? "خیر"
-              : "No"}
+          {form.hasInsurance ? (lang === "fa" ? "بله" : "Yes") : lang === "fa" ? "خیر" : "No"}
         </p>
         <p>
           <strong>{lang === "fa" ? "جایگزین:" : "Substitute:"}</strong>{" "}
-          {form.hasSubstitute
-            ? lang === "fa"
-              ? "بله"
-              : "Yes"
-            : lang === "fa"
-              ? "خیر"
-              : "No"}
+          {form.hasSubstitute ? (lang === "fa" ? "بله" : "Yes") : lang === "fa" ? "خیر" : "No"}
         </p>
       </div>
       {error && (

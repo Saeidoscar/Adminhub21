@@ -59,9 +59,7 @@ export async function listAdminCases(
   if (query.priority) params.set("priority", query.priority)
   if (query.search) params.set("search", query.search)
   const qs = params.toString()
-  const payload = await apiFetch<Record<string, unknown>>(
-    `/api/cases${qs ? `?${qs}` : ""}`,
-  )
+  const payload = await apiFetch<Record<string, unknown>>(`/api/cases${qs ? `?${qs}` : ""}`)
   return unwrapList<CaseRow>(payload, "cases")
 }
 
@@ -117,9 +115,7 @@ export async function listAdminTasks(caseId: string): Promise<TaskRow[]> {
 }
 
 export async function getAdminTask(id: string): Promise<TaskRow | null> {
-  const payload = await apiFetch<Record<string, unknown>>(
-    `/api/schedule/tasks/${id}`,
-  )
+  const payload = await apiFetch<Record<string, unknown>>(`/api/schedule/tasks/${id}`)
   return unwrapItem<TaskRow>(payload, "task")
 }
 
@@ -132,13 +128,10 @@ export async function createAdminTask(data: {
   priority?: string
   dueDate?: string
 }): Promise<TaskRow> {
-  const payload = await apiFetch<Record<string, unknown>>(
-    "/api/schedule/tasks",
-    {
-      method: "POST",
-      body: JSON.stringify(data),
-    },
-  )
+  const payload = await apiFetch<Record<string, unknown>>("/api/schedule/tasks", {
+    method: "POST",
+    body: JSON.stringify(data),
+  })
   const task = unwrapItem<TaskRow>(payload, "task")
   if (!task) {
     throw new Error("Create task response was empty")
@@ -157,13 +150,10 @@ export async function updateAdminTask(
     dueDate: string
   }>,
 ): Promise<TaskRow> {
-  const payload = await apiFetch<Record<string, unknown>>(
-    `/api/schedule/tasks/${id}`,
-    {
-      method: "PATCH",
-      body: JSON.stringify(data),
-    },
-  )
+  const payload = await apiFetch<Record<string, unknown>>(`/api/schedule/tasks/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(data),
+  })
   const task = unwrapItem<TaskRow>(payload, "task")
   if (!task) {
     throw new Error("Update task response was empty")
@@ -188,9 +178,7 @@ export async function listAdminEvents(
 }
 
 export async function getAdminEvent(id: string): Promise<EventRow | null> {
-  const payload = await apiFetch<Record<string, unknown>>(
-    `/api/schedule/events/${id}`,
-  )
+  const payload = await apiFetch<Record<string, unknown>>(`/api/schedule/events/${id}`)
   return unwrapItem<EventRow>(payload, "event")
 }
 
@@ -202,13 +190,10 @@ export async function createAdminEvent(data: {
   allDay?: boolean
   color?: string
 }): Promise<EventRow> {
-  const payload = await apiFetch<Record<string, unknown>>(
-    "/api/schedule/events",
-    {
-      method: "POST",
-      body: JSON.stringify(data),
-    },
-  )
+  const payload = await apiFetch<Record<string, unknown>>("/api/schedule/events", {
+    method: "POST",
+    body: JSON.stringify(data),
+  })
   const event = unwrapItem<EventRow>(payload, "event")
   if (!event) {
     throw new Error("Create event response was empty")
@@ -227,13 +212,10 @@ export async function updateAdminEvent(
     color: string
   }>,
 ): Promise<EventRow> {
-  const payload = await apiFetch<Record<string, unknown>>(
-    `/api/schedule/events/${id}`,
-    {
-      method: "PATCH",
-      body: JSON.stringify(data),
-    },
-  )
+  const payload = await apiFetch<Record<string, unknown>>(`/api/schedule/events/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(data),
+  })
   const event = unwrapItem<EventRow>(payload, "event")
   if (!event) {
     throw new Error("Update event response was empty")
@@ -264,9 +246,7 @@ export async function listAdminTimeLogs(
 }
 
 export async function getAdminTimeLog(id: string): Promise<TimeLogRow | null> {
-  const payload = await apiFetch<Record<string, unknown>>(
-    `/api/schedule/timelogs/${id}`,
-  )
+  const payload = await apiFetch<Record<string, unknown>>(`/api/schedule/timelogs/${id}`)
   return unwrapItem<TimeLogRow>(payload, "timeLog")
 }
 
@@ -277,13 +257,10 @@ export async function createAdminTimeLog(data: {
   startedAt: string
   endedAt: string
 }): Promise<TimeLogRow> {
-  const payload = await apiFetch<Record<string, unknown>>(
-    "/api/schedule/timelogs",
-    {
-      method: "POST",
-      body: JSON.stringify(data),
-    },
-  )
+  const payload = await apiFetch<Record<string, unknown>>("/api/schedule/timelogs", {
+    method: "POST",
+    body: JSON.stringify(data),
+  })
   const timeLog = unwrapItem<TimeLogRow>(payload, "timeLog")
   if (!timeLog) {
     throw new Error("Create time log response was empty")

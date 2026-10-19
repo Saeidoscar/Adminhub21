@@ -30,8 +30,7 @@ export const lightTokens = {
     accentBg: "#eef2ff",
   },
   platform: {
-    instagram:
-      "linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888)",
+    instagram: "linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888)",
     telegram: "#229ED9",
     whatsapp: "#25D366",
     torob: "#e53935",
@@ -70,8 +69,7 @@ export const darkTokens = {
     accentBg: "rgba(20,184,166,0.12)",
   },
   platform: {
-    instagram:
-      "linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888)",
+    instagram: "linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888)",
     telegram: "#229ED9",
     whatsapp: "#25D366",
     torob: "#e53935",
@@ -143,4 +141,4 @@ export const tokens = {
 } as const
 
 export type ThemeTokens = typeof lightTokens
-export type NavItem = typeof tokens.navItems[number]
+export type NavItem = (typeof tokens.navItems)[number]

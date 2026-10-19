@@ -13,7 +13,7 @@ import {
 } from "../lib/api"
 import { TicketCardSkeleton, ListSkeleton } from "../components/ui/Skeleton"
 
-const CATEGORY_LABELS: Record<string, { en: string fa: string }> = {
+const CATEGORY_LABELS: Record<string, { en: string; fa: string }> = {
   billing: { en: "Billing", fa: "مالی" },
   technical: { en: "Technical", fa: "فنی" },
   account: { en: "Account", fa: "حساب کاربری" },
@@ -27,7 +27,7 @@ const PRIORITY_COLORS: Record<string, string> = {
   urgent: "bg-red-100 text-red-700",
 }
 
-const PRIORITY_LABELS: Record<string, { en: string fa: string }> = {
+const PRIORITY_LABELS: Record<string, { en: string; fa: string }> = {
   low: { en: "Low", fa: "پایین" },
   medium: { en: "Medium", fa: "متوسط" },
   high: { en: "High", fa: "بالا" },
@@ -41,7 +41,7 @@ const STATUS_COLORS: Record<string, string> = {
   closed: "bg-gray-100 text-gray-700",
 }
 
-const STATUS_LABELS: Record<string, { en: string fa: string }> = {
+const STATUS_LABELS: Record<string, { en: string; fa: string }> = {
   open: { en: "Open", fa: "باز" },
   in_progress: { en: "In Progress", fa: "در حال بررسی" },
   resolved: { en: "Resolved", fa: "حل شده" },
@@ -52,7 +52,7 @@ export default function AdminTicketsPage({
   tr,
   lang,
 }: {
-  tr: typeof t["en"] & typeof t["fa"]
+  tr: (typeof t)["en"] & (typeof t)["fa"]
   lang: Lang
 }) {
   const navigate = useNavigate()
@@ -179,9 +179,7 @@ export default function AdminTicketsPage({
           </button>
           <div className="flex items-start justify-between gap-4">
             <div>
-              <h1 className="text-xl font-bold text-[#0f172a]">
-                {currentTicket.subject}
-              </h1>
+              <h1 className="text-xl font-bold text-[#0f172a]">{currentTicket.subject}</h1>
               <p className="text-sm text-[#64748b] mt-1">
                 {isFa ? "تیکت" : "Ticket"} #{currentTicket.id.slice(0, 8)}
               </p>
@@ -190,8 +188,7 @@ export default function AdminTicketsPage({
               <span
                 className={`px-2.5 py-1 rounded-full text-xs font-semibold ${PRIORITY_COLORS[currentTicket.priority] || "bg-gray-100 text-gray-700"}`}
               >
-                {PRIORITY_LABELS[currentTicket.priority]?.en ||
-                  currentTicket.priority}
+                {PRIORITY_LABELS[currentTicket.priority]?.en || currentTicket.priority}
               </span>
               <select
                 value={currentTicket.status}
@@ -211,20 +208,15 @@ export default function AdminTicketsPage({
         <div className="bg-white rounded-2xl border border-[#e2e8f0] p-6 mb-6">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
             <div>
-              <div className="text-xs text-[#64748b] mb-1">
-                {tr.adminTickets.category}
-              </div>
+              <div className="text-xs text-[#64748b] mb-1">{tr.adminTickets.category}</div>
               <span className="inline-flex px-2.5 py-1 rounded-full bg-[#1e3a5f]/10 text-[#1e3a5f] text-xs font-semibold">
                 {isFa
                   ? CATEGORY_LABELS[currentTicket.category]?.fa
-                  : CATEGORY_LABELS[currentTicket.category]?.en ||
-                    currentTicket.category}
+                  : CATEGORY_LABELS[currentTicket.category]?.en || currentTicket.category}
               </span>
             </div>
             <div>
-              <div className="text-xs text-[#64748b] mb-1">
-                {tr.adminTickets.priority}
-              </div>
+              <div className="text-xs text-[#64748b] mb-1">{tr.adminTickets.priority}</div>
               <select
                 value={currentTicket.priority}
                 onChange={(e) => handlePriorityChange(e.target.value)}
@@ -238,63 +230,43 @@ export default function AdminTicketsPage({
               </select>
             </div>
             <div>
-              <div className="text-xs text-[#64748b] mb-1">
-                {tr.adminTickets.user}
-              </div>
-              <div className="text-sm font-semibold text-[#0f172a]">
-                {currentTicket.userName}
-              </div>
+              <div className="text-xs text-[#64748b] mb-1">{tr.adminTickets.user}</div>
+              <div className="text-sm font-semibold text-[#0f172a]">{currentTicket.userName}</div>
             </div>
             <div>
-              <div className="text-xs text-[#64748b] mb-1">
-                {tr.adminTickets.email}
-              </div>
-              <div className="text-sm font-semibold text-[#0f172a]">
-                {currentTicket.userEmail}
-              </div>
+              <div className="text-xs text-[#64748b] mb-1">{tr.adminTickets.email}</div>
+              <div className="text-sm font-semibold text-[#0f172a]">{currentTicket.userEmail}</div>
             </div>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <div>
-              <div className="text-xs text-[#64748b] mb-1">
-                {tr.adminTickets.status}
-              </div>
+              <div className="text-xs text-[#64748b] mb-1">{tr.adminTickets.status}</div>
               <span
                 className={`inline-flex px-2.5 py-1 rounded-full text-xs font-semibold ${STATUS_COLORS[currentTicket.status] || "bg-gray-100 text-gray-700"}`}
               >
                 {isFa
-                  ? STATUS_LABELS[currentTicket.status]?.fa ||
-                    currentTicket.status
-                  : STATUS_LABELS[currentTicket.status]?.en ||
-                    currentTicket.status}
+                  ? STATUS_LABELS[currentTicket.status]?.fa || currentTicket.status
+                  : STATUS_LABELS[currentTicket.status]?.en || currentTicket.status}
               </span>
             </div>
             <div>
-              <div className="text-xs text-[#64748b] mb-1">
-                {tr.adminTickets.priority}
-              </div>
+              <div className="text-xs text-[#64748b] mb-1">{tr.adminTickets.priority}</div>
               <span
                 className={`inline-flex px-2.5 py-1 rounded-full text-xs font-semibold ${PRIORITY_COLORS[currentTicket.priority] || "bg-gray-100 text-gray-700"}`}
               >
                 {isFa
-                  ? PRIORITY_LABELS[currentTicket.priority]?.fa ||
-                    currentTicket.priority
-                  : PRIORITY_LABELS[currentTicket.priority]?.en ||
-                    currentTicket.priority}
+                  ? PRIORITY_LABELS[currentTicket.priority]?.fa || currentTicket.priority
+                  : PRIORITY_LABELS[currentTicket.priority]?.en || currentTicket.priority}
               </span>
             </div>
             <div>
-              <div className="text-xs text-[#64748b] mb-1">
-                {tr.adminTickets.createdAt}
-              </div>
+              <div className="text-xs text-[#64748b] mb-1">{tr.adminTickets.createdAt}</div>
               <div className="text-sm font-semibold text-[#0f172a]">
                 {new Date(currentTicket.createdAt).toLocaleDateString()}
               </div>
             </div>
             <div>
-              <div className="text-xs text-[#64748b] mb-1">
-                {tr.adminTickets.update}
-              </div>
+              <div className="text-xs text-[#64748b] mb-1">{tr.adminTickets.update}</div>
               <div className="text-sm font-semibold text-[#0f172a]">
                 {new Date(currentTicket.updatedAt).toLocaleDateString()}
               </div>
@@ -303,23 +275,15 @@ export default function AdminTicketsPage({
         </div>
 
         <div className="space-y-4 mb-6">
-          <h2 className="text-lg font-bold text-[#0f172a]">
-            {tr.tickets.messages}
-          </h2>
+          <h2 className="text-lg font-bold text-[#0f172a]">{tr.tickets.messages}</h2>
           {messages.length === 0 ? (
-            <div className="text-center py-8 text-[#64748b] text-sm">
-              {tr.tickets.noMessages}
-            </div>
+            <div className="text-center py-8 text-[#64748b] text-sm">{tr.tickets.noMessages}</div>
           ) : (
             <div className="space-y-3">
               {messages.map((msg) => (
                 <div
                   key={msg.id}
-                  className={`flex ${
-                    msg.senderId === currentTicket.userId
-                      ? "justify-start"
-                      : "justify-end"
-                  }`}
+                  className={`flex ${msg.senderId === currentTicket.userId ? "justify-start" : "justify-end"}`}
                 >
                   <div
                     className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm ${
@@ -328,15 +292,11 @@ export default function AdminTicketsPage({
                         : "bg-[#1e3a5f] text-white"
                     }`}
                   >
-                    <div className="font-semibold text-xs mb-1 opacity-70">
-                      {msg.senderName}
-                    </div>
+                    <div className="font-semibold text-xs mb-1 opacity-70">{msg.senderName}</div>
                     <div>{msg.body}</div>
                     <div
                       className={`text-xs mt-1 opacity-60 ${
-                        msg.senderId === currentTicket.userId
-                          ? "text-right"
-                          : "text-left"
+                        msg.senderId === currentTicket.userId ? "text-right" : "text-left"
                       }`}
                     >
                       {new Date(msg.createdAt).toLocaleString()}
@@ -376,9 +336,7 @@ export default function AdminTicketsPage({
   return (
     <div className="p-6 lg:p-8 max-w-6xl mx-auto fade-in">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-[#0f172a]">
-          {tr.adminTickets.title}
-        </h1>
+        <h1 className="text-2xl font-bold text-[#0f172a]">{tr.adminTickets.title}</h1>
         <p className="text-[#64748b] mt-1">{tr.adminTickets.sub}</p>
       </div>
 
@@ -440,9 +398,7 @@ export default function AdminTicketsPage({
       ) : tickets.length === 0 ? (
         <div className="bg-white rounded-2xl border border-[#e2e8f0] p-12 text-center">
           <div className="text-4xl mb-3">🎫</div>
-          <div className="font-bold text-[#0f172a] mb-1">
-            {tr.adminTickets.noTickets}
-          </div>
+          <div className="font-bold text-[#0f172a] mb-1">{tr.adminTickets.noTickets}</div>
         </div>
       ) : (
         <div className="space-y-3">
@@ -471,10 +427,8 @@ export default function AdminTicketsPage({
                         className={`px-2 py-0.5 rounded-full text-xs font-semibold flex-shrink-0 ${PRIORITY_COLORS[ticket.priority] || "bg-gray-100 text-gray-700"}`}
                       >
                         {isFa
-                          ? PRIORITY_LABELS[ticket.priority]?.fa ||
-                            ticket.priority
-                          : PRIORITY_LABELS[ticket.priority]?.en ||
-                            ticket.priority}
+                          ? PRIORITY_LABELS[ticket.priority]?.fa || ticket.priority
+                          : PRIORITY_LABELS[ticket.priority]?.en || ticket.priority}
                       </span>
                       <span
                         className={`px-2 py-0.5 rounded-full text-xs font-semibold flex-shrink-0 ${STATUS_COLORS[ticket.status] || "bg-gray-100 text-gray-700"}`}
@@ -488,16 +442,11 @@ export default function AdminTicketsPage({
                       <span className="inline-flex px-2.5 py-0.5 rounded-full bg-[#1e3a5f]/10 text-[#1e3a5f] font-semibold">
                         {isFa
                           ? CATEGORY_LABELS[ticket.category]?.fa
-                          : CATEGORY_LABELS[ticket.category]?.en ||
-                            ticket.category}
+                          : CATEGORY_LABELS[ticket.category]?.en || ticket.category}
                       </span>
                       <span>{ticket.userName}</span>
-                      <span className="hidden sm:inline">
-                        {ticket.userEmail}
-                      </span>
-                      <span>
-                        {new Date(ticket.createdAt).toLocaleDateString()}
-                      </span>
+                      <span className="hidden sm:inline">{ticket.userEmail}</span>
+                      <span>{new Date(ticket.createdAt).toLocaleDateString()}</span>
                     </div>
                   </div>
                   <button

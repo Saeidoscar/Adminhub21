@@ -105,9 +105,7 @@ export function MobileTopbar({
         {fontSize && onChangeFontSize && (
           <button
             onClick={() =>
-              onChangeFontSize(
-                fontSize === "sm" ? "md" : fontSize === "md" ? "lg" : "sm",
-              )
+              onChangeFontSize(fontSize === "sm" ? "md" : fontSize === "md" ? "lg" : "sm")
             }
             className="px-2.5 py-1.5 rounded-lg bg-surface2 border border-border text-xs font-bold text-navy"
           >

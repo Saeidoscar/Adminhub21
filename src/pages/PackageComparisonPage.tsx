@@ -47,15 +47,9 @@ export default function PackageComparisonPage() {
         </div>
         <div className="bg-white rounded-2xl border border-[#e2e8f0] p-12 text-center">
           <div className="text-4xl mb-3">📊</div>
-          <div className="font-bold text-[#0f172a] mb-1">
-            {tr.compare.noComparison}
-          </div>
-          <div className="text-sm text-[#64748b] mb-4">
-            {tr.compare.noComparisonSub}
-          </div>
-          <Button onClick={() => navigate("/marketplace")}>
-            {tr.compare.browsePackages}
-          </Button>
+          <div className="font-bold text-[#0f172a] mb-1">{tr.compare.noComparison}</div>
+          <div className="text-sm text-[#64748b] mb-4">{tr.compare.noComparisonSub}</div>
+          <Button onClick={() => navigate("/marketplace")}>{tr.compare.browsePackages}</Button>
         </div>
       </div>
     )
@@ -73,9 +67,7 @@ export default function PackageComparisonPage() {
         >
           <Icon name="chevronLeft" size={16} /> {tr.common.back}
         </button>
-        <h1 className="text-2xl font-bold text-[#0f172a]">
-          {tr.compare.title}
-        </h1>
+        <h1 className="text-2xl font-bold text-[#0f172a]">{tr.compare.title}</h1>
         <p className="text-[#64748b] mt-1">{tr.compare.sub}</p>
       </div>
 
@@ -89,14 +81,9 @@ export default function PackageComparisonPage() {
         {selectedPkgs.map((pkg) => {
           const adm = findAdmin(pkg.adminId)
           return (
-            <div
-              key={pkg.id}
-              className="bg-white rounded-2xl border border-[#e2e8f0] p-4"
-            >
+            <div key={pkg.id} className="bg-white rounded-2xl border border-[#e2e8f0] p-4">
               <div className="flex items-center justify-between mb-3">
-                <span className="font-bold text-sm text-[#0f172a]">
-                  {pkg.name}
-                </span>
+                <span className="font-bold text-sm text-[#0f172a]">{pkg.name}</span>
                 <span
                   className={`inline-flex px-2 py-0.5 rounded-full text-xs font-semibold ${
                     pkg.type === "bundle"
@@ -117,9 +104,7 @@ export default function PackageComparisonPage() {
                 <div className="flex items-center gap-2 mb-2">
                   <img
                     src={photoUrl(adm.photo, 32)}
-                    onError={(e) =>
-                      (e.currentTarget.style.visibility = "hidden")
-                    }
+                    onError={(e) => (e.currentTarget.style.visibility = "hidden")}
                     alt=""
                     className="w-6 h-6 rounded-md object-cover"
                   />
@@ -152,10 +137,7 @@ export default function PackageComparisonPage() {
                   {tr.compare.feature}
                 </th>
                 {selectedPkgs.map((pkg) => (
-                  <th
-                    key={pkg.id}
-                    className="text-center px-4 py-3 font-semibold text-[#0f172a]"
-                  >
+                  <th key={pkg.id} className="text-center px-4 py-3 font-semibold text-[#0f172a]">
                     {pkg.name}
                   </th>
                 ))}
@@ -163,14 +145,9 @@ export default function PackageComparisonPage() {
             </thead>
             <tbody>
               <tr className="border-b border-[#f2f5fa]">
-                <td className="px-4 py-3 font-semibold text-[#0f172a]">
-                  {tr.common.billingCycle}
-                </td>
+                <td className="px-4 py-3 font-semibold text-[#0f172a]">{tr.common.billingCycle}</td>
                 {selectedPkgs.map((pkg) => (
-                  <td
-                    key={pkg.id}
-                    className="px-4 py-3 text-center text-[#64748b]"
-                  >
+                  <td key={pkg.id} className="px-4 py-3 text-center text-[#64748b]">
                     {pkg.billingCycle === "monthly"
                       ? isFa
                         ? "ماهانه"
@@ -186,9 +163,7 @@ export default function PackageComparisonPage() {
                 ))}
               </tr>
               <tr className="border-b border-[#f2f5fa]">
-                <td className="px-4 py-3 font-semibold text-[#0f172a]">
-                  {tr.common.platforms}
-                </td>
+                <td className="px-4 py-3 font-semibold text-[#0f172a]">{tr.common.platforms}</td>
                 {selectedPkgs.map((pkg) => (
                   <td key={pkg.id} className="px-4 py-3 text-center">
                     <div className="flex flex-wrap justify-center gap-1">
@@ -208,10 +183,7 @@ export default function PackageComparisonPage() {
                 const spec = PLATFORM_SPECS[pl]
                 if (!spec) return null
                 return spec.fields.map((field) => (
-                  <tr
-                    key={`${pl}:${field.id}`}
-                    className="border-b border-[#f2f5fa]"
-                  >
+                  <tr key={`${pl}:${field.id}`} className="border-b border-[#f2f5fa]">
                     <td className="px-4 py-3 font-semibold text-[#0f172a]">
                       <div className="flex items-center gap-2">
                         <div
@@ -223,22 +195,18 @@ export default function PackageComparisonPage() {
                       </div>
                     </td>
                     {selectedPkgs.map((pkg) => {
-                      const config = pkg.platformConfigs.find(
-                        (c) => c.platform === pl,
-                      )
+                      const config = pkg.platformConfigs.find((c) => c.platform === pl)
                       const val = config?.settings[field.id]
                       if (field.type === "boolean") {
                         return (
                           <td key={pkg.id} className="px-4 py-3 text-center">
                             {val ? (
                               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold">
-                                <Icon name="check" size={10} />{" "}
-                                {isFa ? "شامل" : "Included"}
+                                <Icon name="check" size={10} /> {isFa ? "شامل" : "Included"}
                               </span>
                             ) : (
                               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gray-100 text-gray-500 text-xs font-semibold">
-                                <Icon name="x" size={10} />{" "}
-                                {isFa ? "شامل نشده" : "Not included"}
+                                <Icon name="x" size={10} /> {isFa ? "شامل نشده" : "Not included"}
                               </span>
                             )}
                           </td>

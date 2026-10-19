@@ -8,7 +8,7 @@ import { TOMAN_PER_MILLION } from "../lib/constants"
 
 type Category = "scheduling" | "design" | "analytics" | "automation" | "ecommerce"
 
-const CATEGORY_LABELS: Record<Category, { en: string fa: string }> = {
+const CATEGORY_LABELS: Record<Category, { en: string; fa: string }> = {
   scheduling: { en: "Scheduling", fa: "زمان‌بندی" },
   design: { en: "Design", fa: "طراحی" },
   analytics: { en: "Analytics", fa: "آنالیتیکس" },
@@ -16,13 +16,7 @@ const CATEGORY_LABELS: Record<Category, { en: string fa: string }> = {
   ecommerce: { en: "E-commerce", fa: "فروشگاه آنلاین" },
 }
 
-export default function ToolsRentalPage({
-  tr,
-  lang,
-}: {
-  tr: typeof t["en"]
-  lang: Lang
-}) {
+export default function ToolsRentalPage({ tr, lang }: { tr: (typeof t)["en"]; lang: Lang }) {
   const [tools, setTools] = useState<Tool[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState("")
@@ -60,8 +54,7 @@ export default function ToolsRentalPage({
     return matchSearch && matchCategory
   })
 
-  const categoryKey = (key: Category) =>
-    isFa ? CATEGORY_LABELS[key].fa : CATEGORY_LABELS[key].en
+  const categoryKey = (key: Category) => (isFa ? CATEGORY_LABELS[key].fa : CATEGORY_LABELS[key].en)
 
   return (
     <div className="p-6 lg:p-8 max-w-6xl mx-auto fade-in">
@@ -113,9 +106,7 @@ export default function ToolsRentalPage({
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="font-bold text-sm text-[#0f172a] truncate">
-                      {tool.name}
-                    </span>
+                    <span className="font-bold text-sm text-[#0f172a] truncate">{tool.name}</span>
                     {tool.popular && (
                       <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 text-xs font-semibold flex-shrink-0">
                         {tr.tools.popular}
@@ -124,9 +115,7 @@ export default function ToolsRentalPage({
                   </div>
                   <div className="flex items-center gap-1.5">
                     <Stars rating={tool.rating} />
-                    <span className="text-xs font-bold text-[#0f172a]">
-                      {tool.rating}
-                    </span>
+                    <span className="text-xs font-bold text-[#0f172a]">{tool.rating}</span>
                     <span className="text-xs text-[#94a3b8]">
                       ({tool.reviews} {tr.tools.tools})
                     </span>
@@ -146,16 +135,12 @@ export default function ToolsRentalPage({
 
               <div className="border-t border-[#f2f5fa] pt-4 flex items-center justify-between">
                 <div>
-                  <div className="text-xs text-[#64748b]">
-                    {tr.tools.starting}
-                  </div>
+                  <div className="text-xs text-[#64748b]">{tr.tools.starting}</div>
                   <div className="text-base font-bold text-[#1e3a5f]">
                     {isFa
                       ? `${(tool.priceToman / TOMAN_PER_MILLION).toFixed(1)}M ${tr.common.toman}`
                       : `$${tool.priceUSD}`}
-                    <span className="text-xs font-normal text-[#94a3b8]">
-                      {tr.tools.perMonth}
-                    </span>
+                    <span className="text-xs font-normal text-[#94a3b8]">{tr.tools.perMonth}</span>
                   </div>
                 </div>
                 <button className="px-4 py-2 rounded-xl bg-[#1e3a5f] text-white text-xs font-bold hover:bg-[#122435] transition-colors btn-press">
@@ -170,9 +155,7 @@ export default function ToolsRentalPage({
       {!loading && filtered.length === 0 && (
         <div className="text-center py-16 text-[#64748b]">
           <div className="text-4xl mb-3">🧰</div>
-          <div className="font-semibold">
-            {isFa ? "نتیجه‌ای یافت نشد" : "No results found"}
-          </div>
+          <div className="font-semibold">{isFa ? "نتیجه‌ای یافت نشد" : "No results found"}</div>
           <div className="text-sm mt-1">
             {isFa ? "فیلترها را تغییر دهید" : "Try adjusting your filters"}
           </div>

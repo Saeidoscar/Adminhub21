@@ -57,18 +57,10 @@ export default function PackageCard({
           <div className="flex items-center gap-1.5">
             <span
               className={`inline-flex px-2 py-0.5 rounded-full text-xs font-semibold ${
-                pkg.type === "bundle"
-                  ? "bg-purple-100 text-purple-700"
-                  : "bg-sky-100 text-sky-700"
+                pkg.type === "bundle" ? "bg-purple-100 text-purple-700" : "bg-sky-100 text-sky-700"
               }`}
             >
-              {pkg.type === "bundle"
-                ? isFa
-                  ? "باندل"
-                  : "Bundle"
-                : isFa
-                  ? "تک‌پلتفرم"
-                  : "Platform"}
+              {pkg.type === "bundle" ? (isFa ? "باندل" : "Bundle") : isFa ? "تک‌پلتفرم" : "Platform"}
             </span>
             {pkg.platforms.map((pl) => (
               <span
@@ -119,19 +111,14 @@ export default function PackageCard({
           const spec = PLATFORM_SPECS[config.platform]
           if (!spec) return null
           return (
-            <div
-              key={config.platform}
-              className="bg-[#f8fafc] rounded-lg p-2.5"
-            >
+            <div key={config.platform} className="bg-[#f8fafc] rounded-lg p-2.5">
               <div className="flex items-center gap-1.5 mb-1.5">
                 <div
                   className={`w-4 h-4 rounded ${spec.colorClass} flex items-center justify-center text-white text-[10px] font-bold`}
                 >
                   {spec.label[lang].charAt(0)}
                 </div>
-                <span className="text-xs font-bold text-[#0f172a]">
-                  {spec.label[lang]}
-                </span>
+                <span className="text-xs font-bold text-[#0f172a]">{spec.label[lang]}</span>
               </div>
               <div className="flex flex-wrap gap-1.5">
                 {spec.fields.slice(0, expanded ? undefined : 4).map((field) => {
@@ -141,16 +128,10 @@ export default function PackageCard({
                       <span
                         key={field.id}
                         className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold ${
-                          val
-                            ? "bg-emerald-100 text-emerald-700"
-                            : "bg-gray-100 text-gray-500"
+                          val ? "bg-emerald-100 text-emerald-700" : "bg-gray-100 text-gray-500"
                         }`}
                       >
-                        {val ? (
-                          <Icon name="check" size={10} />
-                        ) : (
-                          <Icon name="x" size={10} />
-                        )}
+                        {val ? <Icon name="check" size={10} /> : <Icon name="x" size={10} />}
                         {field.label[lang]}
                       </span>
                     )
@@ -170,9 +151,7 @@ export default function PackageCard({
                   onClick={() => setExpanded(true)}
                   className="text-[10px] text-[#1e3a5f] font-semibold mt-1 hover:underline"
                 >
-                  {isFa
-                    ? `+${spec.fields.length - 4} بیشتر`
-                    : `+${spec.fields.length - 4} more`}
+                  {isFa ? `+${spec.fields.length - 4} بیشتر` : `+${spec.fields.length - 4} more`}
                 </button>
               )}
             </div>
@@ -189,11 +168,7 @@ export default function PackageCard({
             className={inCompare ? "border-[#1e3a5f] text-[#1e3a5f]" : ""}
           >
             <Icon name={inCompare ? "check" : "compare"} size={14} />
-            {inCompare
-              ? isFa
-                ? "در مقایسه"
-                : "Comparing"
-              : tr.common?.compare || "Compare"}
+            {inCompare ? (isFa ? "در مقایسه" : "Comparing") : tr.common?.compare || "Compare"}
           </Button>
         )}
       </div>

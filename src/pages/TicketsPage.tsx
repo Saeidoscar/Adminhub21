@@ -7,7 +7,7 @@ import { ListSkeleton } from "../components/ui/Skeleton"
 import { useTickets } from "../hooks/useTickets"
 import type { TicketInput } from "../lib/validation"
 
-const CATEGORY_LABELS: Record<string, { en: string fa: string }> = {
+const CATEGORY_LABELS: Record<string, { en: string; fa: string }> = {
   billing: { en: "Billing", fa: "مالی" },
   technical: { en: "Technical", fa: "فنی" },
   account: { en: "Account", fa: "حساب کاربری" },
@@ -21,7 +21,7 @@ const PRIORITY_COLORS: Record<string, string> = {
   urgent: "bg-red-100 text-red-700",
 }
 
-const PRIORITY_LABELS: Record<string, { en: string fa: string }> = {
+const PRIORITY_LABELS: Record<string, { en: string; fa: string }> = {
   low: { en: "Low", fa: "پایین" },
   medium: { en: "Medium", fa: "متوسط" },
   high: { en: "High", fa: "بالا" },
@@ -35,20 +35,14 @@ const STATUS_COLORS: Record<string, string> = {
   closed: "bg-gray-100 text-gray-700",
 }
 
-const STATUS_LABELS: Record<string, { en: string fa: string }> = {
+const STATUS_LABELS: Record<string, { en: string; fa: string }> = {
   open: { en: "Open", fa: "باز" },
   in_progress: { en: "In Progress", fa: "در حال بررسی" },
   resolved: { en: "Resolved", fa: "حل شده" },
   closed: { en: "Closed", fa: "بسته شده" },
 }
 
-export default function TicketsPage({
-  tr,
-  lang,
-}: {
-  tr: typeof t["en"]
-  lang: Lang
-}) {
+export default function TicketsPage({ tr, lang }: { tr: (typeof t)["en"]; lang: Lang }) {
   const { ticketId } = useParams()
   const navigate = useNavigate()
   const isFa = lang === "fa"
@@ -94,9 +88,7 @@ export default function TicketsPage({
           </button>
           <div className="flex items-start justify-between gap-4">
             <div>
-              <h1 className="text-xl font-bold text-[#0f172a]">
-                {currentTicket.subject}
-              </h1>
+              <h1 className="text-xl font-bold text-[#0f172a]">{currentTicket.subject}</h1>
               <p className="text-sm text-[#64748b] mt-1">
                 {isFa ? "تیکت" : "Ticket"} #{currentTicket.id.slice(0, 8)}
               </p>
@@ -105,8 +97,7 @@ export default function TicketsPage({
               <span
                 className={`px-2.5 py-1 rounded-full text-xs font-semibold ${PRIORITY_COLORS[currentTicket.priority] || "bg-gray-100 text-gray-700"}`}
               >
-                {PRIORITY_LABELS[currentTicket.priority]?.en ||
-                  currentTicket.priority}
+                {PRIORITY_LABELS[currentTicket.priority]?.en || currentTicket.priority}
               </span>
               <select
                 value={currentTicket.status}
@@ -126,46 +117,33 @@ export default function TicketsPage({
         <div className="bg-white rounded-2xl border border-[#e2e8f0] p-6 mb-6">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
             <div>
-              <div className="text-xs text-[#64748b] mb-1">
-                {isFa ? "دسته‌بندی" : "Category"}
-              </div>
+              <div className="text-xs text-[#64748b] mb-1">{isFa ? "دسته‌بندی" : "Category"}</div>
               <span className="inline-flex px-2.5 py-1 rounded-full bg-[#1e3a5f]/10 text-[#1e3a5f] text-xs font-semibold">
-                {CATEGORY_LABELS[currentTicket.category]?.[lang] ||
-                  currentTicket.category}
+                {CATEGORY_LABELS[currentTicket.category]?.[lang] || currentTicket.category}
               </span>
             </div>
             <div>
-              <div className="text-xs text-[#64748b] mb-1">
-                {isFa ? "اولویت" : "Priority"}
-              </div>
+              <div className="text-xs text-[#64748b] mb-1">{isFa ? "اولویت" : "Priority"}</div>
               <span
                 className={`inline-flex px-2.5 py-1 rounded-full text-xs font-semibold ${PRIORITY_COLORS[currentTicket.priority] || "bg-gray-100 text-gray-700"}`}
               >
                 {isFa
-                  ? PRIORITY_LABELS[currentTicket.priority]?.fa ||
-                    currentTicket.priority
-                  : PRIORITY_LABELS[currentTicket.priority]?.en ||
-                    currentTicket.priority}
+                  ? PRIORITY_LABELS[currentTicket.priority]?.fa || currentTicket.priority
+                  : PRIORITY_LABELS[currentTicket.priority]?.en || currentTicket.priority}
               </span>
             </div>
             <div>
-              <div className="text-xs text-[#64748b] mb-1">
-                {isFa ? "وضعیت" : "Status"}
-              </div>
+              <div className="text-xs text-[#64748b] mb-1">{isFa ? "وضعیت" : "Status"}</div>
               <span
                 className={`inline-flex px-2.5 py-1 rounded-full text-xs font-semibold ${STATUS_COLORS[currentTicket.status] || "bg-gray-100 text-gray-700"}`}
               >
                 {isFa
-                  ? STATUS_LABELS[currentTicket.status]?.fa ||
-                    currentTicket.status
-                  : STATUS_LABELS[currentTicket.status]?.en ||
-                    currentTicket.status}
+                  ? STATUS_LABELS[currentTicket.status]?.fa || currentTicket.status
+                  : STATUS_LABELS[currentTicket.status]?.en || currentTicket.status}
               </span>
             </div>
             <div>
-              <div className="text-xs text-[#64748b] mb-1">
-                {isFa ? "تاریخ ایجاد" : "Created"}
-              </div>
+              <div className="text-xs text-[#64748b] mb-1">{isFa ? "تاریخ ایجاد" : "Created"}</div>
               <div className="text-sm font-semibold text-[#0f172a]">
                 {new Date(currentTicket.createdAt).toLocaleDateString()}
               </div>
@@ -174,9 +152,7 @@ export default function TicketsPage({
         </div>
 
         <div className="space-y-4 mb-6">
-          <h2 className="text-lg font-bold text-[#0f172a]">
-            {isFa ? "پیام‌ها" : "Messages"}
-          </h2>
+          <h2 className="text-lg font-bold text-[#0f172a]">{isFa ? "پیام‌ها" : "Messages"}</h2>
           {messages.length === 0 ? (
             <div className="text-center py-8 text-[#64748b] text-sm">
               {isFa ? "هنوز پیامی ارسال نشده" : "No messages yet"}
@@ -185,11 +161,7 @@ export default function TicketsPage({
             messages.map((msg) => (
               <div
                 key={msg.id}
-                className={`flex ${
-                  msg.senderId === currentTicket.userId
-                    ? "justify-start"
-                    : "justify-end"
-                }`}
+                className={`flex ${msg.senderId === currentTicket.userId ? "justify-start" : "justify-end"}`}
               >
                 <div
                   className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm ${
@@ -198,15 +170,11 @@ export default function TicketsPage({
                       : "bg-[#1e3a5f] text-white"
                   }`}
                 >
-                  <div className="font-semibold text-xs mb-1 opacity-70">
-                    {msg.senderName}
-                  </div>
+                  <div className="font-semibold text-xs mb-1 opacity-70">{msg.senderName}</div>
                   <div>{msg.body}</div>
                   <div
                     className={`text-xs mt-1 opacity-60 ${
-                      msg.senderId === currentTicket.userId
-                        ? "text-right"
-                        : "text-left"
+                      msg.senderId === currentTicket.userId ? "text-right" : "text-left"
                     }`}
                   >
                     {new Date(msg.createdAt).toLocaleString()}
@@ -230,9 +198,7 @@ export default function TicketsPage({
             <textarea
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
-              placeholder={
-                isFa ? "پیام خود را بنویسید..." : "Write your message..."
-              }
+              placeholder={isFa ? "پیام خود را بنویسید..." : "Write your message..."}
               rows={2}
               className="flex-1 px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all resize-none"
             />
@@ -276,22 +242,14 @@ export default function TicketsPage({
             {isFa ? "تیکت‌های پشتیبانی" : "Support Tickets"}
           </h1>
           <p className="text-[#64748b] mt-1">
-            {isFa
-              ? "مدیریت درخواست‌های پشتیبانی خود"
-              : "Manage your support requests"}
+            {isFa ? "مدیریت درخواست‌های پشتیبانی خود" : "Manage your support requests"}
           </p>
         </div>
         <button
           onClick={() => setShowCreateForm(!showCreateForm)}
           className="px-4 py-2 rounded-xl bg-[#1e3a5f] text-white text-sm font-bold hover:bg-[#122435] transition-colors btn-press"
         >
-          {showCreateForm
-            ? isFa
-              ? "لغو"
-              : "Cancel"
-            : isFa
-              ? "تیکت جدید"
-              : "New Ticket"}
+          {showCreateForm ? (isFa ? "لغو" : "Cancel") : isFa ? "تیکت جدید" : "New Ticket"}
         </button>
       </div>
 
@@ -314,16 +272,12 @@ export default function TicketsPage({
               <input
                 value={newSubject}
                 onChange={(e) => setNewSubject(e.target.value)}
-                placeholder={
-                  isFa ? "موضوع تیکت را وارد کنید" : "Enter ticket subject"
-                }
+                placeholder={isFa ? "موضوع تیکت را وارد کنید" : "Enter ticket subject"}
                 maxLength={200}
                 required
                 className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all"
               />
-              {errors.subject && (
-                <p className="text-xs text-rose-600 mt-1">{errors.subject}</p>
-              )}
+              {errors.subject && <p className="text-xs text-rose-600 mt-1">{errors.subject}</p>}
             </div>
             <div className="grid sm:grid-cols-2 gap-4">
               <div>
@@ -374,13 +328,9 @@ export default function TicketsPage({
       ) : tickets.length === 0 ? (
         <div className="text-center py-16 text-[#64748b]">
           <div className="text-4xl mb-3">🎫</div>
-          <div className="font-semibold">
-            {isFa ? "هنوز تیکتی ندارید" : "No tickets yet"}
-          </div>
+          <div className="font-semibold">{isFa ? "هنوز تیکتی ندارید" : "No tickets yet"}</div>
           <div className="text-sm mt-1">
-            {isFa
-              ? "اولین تیکت پشتیبانی خود را ایجاد کنید"
-              : "Create your first support ticket"}
+            {isFa ? "اولین تیکت پشتیبانی خود را ایجاد کنید" : "Create your first support ticket"}
           </div>
         </div>
       ) : (
@@ -400,10 +350,8 @@ export default function TicketsPage({
                       className={`px-2 py-0.5 rounded-full text-xs font-semibold flex-shrink-0 ${PRIORITY_COLORS[ticket.priority] || "bg-gray-100 text-gray-700"}`}
                     >
                       {isFa
-                        ? PRIORITY_LABELS[ticket.priority]?.fa ||
-                          ticket.priority
-                        : PRIORITY_LABELS[ticket.priority]?.en ||
-                          ticket.priority}
+                        ? PRIORITY_LABELS[ticket.priority]?.fa || ticket.priority
+                        : PRIORITY_LABELS[ticket.priority]?.en || ticket.priority}
                     </span>
                     <span
                       className={`px-2 py-0.5 rounded-full text-xs font-semibold flex-shrink-0 ${STATUS_COLORS[ticket.status] || "bg-gray-100 text-gray-700"}`}
@@ -415,12 +363,9 @@ export default function TicketsPage({
                   </div>
                   <div className="flex items-center gap-3 text-xs text-[#64748b]">
                     <span className="inline-flex px-2.5 py-0.5 rounded-full bg-[#1e3a5f]/10 text-[#1e3a5f] font-semibold">
-                      {CATEGORY_LABELS[ticket.category]?.[lang] ||
-                        ticket.category}
+                      {CATEGORY_LABELS[ticket.category]?.[lang] || ticket.category}
                     </span>
-                    <span>
-                      {new Date(ticket.createdAt).toLocaleDateString()}
-                    </span>
+                    <span>{new Date(ticket.createdAt).toLocaleDateString()}</span>
                   </div>
                 </div>
                 <button

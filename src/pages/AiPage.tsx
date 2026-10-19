@@ -50,13 +50,7 @@ function LoadingBubble() {
   )
 }
 
-export default function AiPage({
-  tr,
-  lang,
-}: {
-  tr: typeof t["en"]
-  lang: Lang
-}) {
+export default function AiPage({ tr, lang }: { tr: (typeof t)["en"]; lang: Lang }) {
   const ai = tr.ai
   const { conversationId } = useParams()
   const navigate = useNavigate()
@@ -82,8 +76,7 @@ export default function AiPage({
   const hasActiveConversation = !!activeConversation
   const hasMessages = messages.length > 0
   const hasModels = models.length > 0
-  const isConversationLoaded =
-    !conversationId || activeConversation?.id === conversationId
+  const isConversationLoaded = !conversationId || activeConversation?.id === conversationId
 
   useEffect(() => {
     if (conversationId && conversationId !== activeConversation?.id) {
@@ -162,13 +155,7 @@ export default function AiPage({
         }
       }
     },
-    [
-      deleteConversation,
-      refreshConversations,
-      activeConversation,
-      conversations,
-      navigate,
-    ],
+    [deleteConversation, refreshConversations, activeConversation, conversations, navigate],
   )
 
   const selectedModel = models.find((m) => m.id === activeConversation?.modelId)
@@ -191,9 +178,7 @@ export default function AiPage({
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-subtle">
             <Icon name="bot" size={24} className="text-muted" />
           </div>
-          <h2 className="text-lg font-bold text-foreground">
-            {ai.noModelsTitle}
-          </h2>
+          <h2 className="text-lg font-bold text-foreground">{ai.noModelsTitle}</h2>
           <p className="mt-2 text-sm text-muted">{ai.noModelsSub}</p>
         </div>
       </div>
@@ -224,11 +209,7 @@ export default function AiPage({
           </div>
         ) : hasActiveConversation ? (
           <>
-            <ErrorBanner
-              message={error ?? ""}
-              onDismiss={clearError}
-              dismissLabel={ai.dismiss}
-            />
+            <ErrorBanner message={error ?? ""} onDismiss={clearError} dismissLabel={ai.dismiss} />
 
             {/* Header */}
             <div className="flex shrink-0 items-center justify-between gap-2 border-b border-border bg-surface px-4 py-3">
@@ -277,16 +258,10 @@ export default function AiPage({
               <Icon name="bot" size={32} />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-foreground">
-                {ai.welcomeTitle}
-              </h2>
+              <h2 className="text-lg font-bold text-foreground">{ai.welcomeTitle}</h2>
               <p className="mt-1 text-sm text-muted">{ai.welcomeSub}</p>
             </div>
-            <Button
-              onClick={handleNewConversation}
-              variant="primary"
-              className="mt-2"
-            >
+            <Button onClick={handleNewConversation} variant="primary" className="mt-2">
               <Icon name="plus" size={16} />
               {ai.newConversation}
             </Button>

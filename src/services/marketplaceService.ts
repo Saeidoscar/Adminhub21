@@ -1,14 +1,5 @@
-import type {
-  AdminProfile,
-  FavoriteRow,
-  ContractPackage,
-} from "@adminhub/shared"
-import {
-  listAdminProfiles,
-  listFavorites,
-  addFavorite,
-  removeFavorite,
-} from "../lib/api"
+import type { AdminProfile, FavoriteRow, ContractPackage } from "@adminhub/shared"
+import { listAdminProfiles, listFavorites, addFavorite, removeFavorite } from "../lib/api"
 import {
   filterPackagesForAdmin,
   filterPackagesForPlatform,
@@ -35,11 +26,8 @@ export function filterAndSortAdmins(
     const name = lang === "fa" ? a.nameFa : a.nameEn
     const bio = lang === "fa" ? a.bioFa : a.bioEn
     const matchSearch =
-      !query ||
-      name.toLowerCase().includes(query) ||
-      bio.toLowerCase().includes(query)
-    const matchPlatform =
-      platform === "all" || a.platforms.includes(platform as any)
+      !query || name.toLowerCase().includes(query) || bio.toLowerCase().includes(query)
+    const matchPlatform = platform === "all" || a.platforms.includes(platform as any)
     const matchVerified = !verifiedOnly || a.verified
     return matchSearch && matchPlatform && matchVerified
   })
@@ -58,17 +46,11 @@ export async function loadMarketplaceData(): Promise<{
   admins: AdminProfile[]
   favorites: FavoriteRow[]
 }> {
-  const [profiles, favs] = await Promise.all([
-    listAdminProfiles(),
-    listFavorites().catch(() => []),
-  ])
+  const [profiles, favs] = await Promise.all([listAdminProfiles(), listFavorites().catch(() => [])])
   return { admins: profiles, favorites: favs }
 }
 
-export function isFavoriteAdmin(
-  favorites: FavoriteRow[],
-  adminId: string,
-): boolean {
+export function isFavoriteAdmin(favorites: FavoriteRow[], adminId: string): boolean {
   return favorites.some((f) => f.adminId === adminId)
 }
 
@@ -80,10 +62,7 @@ export function toggleFavoriteService(
   if (isFav) {
     return favorites.filter((f) => f.adminId !== adminId)
   }
-  return [
-    ...favorites,
-    { id: `fav-${Date.now()}`, adminId, createdAt: new Date().toISOString() },
-  ]
+  return [...favorites, { id: `fav-${Date.now()}`, adminId, createdAt: new Date().toISOString() }]
 }
 
 export function searchAndFilterPackages(
