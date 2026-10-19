@@ -24,6 +24,7 @@ class Ticket extends Model
         'status',
         'attachments',
         'resolved_at',
+        'last_message_at',
     ];
 
     protected function casts(): array
@@ -33,6 +34,7 @@ class Ticket extends Model
             'status' => TicketStatus::class,
             'attachments' => 'array',
             'resolved_at' => 'datetime',
+            'last_message_at' => 'datetime',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
             'deleted_at' => 'datetime',

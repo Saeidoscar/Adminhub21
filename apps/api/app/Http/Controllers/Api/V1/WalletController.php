@@ -82,34 +82,36 @@ class WalletController extends Controller
      */
     public function block(Request $request): JsonResponse
     {
-        $request->validate([
+        $data = $request->validate([
             'amount' => ['required', 'integer', 'min:1'],
         ]);
 
-        $wallet = $this->blockAmount->execute($request->user(), $request->validated('amount'));
+        $wallet = $this->blockAmount->execute($request->user(), $data['amount']);
 
         return response()->json($wallet);
     }
 
     public function unblock(Request $request): JsonResponse
     {
-        $request->validate([
+        $data = $request->validate([
             'amount' => ['required', 'integer', 'min:1'],
         ]);
 
-        $wallet = $this->unblockAmount->execute($request->user(), $request->validated('amount'));
+        $wallet = $this->unblockAmount->execute($request->user(), $data['amount']);
 
         return response()->json($wallet);
     }
 
     public function transfer(Request $request): JsonResponse
     {
-        $request->validate([
+        // A plain Request has no validated(): keep the array that validate()
+        // returns instead of re-reading the input.
+        $data = $request->validate([
             'receiver_id' => ['required', 'integer', 'exists:users,id'],
             'amount' => ['required', 'integer', 'min:1'],
         ]);
 
-        $receiver = User::query()->findOrFail($request->receiver_id);
+        $receiver = User::query()->findOrFail($data['receiver_id']);
 
         if ($receiver->id === $request->user()->id) {
             return response()->json(['message' => 'Cannot transfer to yourself.'], 422);
@@ -118,7 +120,7 @@ class WalletController extends Controller
         $transaction = $this->transfer->execute(
             $request->user(),
             $receiver,
-            $request->validated('amount'),
+            $data['amount'],
             WalletTransactionType::Transfer
         );
 
