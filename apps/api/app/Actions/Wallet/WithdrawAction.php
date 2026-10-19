@@ -3,6 +3,7 @@
 namespace App\Actions\Wallet;
 
 use App\Enums\WalletTransactionDirection;
+use App\Exceptions\InsufficientFundsException;
 use App\Enums\WalletTransactionStatus;
 use App\Enums\WalletTransactionType;
 use App\Models\User;
@@ -18,10 +19,11 @@ class WithdrawAction
             $wallet = Wallet::query()
                 ->whereKey($user->id)
                 ->lockForUpdate()
-                ->firstOrFail();
+                ->first();
 
-            if ($wallet->withdrawable_balance < $amount) {
-                throw new \RuntimeException('Insufficient withdrawable balance.');
+            // A user who never had a wallet has a zero balance, not a 404.
+            if ($wallet === null || $wallet->withdrawable_balance < $amount) {
+                throw new InsufficientFundsException();
             }
 
             $wallet->balance -= $amount;

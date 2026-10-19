@@ -2,6 +2,7 @@
 
 namespace App\Actions\Wallet;
 
+use App\Exceptions\InsufficientFundsException;
 use App\Models\User;
 use App\Models\Wallet;
 use Illuminate\Support\Facades\DB;
@@ -17,7 +18,7 @@ class BlockAmountAction
                 ->firstOrFail();
 
             if ($wallet->withdrawable_balance < $amount) {
-                throw new \RuntimeException('Insufficient withdrawable balance to block.');
+                throw new InsufficientFundsException('Insufficient withdrawable balance to block.');
             }
 
             $wallet->withdrawable_balance -= $amount;
