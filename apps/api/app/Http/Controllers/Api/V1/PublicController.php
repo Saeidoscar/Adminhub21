@@ -25,12 +25,21 @@ class PublicController extends Controller
         return response()->json($packages);
     }
 
-    public function package($id): JsonResponse
+    /**
+     * Resolve a published package by its slug, falling back to its id so old
+     * links keep working while the public surface moves to slugs.
+     */
+    public function package(string $ref): JsonResponse
     {
         $package = Package::query()
             ->published()
             ->with(['user', 'platformConfigs'])
-            ->findOrFail($id);
+            ->when(
+                ctype_digit($ref),
+                fn ($query) => $query->whereKey($ref),
+                fn ($query) => $query->where('slug', $ref),
+            )
+            ->firstOrFail();
 
         return response()->json($package);
     }
