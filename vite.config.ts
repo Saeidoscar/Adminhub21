@@ -4,16 +4,19 @@ import tailwindcss from "@tailwindcss/vite"
 import path from "node:path"
 
 import siteConfiguration from "./.figma/make/site.json"
+import { demoApiPlugin } from "./dev/demo-api-plugin"
 
 // Vite config — https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   // .figma/make/deploy-preview passes `--mode development` for cached-preview builds.
   const emitSourcemaps = mode === "development"
+  // `pnpm dev:demo` serves the UI from an in-memory demo API (no database).
+  const isDemo = mode === "demo"
+  // The hosted preview proxies the dev server over HTTPS on port 443.
+  const hmr = process.env.E2B_SANDBOX ? { protocol: "wss" as const, clientPort: 443 } : undefined
 
   return {
-    base: process.env.FIGMA_PUBLIC_URL
-      ? `${process.env.FIGMA_PUBLIC_URL}/`
-      : "/",
+    base: process.env.FIGMA_PUBLIC_URL ? `${process.env.FIGMA_PUBLIC_URL}/` : "/",
     build: {
       sourcemap: emitSourcemaps ? "inline" : false,
       minify: !emitSourcemaps,
@@ -21,6 +24,7 @@ export default defineConfig(({ mode }) => {
     plugins: [
       react(),
       tailwindcss(),
+      ...(isDemo ? [demoApiPlugin()] : []),
       figmaSiteConfiguration(siteConfiguration),
       figmaErrorOverlayReplay(),
       figmaReactRefreshBoundaryFallback(),
@@ -29,21 +33,21 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),
-        "@adminhub/shared": path.resolve(
-          __dirname,
-          "./packages/shared/src/index.ts",
-        ),
+        "@adminhub/shared": path.resolve(__dirname, "./packages/shared/src/index.ts"),
       },
     },
     server: {
       host: "0.0.0.0",
       port: parseInt(process.env.PORT || "8443"),
       strictPort: true,
+      allowedHosts: true,
+      hmr,
       watch: { ignored: ["**/.figma/**"] },
     },
     preview: {
       host: "0.0.0.0",
       port: parseInt(process.env.PORT || "8443"),
+      allowedHosts: true,
     },
   }
 })
@@ -81,16 +85,9 @@ function figmaSiteConfiguration(config: FigmaSiteConfiguration): Plugin {
     return value?.replace(/[^a-zA-Z0-9_-]/g, "") || ""
   }
   function escapeHtmlText(value: string): string {
-    return value
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
+    return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
   }
-  function replaceHtmlCommentSlot(
-    html: string,
-    slotName: string,
-    content: string,
-  ): string {
+  function replaceHtmlCommentSlot(html: string, slotName: string, content: string): string {
     return html.replace(`<!-- ${slotName} -->`, content)
   }
 
@@ -99,22 +96,18 @@ function figmaSiteConfiguration(config: FigmaSiteConfiguration): Plugin {
   const favicon = config.icons?.icon ?? ""
   const socialImage = config.openGraph?.image ?? ""
   const language = sanitizeHtmlValue(config.language) || "en"
-  const googleAnalyticsId = sanitizeHtmlValue(
-    config.analytics?.googleAnalyticsId,
-  )
+  const googleAnalyticsId = sanitizeHtmlValue(config.analytics?.googleAnalyticsId)
   const headStart = config.customScripts?.headStart ?? ""
   const headEnd = config.customScripts?.headEnd ?? ""
   const bodyStart = config.customScripts?.bodyStart ?? ""
   const bodyEnd = config.customScripts?.bodyEnd ?? ""
-  const robotsTxt =
-    config.robots?.index === false ? "User-agent: *\nDisallow: /\n" : ""
+  const robotsTxt = config.robots?.index === false ? "User-agent: *\nDisallow: /\n" : ""
 
   return {
     name: "figma-site-configuration",
     configureServer(server) {
       server.middlewares.use((req, res, next) => {
-        if (!robotsTxt || req.url?.split("?")[0] !== "/robots.txt")
-          return next()
+        if (!robotsTxt || req.url?.split("?")[0] !== "/robots.txt") return next()
 
         res.setHeader("Content-Type", "text/plain; charset=utf-8")
         res.end(robotsTxt)
@@ -134,11 +127,7 @@ function figmaSiteConfiguration(config: FigmaSiteConfiguration): Plugin {
       handler(html) {
         let result = html
         result = replaceHtmlCommentSlot(result, "figma:lang", language)
-        result = replaceHtmlCommentSlot(
-          result,
-          "figma:title",
-          escapeHtmlText(title),
-        )
+        result = replaceHtmlCommentSlot(result, "figma:title", escapeHtmlText(title))
         result = replaceHtmlCommentSlot(result, "figma:head-start", headStart)
         result = replaceHtmlCommentSlot(result, "figma:head-end", headEnd)
         result = replaceHtmlCommentSlot(result, "figma:body-start", bodyStart)
@@ -285,21 +274,19 @@ function figmaErrorOverlayReplay(): Plugin {
     configureServer(server) {
       let lastError: object | null = null
 
-      const origSend = server.ws.send.bind(server.ws) as (
-        ...args: any[]
-      ) => void
-      server.ws.send = (((...args: any[]) => {
+      const origSend = server.ws.send.bind(server.ws) as (...args: any[]) => void
+      server.ws.send = ((...args: any[]) => {
         const payload = args[0]
         if (payload && typeof payload === "object" && !Array.isArray(payload)) {
           const type = (payload as { type?: string }).type
           if (type === "error") {
-            lastError = (payload as object)
+            lastError = payload as object
           } else if (type === "update" || type === "full-reload") {
             lastError = null
           }
         }
         return origSend(...args)
-      }) as typeof server.ws.send)
+      }) as typeof server.ws.send
 
       server.ws.on("connection", (socket) => {
         if (lastError !== null) {
@@ -334,8 +321,7 @@ function figmaReactRefreshBoundaryFallback(): Plugin {
       sendFullReload = () => server.ws.send({ type: "full-reload", path: "*" })
     },
     transform(code, id) {
-      if (!/\.[jt]sx?(?:\?|$)/.test(id) || id.includes("/node_modules/"))
-        return null
+      if (!/\.[jt]sx?(?:\?|$)/.test(id) || id.includes("/node_modules/")) return null
 
       const moduleId = id.split("?")[0] ?? id
       const hasRefreshBoundary = code.includes("registerExportsForReactRefresh")
@@ -362,9 +348,7 @@ function figmaReactRefreshBoundaryFallback(): Plugin {
  * builds (`vite build`) skip it entirely so the route doesn't leak
  * into shipped bundles.
  */
-function figmaMakeKitPlugin(options: {
-  storiesGlob: string | string[]
-}): Plugin {
+function figmaMakeKitPlugin(options: { storiesGlob: string | string[] }): Plugin {
   const storiesGlob = Array.isArray(options.storiesGlob)
     ? options.storiesGlob
     : [options.storiesGlob]

@@ -86,7 +86,11 @@ aiRoutes.patch(
     const { id: userId } = c.get("authUser")
     const conversationId = c.req.param("id")
     const body = c.req.valid("json")
-    const conversation = await renameConversation(userId, conversationId, body.title)
+    const conversation = await renameConversation(
+      userId,
+      conversationId,
+      body.title,
+    )
     return c.json({ conversation })
   },
 )

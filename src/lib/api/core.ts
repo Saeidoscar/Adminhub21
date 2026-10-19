@@ -30,16 +30,22 @@ export type {
   WalletTransactionRow,
 }
 
+import { isDemoMode } from "../demo-mode"
+
 export const DEFAULT_API_BASE_URL = "http://localhost:8000"
 
 export function getApiBaseUrl() {
-  return (import.meta.env.VITE_API_BASE_URL?.trim() || DEFAULT_API_BASE_URL)
-    .replace(/\/+$/, "")
+  // In demo mode every request is served by the Vite middleware on the same
+  // origin, so relative URLs are exactly what we want.
+  if (isDemoMode && !import.meta.env.VITE_API_BASE_URL?.trim()) {
+    return ""
+  }
+
+  return (import.meta.env.VITE_API_BASE_URL?.trim() || DEFAULT_API_BASE_URL).replace(/\/+$/, "")
 }
 
 export function getApiBaseUrlLaravel() {
-  return (import.meta.env.VITE_API_BASE_URL_LARAVEL?.trim() || getApiBaseUrl())
-    .replace(/\/+$/, "")
+  return (import.meta.env.VITE_API_BASE_URL_LARAVEL?.trim() || getApiBaseUrl()).replace(/\/+$/, "")
 }
 
 export function getAuthToken() {
@@ -78,9 +84,7 @@ export async function apiFetch<T>(path: string, init: RequestInit = {}): Promise
   if (!response.ok) {
     const message = await response.text()
 
-    const error = new Error(
-      message || `Request failed with status ${response.status}`,
-    )
+    const error = new Error(message || `Request failed with status ${response.status}`)
     ;(error as Error & { status: number }).status = response.status
     throw error
   }
@@ -92,18 +96,12 @@ export async function apiFetch<T>(path: string, init: RequestInit = {}): Promise
   return (await response.json()) as T
 }
 
-export function unwrapList<T>(
-  payload: Record<string, unknown> | null | undefined,
-  key: string,
-) {
+export function unwrapList<T>(payload: Record<string, unknown> | null | undefined, key: string) {
   const maybe = payload?.[key]
 
-  return Array.isArray(maybe) ? maybe as T[] : []
+  return Array.isArray(maybe) ? (maybe as T[]) : []
 }
 
-export function unwrapItem<T>(
-  payload: Record<string, unknown> | null | undefined,
-  key: string,
-) {
-  return payload?.[key] as T | undefined ?? null
+export function unwrapItem<T>(payload: Record<string, unknown> | null | undefined, key: string) {
+  return (payload?.[key] as T | undefined) ?? null
 }

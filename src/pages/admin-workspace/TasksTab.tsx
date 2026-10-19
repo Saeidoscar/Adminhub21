@@ -182,9 +182,7 @@ function TasksTab({ tr, lang, isFa }: { tr: Tr; lang: Lang; isFa: boolean }) {
       )}
 
       {!selectedCaseId ? (
-        <div className="text-center py-16 text-[#64748b]">
-          {tr.adminWorkspace.selectCase}
-        </div>
+        <div className="text-center py-16 text-[#64748b]">{tr.adminWorkspace.selectCase}</div>
       ) : (
         <>
           {showForm && (
@@ -194,17 +192,15 @@ function TasksTab({ tr, lang, isFa }: { tr: Tr; lang: Lang; isFa: boolean }) {
             >
               <div>
                 <label className="block text-sm font-semibold text-[#0f172a] mb-1.5">
-                  {tr.adminWorkspace.title}
+                  {tr.adminWorkspace.fieldTitle}
                 </label>
-            <input
-              value={form.title}
-              onChange={(e) => setForm({ ...form, title: e.target.value })}
-              required
-              className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all"
-            />
-            {errors.title && (
-              <p className="text-xs text-rose-600 mt-1">{errors.title}</p>
-            )}
+                <input
+                  value={form.title}
+                  onChange={(e) => setForm({ ...form, title: e.target.value })}
+                  required
+                  className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all"
+                />
+                {errors.title && <p className="text-xs text-rose-600 mt-1">{errors.title}</p>}
               </div>
               <div>
                 <label className="block text-sm font-semibold text-[#0f172a] mb-1.5">
@@ -212,9 +208,7 @@ function TasksTab({ tr, lang, isFa }: { tr: Tr; lang: Lang; isFa: boolean }) {
                 </label>
                 <textarea
                   value={form.description}
-                  onChange={(e) =>
-                    setForm({ ...form, description: e.target.value })
-                  }
+                  onChange={(e) => setForm({ ...form, description: e.target.value })}
                   rows={3}
                   className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all resize-none"
                 />
@@ -245,9 +239,7 @@ function TasksTab({ tr, lang, isFa }: { tr: Tr; lang: Lang; isFa: boolean }) {
                   </label>
                   <select
                     value={form.priority}
-                    onChange={(e) =>
-                      setForm({ ...form, priority: e.target.value })
-                    }
+                    onChange={(e) => setForm({ ...form, priority: e.target.value })}
                     className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] transition-all bg-white"
                   >
                     {Object.entries(PRIORITY).map(([key, val]) => (
@@ -275,9 +267,7 @@ function TasksTab({ tr, lang, isFa }: { tr: Tr; lang: Lang; isFa: boolean }) {
                 </label>
                 <input
                   value={form.assignedTo}
-                  onChange={(e) =>
-                    setForm({ ...form, assignedTo: e.target.value })
-                  }
+                  onChange={(e) => setForm({ ...form, assignedTo: e.target.value })}
                   className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all"
                 />
               </div>
@@ -293,27 +283,20 @@ function TasksTab({ tr, lang, isFa }: { tr: Tr; lang: Lang; isFa: boolean }) {
           {loading ? (
             <ListSkeleton count={3} />
           ) : tasks.length === 0 ? (
-            <div className="text-center py-16 text-[#64748b]">
-              {tr.adminWorkspace.noTasks}
-            </div>
+            <div className="text-center py-16 text-[#64748b]">{tr.adminWorkspace.noTasks}</div>
           ) : (
             <div className="space-y-3">
               {tasks.map((task) => (
-                <div
-                  key={task.id}
-                  className="bg-white rounded-2xl border border-[#e2e8f0] p-5"
-                >
+                <div key={task.id} className="bg-white rounded-2xl border border-[#e2e8f0] p-5">
                   {editingId === task.id ? (
                     <div className="space-y-4">
                       <div>
                         <label className="block text-sm font-semibold text-[#0f172a] mb-1.5">
-                          {tr.adminWorkspace.title}
+                          {tr.adminWorkspace.fieldTitle}
                         </label>
                         <input
                           value={editForm.title}
-                          onChange={(e) =>
-                            setEditForm({ ...editForm, title: e.target.value })
-                          }
+                          onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
                           className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all"
                         />
                       </div>
@@ -340,9 +323,7 @@ function TasksTab({ tr, lang, isFa }: { tr: Tr; lang: Lang; isFa: boolean }) {
                           </label>
                           <select
                             value={editForm.status}
-                            onChange={(e) =>
-                              setEditForm({ ...editForm, status: e.target.value })
-                            }
+                            onChange={(e) => setEditForm({ ...editForm, status: e.target.value })}
                             className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] transition-all bg-white"
                           >
                             {Object.entries(TASK_STATUS).map(([key, val]) => (

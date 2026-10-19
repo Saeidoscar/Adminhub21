@@ -75,10 +75,10 @@ portfolioRoutes.delete("/:id", requireAuth, async (c) => {
   if (!item) {
     throw new ApiError(404, "Portfolio item not found", "NOT_FOUND")
   }
-    if (!(await policy.remove(user, item))) {
-      throw new ApiError(404, "Portfolio item not found", "NOT_FOUND")
-    }
-    await deletePortfolio(id)
+  if (!(await policy.remove(user, item))) {
+    throw new ApiError(404, "Portfolio item not found", "NOT_FOUND")
+  }
+  await deletePortfolio(id)
   return c.json({ ok: true })
 })
 

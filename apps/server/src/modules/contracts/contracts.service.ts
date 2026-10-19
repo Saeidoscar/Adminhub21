@@ -77,7 +77,7 @@ function toSafe(row: {
 
 async function resolveAdminName(
   adminId: string,
-): Promise<{ nameEn: string; nameFa: string; photo: string | null }> {
+): Promise<{ nameEn: string nameFa: string photo: string | null }> {
   const [admin] = await db
     .select({
       nameEn: users.nameEn,
@@ -263,9 +263,7 @@ export async function listContractsForUser(
   )
 }
 
-export async function getContractById(
-  id: string,
-): Promise<ContractRow | null> {
+export async function getContractById(id: string): Promise<ContractRow | null> {
   const [row] = await db
     .select({
       id: contracts.id,

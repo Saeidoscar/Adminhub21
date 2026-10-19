@@ -20,7 +20,7 @@ export function ReviewsTab({
   submitting: boolean
   onSubmit: () => Promise<void>
   lang: Lang
-  tr: typeof t["en"] & typeof t["fa"]
+  tr: (typeof t)["en"] & (typeof t)["fa"]
 }) {
   const isFa = lang === "fa"
 
@@ -49,9 +49,7 @@ export function ReviewsTab({
                   key={star}
                   onClick={() => setReviewForm({ ...reviewForm, rating: star })}
                   className={`text-2xl transition-colors ${
-                    star <= reviewForm.rating
-                      ? "text-amber-400"
-                      : "text-gray-300"
+                    star <= reviewForm.rating ? "text-amber-400" : "text-gray-300"
                   }`}
                 >
                   ★
@@ -65,18 +63,15 @@ export function ReviewsTab({
             </label>
             <textarea
               value={reviewForm.comment}
-              onChange={(e) =>
-                setReviewForm({ ...reviewForm, comment: e.target.value })
+              onChange={(e) => setReviewForm({ ...reviewForm, comment: e.target.value })}
+              placeholder={
+                isFa ? "تجربه خود را با دیگران به اشتراک بگذارید..." : "Share your experience..."
               }
-              placeholder={isFa ? "تجربه خود را با دیگران به اشتراک بگذارید..." : "Share your experience..."}
               rows={3}
               className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] bg-[#f8fafc] text-sm text-[#0f172a] placeholder-[#94a3b8] focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all resize-none"
             />
           </div>
-          <Button
-            onClick={onSubmit}
-            disabled={submitting || !reviewForm.comment.trim()}
-          >
+          <Button onClick={onSubmit} disabled={submitting || !reviewForm.comment.trim()}>
             {submitting ? tr.common.loading : isFa ? "ثبت نظر" : "Submit Review"}
           </Button>
         </div>
@@ -92,23 +87,16 @@ export function ReviewsTab({
           </div>
         ) : (
           reviews.map((review) => (
-            <div
-              key={review.id}
-              className="bg-white rounded-2xl border border-[#e2e8f0] p-5"
-            >
+            <div key={review.id} className="bg-white rounded-2xl border border-[#e2e8f0] p-5">
               <div className="flex items-center gap-2 mb-2">
                 <Stars rating={review.rating} />
-                <span className="text-sm font-bold text-[#0f172a]">
-                  {review.rating}/5
-                </span>
+                <span className="text-sm font-bold text-[#0f172a]">{review.rating}/5</span>
                 <span className="text-xs text-[#94a3b8]">
                   {new Date(review.createdAt).toLocaleDateString()}
                 </span>
               </div>
               {review.comment && (
-                <p className="text-sm text-[#64748b] leading-relaxed">
-                  {review.comment}
-                </p>
+                <p className="text-sm text-[#64748b] leading-relaxed">{review.comment}</p>
               )}
             </div>
           ))

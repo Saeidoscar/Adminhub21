@@ -21,8 +21,7 @@ export function createQueryBuilder(result: SqlResult = []) {
 
   builder.then = (resolve: any, reject: any) =>
     Promise.resolve(result).then(resolve, reject)
-  builder.catch = (reject: any) =>
-    Promise.resolve(result).catch(reject)
+  builder.catch = (reject: any) => Promise.resolve(result).catch(reject)
 
   return builder
 }

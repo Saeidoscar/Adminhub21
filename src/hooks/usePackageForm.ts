@@ -97,19 +97,14 @@ export function usePackageForm({ onSuccess }: UsePackageFormOptions = {}) {
     })
   }, [])
 
-  const updateConfig = useCallback(
-    (platform: PlatformKey, field: string, value: unknown) => {
-      setForm((f) => ({
-        ...f,
-        platformConfigs: f.platformConfigs.map((c) =>
-          c.platform === platform
-            ? { ...c, settings: { ...c.settings, [field]: value } }
-            : c,
-        ),
-      }))
-    },
-    [],
-  )
+  const updateConfig = useCallback((platform: PlatformKey, field: string, value: unknown) => {
+    setForm((f) => ({
+      ...f,
+      platformConfigs: f.platformConfigs.map((c) =>
+        c.platform === platform ? { ...c, settings: { ...c.settings, [field]: value } } : c,
+      ),
+    }))
+  }, [])
 
   const validate = useCallback((): boolean => {
     const fieldErrors: Record<string, string> = {}
@@ -159,8 +154,7 @@ export function usePackageForm({ onSuccess }: UsePackageFormOptions = {}) {
   }, [editingId, form, validate, addPackage, updatePackage, resetForm, onSuccess])
 
   const setF = useCallback(
-    (k: string, v: string | boolean) =>
-      setForm((f) => ({ ...f, [k]: v })),
+    (k: string, v: string | boolean) => setForm((f) => ({ ...f, [k]: v })),
     [],
   )
 

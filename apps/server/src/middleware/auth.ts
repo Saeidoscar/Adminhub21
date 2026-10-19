@@ -29,7 +29,11 @@ export const requireAuth = createMiddleware(async (c, next) => {
     throw new ApiError(401, "Invalid or revoked access token", "UNAUTHORIZED")
   }
 
-  const [user] = await db.select().from(users).where(eq(users.id, record.userId)).limit(1)
+  const [user] = await db
+    .select()
+    .from(users)
+    .where(eq(users.id, record.userId))
+    .limit(1)
   if (!user) {
     throw new ApiError(401, "User not found", "UNAUTHORIZED")
   }
@@ -42,7 +46,11 @@ export function requireRole(...roles: Role[]) {
   return createMiddleware(async (c, next) => {
     const user = c.get("authUser")
     if (!roles.includes(user.role)) {
-      throw new ApiError(403, "You do not have permission for this action", "FORBIDDEN")
+      throw new ApiError(
+        403,
+        "You do not have permission for this action",
+        "FORBIDDEN",
+      )
     }
     await next()
   })

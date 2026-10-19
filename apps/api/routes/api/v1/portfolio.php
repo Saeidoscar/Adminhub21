@@ -8,7 +8,7 @@ Route::get('/portfolio/item/{id}', [PortfolioController::class, 'show'])->whereN
 
 Route::middleware('auth:sanctum')->group(function (): void {
     Route::post('/portfolio', [PortfolioController::class, 'store']);
-    Route::put('/portfolio/{id}', [PortfolioController::class, 'update'])->whereNumber('id');
-    Route::delete('/portfolio/{id}', [PortfolioController::class, 'destroy'])->whereNumber('id');
-    Route::post('/portfolio/{id}/media', [PortfolioController::class, 'uploadMedia'])->whereNumber('id');
+    Route::put('/portfolio/{portfolio}', [PortfolioController::class, 'update'])->whereNumber('portfolio');
+    Route::delete('/portfolio/{portfolio}', [PortfolioController::class, 'destroy'])->whereNumber('portfolio');
+    Route::post('/portfolio/{portfolio}/media', [PortfolioController::class, 'uploadMedia'])->whereNumber('portfolio');
 });

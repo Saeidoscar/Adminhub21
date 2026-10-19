@@ -8,12 +8,7 @@ import {
   deletePackage,
   createOffer,
 } from "../lib/api"
-import {
-  packagesByAdmin,
-  packagesByPlatform,
-  findAdmin,
-  findPackage,
-} from "../domain/package"
+import { packagesByAdmin, packagesByPlatform, findAdmin, findPackage } from "../domain/package"
 
 export async function fetchPackagesWithAdmins(): Promise<{
   admins: AdminProfile[]
@@ -33,9 +28,7 @@ export async function createPackageService(
   return createPackage(input)
 }
 
-export async function updatePackageService(
-  pkg: ContractPackage,
-): Promise<ContractPackage> {
+export async function updatePackageService(pkg: ContractPackage): Promise<ContractPackage> {
   return updatePackage(pkg.id, pkg)
 }
 

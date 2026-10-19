@@ -8,7 +8,12 @@ import {
   addFavorite,
   removeFavorite,
 } from "../lib/api"
-import { filterAndSortAdmins, isFavoriteAdmin, toggleFavoriteService, loadMarketplaceData } from "../services/marketplaceService"
+import {
+  filterAndSortAdmins,
+  isFavoriteAdmin,
+  toggleFavoriteService,
+  loadMarketplaceData,
+} from "../services/marketplaceService"
 import type { MarketplaceFilters } from "../services/marketplaceService"
 
 export function useContracts() {
@@ -35,8 +40,12 @@ export function useContracts() {
 
   const updateStatus = useCallback(async (contractId: string, status: string) => {
     const validStatuses = ["active", "pending", "completed", "disputed"] as const
-    const safeStatus = validStatuses.includes(status as (typeof validStatuses)[number]) ? (status as (typeof validStatuses)[number]) : undefined
-    const updated = await updateContractStatus(contractId, { status: safeStatus })
+    const safeStatus = validStatuses.includes(status as (typeof validStatuses)[number])
+      ? (status as (typeof validStatuses)[number])
+      : undefined
+    const updated = await updateContractStatus(contractId, {
+      status: safeStatus,
+    })
     setContracts((prev) => prev.map((c) => (c.id === contractId ? updated : c)))
     return updated
   }, [])
@@ -46,7 +55,14 @@ export function useContracts() {
     return contract
   }, [])
 
-  return { contracts, loading, error, loadContracts, updateStatus, viewContract }
+  return {
+    contracts,
+    loading,
+    error,
+    loadContracts,
+    updateStatus,
+    viewContract,
+  }
 }
 
 export function useFavorites() {
@@ -62,30 +78,36 @@ export function useFavorites() {
     }
   }, [])
 
-  const toggleFavorite = useCallback(async (adminId: string) => {
-    setFavLoading((prev) => ({ ...prev, [adminId]: true }))
-    try {
-      const isFav = isFavoriteAdmin(favorites, adminId)
-      if (isFav) {
-        await removeFavorite(adminId)
-      } else {
-        await addFavorite(adminId)
+  const toggleFavorite = useCallback(
+    async (adminId: string) => {
+      setFavLoading((prev) => ({ ...prev, [adminId]: true }))
+      try {
+        const isFav = isFavoriteAdmin(favorites, adminId)
+        if (isFav) {
+          await removeFavorite(adminId)
+        } else {
+          await addFavorite(adminId)
+        }
+        setFavorites((prev) => toggleFavoriteService(prev, adminId, isFav))
+      } catch {
+        // silently fail
+      } finally {
+        setFavLoading((prev) => {
+          const next = { ...prev }
+          delete next[adminId]
+          return next
+        })
       }
-      setFavorites((prev) => toggleFavoriteService(prev, adminId, isFav))
-    } catch {
-      // silently fail
-    } finally {
-      setFavLoading((prev) => {
-        const next = { ...prev }
-        delete next[adminId]
-        return next
-      })
-    }
-  }, [favorites])
+    },
+    [favorites],
+  )
 
-  const isFavorite = useCallback((adminId: string) => {
-    return isFavoriteAdmin(favorites, adminId)
-  }, [favorites])
+  const isFavorite = useCallback(
+    (adminId: string) => {
+      return isFavoriteAdmin(favorites, adminId)
+    },
+    [favorites],
+  )
 
   return { favorites, favLoading, loadFavorites, toggleFavorite, isFavorite }
 }
@@ -125,5 +147,13 @@ export function useMarketplace(filters: MarketplaceFilters) {
 
   const filtered = filterAndSortAdmins(admins, filters)
 
-  return { admins, filtered, loading, favorites, favLoading, toggleFavorite, isFavorite }
+  return {
+    admins,
+    filtered,
+    loading,
+    favorites,
+    favLoading,
+    toggleFavorite,
+    isFavorite,
+  }
 }

@@ -46,17 +46,17 @@ export interface CreateStoryInput {
   status?: "draft" | "published" | "archived"
 }
 
-export async function listStories(query: {
-  status?: string
-  search?: string
-} = {}): Promise<StoryRow[]> {
+export async function listStories(
+  query: {
+    status?: string
+    search?: string
+  } = {},
+): Promise<StoryRow[]> {
   const params = new URLSearchParams()
   if (query.status) params.set("status", query.status)
   if (query.search) params.set("search", query.search)
   const qs = params.toString()
-  const payload = await apiFetch<Record<string, unknown>>(
-    `/api/stories${qs ? `?${qs}` : ""}`,
-  )
+  const payload = await apiFetch<Record<string, unknown>>(`/api/stories${qs ? `?${qs}` : ""}`)
   return unwrapList<StoryRow>(payload, "stories")
 }
 
@@ -77,10 +77,7 @@ export async function createStory(input: CreateStoryInput): Promise<StoryRow> {
   return story
 }
 
-export async function updateStory(
-  id: string,
-  input: Partial<CreateStoryInput>,
-): Promise<StoryRow> {
+export async function updateStory(id: string, input: Partial<CreateStoryInput>): Promise<StoryRow> {
   const payload = await apiFetch<Record<string, unknown>>(`/api/stories/${id}`, {
     method: "PATCH",
     body: JSON.stringify(input),
@@ -105,17 +102,17 @@ export interface CreateBlogInput {
   status?: "draft" | "published" | "archived"
 }
 
-export async function listBlogs(query: {
-  status?: string
-  search?: string
-} = {}): Promise<BlogRow[]> {
+export async function listBlogs(
+  query: {
+    status?: string
+    search?: string
+  } = {},
+): Promise<BlogRow[]> {
   const params = new URLSearchParams()
   if (query.status) params.set("status", query.status)
   if (query.search) params.set("search", query.search)
   const qs = params.toString()
-  const payload = await apiFetch<Record<string, unknown>>(
-    `/api/blogs${qs ? `?${qs}` : ""}`,
-  )
+  const payload = await apiFetch<Record<string, unknown>>(`/api/blogs${qs ? `?${qs}` : ""}`)
   return unwrapList<BlogRow>(payload, "blogs")
 }
 
@@ -136,10 +133,7 @@ export async function createBlog(input: CreateBlogInput): Promise<BlogRow> {
   return blog
 }
 
-export async function updateBlog(
-  id: string,
-  input: Partial<CreateBlogInput>,
-): Promise<BlogRow> {
+export async function updateBlog(id: string, input: Partial<CreateBlogInput>): Promise<BlogRow> {
   const payload = await apiFetch<Record<string, unknown>>(`/api/blogs/${id}`, {
     method: "PATCH",
     body: JSON.stringify(input),
@@ -172,9 +166,7 @@ export async function listComments(query: {
   params.set("postId", query.postId)
   params.set("postType", query.postType)
   const qs = params.toString()
-  const payload = await apiFetch<Record<string, unknown>>(
-    `/api/comments${qs ? `?${qs}` : ""}`,
-  )
+  const payload = await apiFetch<Record<string, unknown>>(`/api/comments${qs ? `?${qs}` : ""}`)
   return unwrapList<CommentRow>(payload, "comments")
 }
 

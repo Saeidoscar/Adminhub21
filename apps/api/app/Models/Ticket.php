@@ -24,6 +24,7 @@ class Ticket extends Model
         'status',
         'attachments',
         'resolved_at',
+        'last_message_at',
     ];
 
     protected function casts(): array
@@ -33,6 +34,7 @@ class Ticket extends Model
             'status' => TicketStatus::class,
             'attachments' => 'array',
             'resolved_at' => 'datetime',
+            'last_message_at' => 'datetime',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
             'deleted_at' => 'datetime',
@@ -50,7 +52,12 @@ class Ticket extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function assignedTo(): BelongsTo
+    /**
+     * Named `assignee` on purpose: Eloquent serialises a relation called
+     * `assignedTo` under the key `assigned_to`, which would overwrite the
+     * integer foreign-key column in every JSON response.
+     */
+    public function assignee(): BelongsTo
     {
         return $this->belongsTo(User::class, 'assigned_to');
     }
@@ -73,12 +80,7 @@ class Ticket extends Model
 
     public function scopeOpen(Builder $query): Builder
     {
-        return $query->whereIn('status', [
-            TicketStatus::Open->value,
-            TicketStatus::Answered->value,
-            TicketStatus::Referred->value,
-            TicketStatus::Pending->value,
-        ]);
+        return $query->whereIn('status', TicketStatus::openStatuses());
     }
 
     public function scopeClosed(Builder $query): Builder
@@ -94,7 +96,10 @@ class Ticket extends Model
 
     public function isOpen(): bool
     {
-        return $this->status !== TicketStatus::Closed->value;
+        return in_array($this->status, [
+            TicketStatus::Open->value,
+            TicketStatus::InProgress->value,
+        ], true);
     }
 
     public function isClosed(): bool

@@ -8,6 +8,6 @@ Route::middleware('auth:sanctum')->group(function (): void {
 });
 
 Route::post('/reviews', [ReviewController::class, 'store'])->middleware('auth:sanctum');
-Route::put('/reviews/{id}', [ReviewController::class, 'update'])->whereNumber('id')->middleware('auth:sanctum');
-Route::delete('/reviews/{id}', [ReviewController::class, 'destroy'])->whereNumber('id')->middleware('auth:sanctum');
+Route::put('/reviews/{review}', [ReviewController::class, 'update'])->whereNumber('review')->middleware('auth:sanctum');
+Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])->whereNumber('review')->middleware('auth:sanctum');
 Route::post('/reviews/{user}/recalculate', [ReviewController::class, 'recalculate'])->whereNumber('user')->middleware('auth:sanctum');

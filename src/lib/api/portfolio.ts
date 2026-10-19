@@ -13,9 +13,7 @@ export interface PortfolioRow {
 }
 
 export async function listAdminPortfolio(adminId: string): Promise<PortfolioRow[]> {
-  const payload = await apiFetch<Record<string, unknown>>(
-    `/api/portfolio/${adminId}`,
-  )
+  const payload = await apiFetch<Record<string, unknown>>(`/api/portfolio/${adminId}`)
   return unwrapList<PortfolioRow>(payload, "portfolio")
 }
 

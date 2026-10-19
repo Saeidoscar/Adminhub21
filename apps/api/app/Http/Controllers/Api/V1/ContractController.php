@@ -14,9 +14,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\StoreContractRequest;
 use App\Http\Requests\Api\V1\StoreReviewRequest;
 use App\Models\Contract;
+use App\Services\Contracts\ContractLifecycle;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use App\Services\Media\MediaService;
 
 class ContractController extends Controller
 {
@@ -33,11 +34,22 @@ class ContractController extends Controller
 
     public function index(Request $request): JsonResponse
     {
+        $user = $request->user();
+
         $contracts = Contract::query()
-            ->where('user_id', $request->user()->id)
-            ->orWhere('client_id', $request->user()->id)
+            // Grouped so that a future scope cannot turn this into
+            // "(mine OR client) AND something else".
+            ->where(function ($query) use ($user): void {
+                $query->where('user_id', $user->id)
+                    ->orWhere('client_id', $user->id);
+            })
+            ->when(
+                $request->query('status'),
+                fn ($query, string $status) => $query->where('status', $status),
+            )
             ->with(['user', 'client', 'package', 'reviews', 'clauses'])
-            ->paginate();
+            ->latest('updated_at')
+            ->paginate(min(50, max(1, (int) $request->query('per_page', 20))));
 
         return response()->json($contracts);
     }
@@ -84,6 +96,10 @@ class ContractController extends Controller
     public function sign(Request $request, Contract $contract): JsonResponse
     {
         $this->authorize('update', $contract);
+
+        if (! ContractLifecycle::canSign($contract)) {
+            return response()->json(['message' => ContractLifecycle::refusal($contract, 'sign')], 422);
+        }
         $signature = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'ip_address' => ['nullable', 'ip'],
@@ -106,7 +122,7 @@ class ContractController extends Controller
     public function downloadPdf(Contract $contract): Symfony\Component\HttpFoundation\BinaryFileResponse
     {
         $this->authorize('view', $contract);
-        if (! $contract->pdf_path || ! Storage::disk('public')->exists($contract->pdf_path)) {
+        if (! $contract->pdf_path || ! app(MediaService::class)->disk()->exists($contract->pdf_path)) {
             abort(404, 'PDF not generated yet.');
         }
 
@@ -116,6 +132,11 @@ class ContractController extends Controller
     public function activate(Contract $contract): JsonResponse
     {
         $this->authorize('update', $contract);
+
+        if (! ContractLifecycle::canActivate($contract)) {
+            return response()->json(['message' => ContractLifecycle::refusal($contract, 'activate')], 422);
+        }
+
         $contract = $this->activateContract->execute($contract);
 
         return response()->json($contract);
@@ -124,6 +145,11 @@ class ContractController extends Controller
     public function complete(Contract $contract): JsonResponse
     {
         $this->authorize('update', $contract);
+
+        if (! ContractLifecycle::canComplete($contract)) {
+            return response()->json(['message' => ContractLifecycle::refusal($contract, 'complete')], 422);
+        }
+
         $contract = $this->completeContract->execute($contract);
 
         return response()->json($contract);
@@ -132,6 +158,11 @@ class ContractController extends Controller
     public function cancel(Contract $contract): JsonResponse
     {
         $this->authorize('update', $contract);
+
+        if (! ContractLifecycle::canCancel($contract)) {
+            return response()->json(['message' => ContractLifecycle::refusal($contract, 'cancel')], 422);
+        }
+
         $contract = $this->cancelContract->execute($contract);
 
         return response()->json($contract);

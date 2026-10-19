@@ -15,7 +15,7 @@ class DepositRequest extends FormRequest
     {
         return [
             'amount' => ['required', 'integer', 'min:1'],
-            'gateway' => ['nullable', 'string', 'in:zibal,sep,crypto'],
+            'gateway' => ['required', 'string', 'in:zibal,sep,crypto'],
         ];
     }
 }

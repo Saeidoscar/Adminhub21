@@ -39,12 +39,12 @@ function TimeLogsTab({ tr, lang, isFa }: { tr: Tr; lang: Lang; isFa: boolean }) 
     }
   }
 
-   useEffect(() => {
-     load()
-     listAdminCases()
-       .then(setCases)
-       .catch((err) => console.error("Failed to load cases", err))
-   }, [])
+  useEffect(() => {
+    load()
+    listAdminCases()
+      .then(setCases)
+      .catch((err) => console.error("Failed to load cases", err))
+  }, [])
 
   const resetForm = () => {
     setForm({
@@ -88,9 +88,7 @@ function TimeLogsTab({ tr, lang, isFa }: { tr: Tr; lang: Lang; isFa: boolean }) 
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-bold text-[#0f172a]">
-          {tr.adminWorkspace.timeLogs}
-        </h2>
+        <h2 className="text-lg font-bold text-[#0f172a]">{tr.adminWorkspace.timeLogs}</h2>
         <button
           onClick={() => setShowForm((v) => !v)}
           className="px-4 py-2 rounded-xl bg-[#1e3a5f] text-white text-sm font-bold hover:bg-[#122435] transition-colors btn-press"
@@ -166,9 +164,7 @@ function TimeLogsTab({ tr, lang, isFa }: { tr: Tr; lang: Lang; isFa: boolean }) 
                 required
                 className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all"
               />
-              {errors.startedAt && (
-                <p className="text-xs text-rose-600 mt-1">{errors.startedAt}</p>
-              )}
+              {errors.startedAt && <p className="text-xs text-rose-600 mt-1">{errors.startedAt}</p>}
             </div>
             <div>
               <label className="block text-sm font-semibold text-[#0f172a] mb-1.5">
@@ -181,9 +177,7 @@ function TimeLogsTab({ tr, lang, isFa }: { tr: Tr; lang: Lang; isFa: boolean }) 
                 required
                 className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all"
               />
-              {errors.endedAt && (
-                <p className="text-xs text-rose-600 mt-1">{errors.endedAt}</p>
-              )}
+              {errors.endedAt && <p className="text-xs text-rose-600 mt-1">{errors.endedAt}</p>}
             </div>
           </div>
           {previewMinutes !== null && (
@@ -203,21 +197,14 @@ function TimeLogsTab({ tr, lang, isFa }: { tr: Tr; lang: Lang; isFa: boolean }) 
       {loading ? (
         <ListSkeleton count={3} />
       ) : timeLogs.length === 0 ? (
-        <div className="text-center py-16 text-[#64748b]">
-          {tr.adminWorkspace.noTimeLogs}
-        </div>
+        <div className="text-center py-16 text-[#64748b]">{tr.adminWorkspace.noTimeLogs}</div>
       ) : (
         <div className="space-y-3">
           {timeLogs.map((log) => (
-            <div
-              key={log.id}
-              className="bg-white rounded-2xl border border-[#e2e8f0] p-5"
-            >
+            <div key={log.id} className="bg-white rounded-2xl border border-[#e2e8f0] p-5">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
-                  <div className="font-bold text-sm text-[#0f172a] mb-2">
-                    {log.description}
-                  </div>
+                  <div className="font-bold text-sm text-[#0f172a] mb-2">{log.description}</div>
                   <div className="flex flex-wrap gap-2 text-xs text-[#64748b]">
                     {log.caseTitle && (
                       <span className="px-2 py-0.5 rounded-full bg-[#1e3a5f]/10 text-[#1e3a5f] font-semibold">

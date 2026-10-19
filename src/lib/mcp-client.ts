@@ -42,21 +42,25 @@ export interface McpClientConfig {
   onEvent?: (event: McpEvent) => void
 }
 
-export type McpEvent = {
-  type: "tool_started"
-  tool: string
-  input: Record<string, unknown>
-} | {
-  type: "tool_result"
-  tool: string
-  result: unknown
-} | {
-  type: "error"
-  message: string
-} | {
-  type: "session_updated"
-  session: McpSession
-}
+export type McpEvent =
+  | {
+      type: "tool_started"
+      tool: string
+      input: Record<string, unknown>
+    }
+  | {
+      type: "tool_result"
+      tool: string
+      result: unknown
+    }
+  | {
+      type: "error"
+      message: string
+    }
+  | {
+      type: "session_updated"
+      session: McpSession
+    }
 
 let config: McpClientConfig = { baseUrl: "" }
 
@@ -68,9 +72,7 @@ export async function listTools(): Promise<McpTool[]> {
   if (!config.baseUrl) return mockTools
   try {
     const res = await fetch(`${config.baseUrl}/api/mcp/tools`, {
-      headers: config.apiKey
-        ? { Authorization: `Bearer ${config.apiKey}` }
-        : {},
+      headers: config.apiKey ? { Authorization: `Bearer ${config.apiKey}` } : {},
     })
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
     return (await res.json()) as McpTool[]
@@ -79,10 +81,7 @@ export async function listTools(): Promise<McpTool[]> {
   }
 }
 
-export async function detectIntent(
-  text: string,
-  opts?: McpCallOptions,
-): Promise<McpIntent> {
+export async function detectIntent(text: string, opts?: McpCallOptions): Promise<McpIntent> {
   if (!config.baseUrl) {
     return mockIntentDetection(text)
   }
@@ -275,21 +274,13 @@ function mockIntentDetection(text: string): McpIntent {
   ) {
     return { intent: "recommend_team", entities: {}, confidence: 0.8 }
   }
-  if (
-    lower.includes("package") ||
-    lower.includes("پکیج") ||
-    lower.includes("باندل")
-  ) {
+  if (lower.includes("package") || lower.includes("پکیج") || lower.includes("باندل")) {
     return { intent: "list_packages", entities: {}, confidence: 0.9 }
   }
   if (lower.includes("compare") || lower.includes("مقایسه")) {
     return { intent: "compare_packages", entities: {}, confidence: 0.88 }
   }
-  if (
-    lower.includes("offer") ||
-    lower.includes("پیشنهاد") ||
-    lower.includes("custom")
-  ) {
+  if (lower.includes("offer") || lower.includes("پیشنهاد") || lower.includes("custom")) {
     return { intent: "send_custom_offer", entities: {}, confidence: 0.85 }
   }
   return { intent: "ask_general", entities: {}, confidence: 0.5 }
@@ -301,10 +292,13 @@ function mockToolCall(
   opts?: McpCallOptions,
 ): McpResult {
   const isFa = opts?.language === "fa"
-  const responses: Record<string, {
-    en: string
-    fa: string
-  }> = {
+  const responses: Record<
+    string,
+    {
+      en: string
+      fa: string
+    }
+  > = {
     "find-admin": {
       en: "Looking for admins on Instagram with 4.5+ rating and engagement experience. Top matches: Arya Ahmadi (4.9★), Neda Farahani (5.0★). Estimated rate: $100-150/mo.",
       fa: "جستجو برای ادمین اینستاگرام با امتیاز ۴.۵+ و تجربه تعامل. بهترین مطابق‌ها: آریا احمدی (۴.۹★)، ندا فراهانی (۵.۰★). نرخ تخمینی: ۴۲-۶۳ میلیون تومان/ماه.",

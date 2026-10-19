@@ -19,7 +19,7 @@ function cleanupStore() {
 
 setInterval(cleanupStore, 60000)
 
-export function rateLimit(options: { windowMs: number; max: number }) {
+export function rateLimit(options: { windowMs: number max: number }) {
   const { windowMs, max } = options
 
   return createMiddleware(async (c, next) => {

@@ -1,10 +1,4 @@
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  ReactNode,
-} from "react"
+import { createContext, useContext, useEffect, useState, ReactNode } from "react"
 import type { Lang } from "../i18n"
 import { lightTokens, darkTokens } from "../design-system/tokens"
 
@@ -29,9 +23,7 @@ const getStoredTheme = (): Theme => {
   if (typeof window === "undefined") return "light"
   const stored = localStorage.getItem("theme") as Theme | null
   if (stored === "dark" || stored === "light") return stored
-  return window.matchMedia("(prefers-color-scheme: dark)").matches
-    ? "dark"
-    : "light"
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
 }
 
 const getStoredLang = (): Lang => {
@@ -49,9 +41,7 @@ const getStoredFontSize = (): "sm" | "md" | "lg" => {
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<Theme>(getStoredTheme)
   const [lang, setLangState] = useState<Lang>(getStoredLang)
-  const [fontSize, setFontSize] = useState<"sm" | "md" | "lg">(
-    getStoredFontSize,
-  )
+  const [fontSize, setFontSize] = useState<"sm" | "md" | "lg">(getStoredFontSize)
 
   const dir = lang === "fa" ? "rtl" : "ltr"
   const currentTokens = theme === "dark" ? darkTokens : lightTokens

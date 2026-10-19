@@ -44,9 +44,7 @@ export async function register(
   return { user, accessToken }
 }
 
-export async function login(
-  input: LoginInput,
-): Promise<{ user: SafeUser; accessToken: string }> {
+export async function login(input: LoginInput): Promise<{ user: SafeUser; accessToken: string }> {
   const payload = await apiFetch<Record<string, unknown>>("/api/auth/login", {
     method: "POST",
     body: JSON.stringify(input),
@@ -62,9 +60,7 @@ export async function login(
   return { user, accessToken }
 }
 
-export async function sendOtp(
-  input: OtpSendInput,
-): Promise<{ message: string; phone: string }> {
+export async function sendOtp(input: OtpSendInput): Promise<{ message: string; phone: string }> {
   const payload = await apiFetch<Record<string, unknown>>("/api/auth/otp/request", {
     method: "POST",
     body: JSON.stringify(input),

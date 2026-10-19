@@ -37,7 +37,7 @@ class ReviewController extends Controller
     public function store(StoreReviewRequest $request): JsonResponse
     {
         $contract = Contract::findOrFail($request->validated('contract_id'));
-        $this->authorize('create', $contract);
+        $this->authorize('create', [Review::class, $contract]);
         $this->authorize('view', $contract);
 
         $review = $this->submitReview->execute($request->user(), $contract, $request->validated());

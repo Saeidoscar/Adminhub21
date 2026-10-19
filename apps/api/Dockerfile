@@ -1,5 +1,5 @@
 # Laravel API Dockerfile - PHP-FPM
-FROM php:8.3-fpm-alpine
+FROM php:8.4-fpm-alpine
 
 RUN apk add --no-cache \
     postgresql-dev \
@@ -34,12 +34,23 @@ RUN apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \
 
 WORKDIR /var/www/html
 
-# Copy application files (vendor is mounted from host)
+# Composer is needed inside the image: a fresh checkout has no vendor/, and the
+# compose file mounts an anonymous volume there so the install survives rebuilds.
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --no-interaction --prefer-dist --no-scripts --no-progress
+
+# Copy application files
 COPY . .
+
+RUN composer dump-autoload --no-dev --optimize
 
 # Copy PHP config
 COPY docker/php/php.ini /usr/local/etc/php/conf.d/custom.ini
 COPY docker/php/www.conf /usr/local/etc/php-fpm.d/www.conf
+COPY docker/php/entrypoint.sh /usr/local/bin/entrypoint
+RUN chmod +x /usr/local/bin/entrypoint
 
 # Ensure storage directories exist and are writable
 RUN mkdir -p /var/www/html/storage/framework/cache/data \
@@ -56,4 +67,5 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
 
 EXPOSE 9000
 
+ENTRYPOINT ["entrypoint"]
 CMD ["php-fpm"]

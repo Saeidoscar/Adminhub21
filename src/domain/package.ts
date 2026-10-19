@@ -53,10 +53,7 @@ export function getPackageAdmin(
 
 export { getPackageAdmin as findAdmin }
 
-export function findPackage(
-  packages: ContractPackage[],
-  id: string,
-): ContractPackage | undefined {
+export function findPackage(packages: ContractPackage[], id: string): ContractPackage | undefined {
   return packages.find((p) => p.id === id)
 }
 

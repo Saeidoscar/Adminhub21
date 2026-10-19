@@ -24,13 +24,7 @@ export function useCopyText() {
   return { copied, copy }
 }
 
-export function CodeBlock({
-  children,
-  className,
-}: {
-  children?: string
-  className?: string
-}) {
+export function CodeBlock({ children, className }: { children?: string; className?: string }) {
   const language = className?.replace("language-", "") || "text"
   const code = String(children ?? "").replace(/\n$/, "")
   const { copied, copy } = useCopyText()

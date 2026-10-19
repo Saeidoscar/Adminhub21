@@ -1,0 +1,52 @@
+@theme {
+  --color-navy: #1e3a5f;
+  --color-navy-light: #2d5a8e;
+  --color-navy-dark: #122435;
+  --color-amber: #f59e0b;
+  --color-amber-light: #fef3c7;
+  --color-emerald: #10b981;
+  --color-rose: #ef4444;
+  --color-sky: #3b82f6;
+  --color-surface: #f2f5fa;
+  --color-surface2: #eef2f8;
+  --color-card: #ffffff;
+  --color-border: #e2e8f0;
+  --color-foreground: #0f172a;
+  --color-primary: #1e3a5f;
+  --color-subtle: #f1f5fb;
+  --color-text: #0f172a;
+  --color-muted: #64748b;
+  --font-en: "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-fa: "Vazirmatn", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+}
+
+[dir="ltr"] {
+  font-family: var(--font-en);
+}
+[dir="rtl"] {
+  font-family: var(--font-fa);
+}
+
+[data-theme="dark"] {
+  --color-navy: #16233c;
+  --color-navy-light: #223354;
+  --color-navy-dark: #0d1524;
+  /* Brand accents that must stay readable on dark surfaces. */
+  --color-amber: #fbbf24;
+  --color-emerald: #34d399;
+  --color-amber: #f59e0b;
+  --color-amber-light: #fef3c7;
+  --color-emerald: #22c55e;
+  --color-rose: #ef4444;
+  --color-sky: #38bdf8;
+  --color-surface: #0b1020;
+  --color-surface2: #182034;
+  --color-card: #11182b;
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-foreground: #eef2ff;
+  --color-primary: #27406b;
+  --color-subtle: #141b2d;
+  --color-text: #eef2ff;
+  --color-muted: #9aa6c4;
+}

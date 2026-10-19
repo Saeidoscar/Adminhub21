@@ -1,53 +1,63 @@
 import { vi, describe, it, expect, beforeEach } from "vitest"
-import { register, login, refresh, me } from "../../src/modules/auth/auth.service"
+import {
+  register,
+  login,
+  refresh,
+  me,
+} from "../../src/modules/auth/auth.service"
 import { ApiError } from "../../src/lib/errors"
 
-const { mockDb, mockHashPassword, mockVerifyPassword, mockCreateApiToken, mockSignToken, createQueryBuilder } =
-  vi.hoisted(() => {
-    function createQueryBuilder(result: any[] = []) {
-      const builder: any = {
-        select: vi.fn().mockReturnThis(),
-        from: vi.fn().mockReturnThis(),
-        innerJoin: vi.fn().mockReturnThis(),
-        leftJoin: vi.fn().mockReturnThis(),
-        where: vi.fn().mockReturnThis(),
-        orderBy: vi.fn().mockReturnThis(),
-        having: vi.fn().mockReturnThis(),
-        groupBy: vi.fn().mockReturnThis(),
-        values: vi.fn().mockReturnThis(),
-        set: vi.fn().mockReturnThis(),
-        limit: vi.fn().mockResolvedValue(result),
-        offset: vi.fn().mockResolvedValue(result),
-        returning: vi.fn().mockResolvedValue(result),
-      }
-      builder.then = (resolve: any, reject: any) =>
-        Promise.resolve(result).then(resolve, reject)
-      builder.catch = (reject: any) =>
-        Promise.resolve(result).catch(reject)
-      return builder
+const {
+  mockDb,
+  mockHashPassword,
+  mockVerifyPassword,
+  mockCreateApiToken,
+  mockSignToken,
+  createQueryBuilder,
+} = vi.hoisted(() => {
+  function createQueryBuilder(result: any[] = []) {
+    const builder: any = {
+      select: vi.fn().mockReturnThis(),
+      from: vi.fn().mockReturnThis(),
+      innerJoin: vi.fn().mockReturnThis(),
+      leftJoin: vi.fn().mockReturnThis(),
+      where: vi.fn().mockReturnThis(),
+      orderBy: vi.fn().mockReturnThis(),
+      having: vi.fn().mockReturnThis(),
+      groupBy: vi.fn().mockReturnThis(),
+      values: vi.fn().mockReturnThis(),
+      set: vi.fn().mockReturnThis(),
+      limit: vi.fn().mockResolvedValue(result),
+      offset: vi.fn().mockResolvedValue(result),
+      returning: vi.fn().mockResolvedValue(result),
     }
+    builder.then = (resolve: any, reject: any) =>
+      Promise.resolve(result).then(resolve, reject)
+    builder.catch = (reject: any) => Promise.resolve(result).catch(reject)
+    return builder
+  }
 
-    const mockDb = {
-      select: vi.fn(() => createQueryBuilder([])),
-      insert: vi.fn(() => createQueryBuilder([])),
-      update: vi.fn(() => createQueryBuilder([])),
-      delete: vi.fn(() => createQueryBuilder(undefined)),
-    }
+  const mockDb = {
+    select: vi.fn(() => createQueryBuilder([])),
+    insert: vi.fn(() => createQueryBuilder([])),
+    update: vi.fn(() => createQueryBuilder([])),
+    delete: vi.fn(() => createQueryBuilder(undefined)),
+  }
 
-    const mockHashPassword = vi.fn().mockResolvedValue("hashed")
-    const mockVerifyPassword = vi.fn()
-    const mockCreateApiToken = vi.fn().mockResolvedValue("access-token")
-    const mockSignToken = vi.fn().mockResolvedValue("refresh-token")
+  const mockHashPassword = vi.fn().mockResolvedValue("hashed")
+  const mockVerifyPassword = vi.fn()
+  const mockCreateApiToken = vi.fn().mockResolvedValue("access-token")
+  const mockSignToken = vi.fn().mockResolvedValue("refresh-token")
 
-    return {
-      mockDb,
-      mockHashPassword,
-      mockVerifyPassword,
-      mockCreateApiToken,
-      mockSignToken,
-      createQueryBuilder,
-    }
-  })
+  return {
+    mockDb,
+    mockHashPassword,
+    mockVerifyPassword,
+    mockCreateApiToken,
+    mockSignToken,
+    createQueryBuilder,
+  }
+})
 
 vi.mock("../../src/db", () => ({ db: mockDb }))
 vi.mock("../../src/lib/password", () => ({
@@ -72,9 +82,7 @@ describe("auth.service", () => {
 
   describe("register", () => {
     it("should throw 409 if email already exists", async () => {
-      mockDb.select.mockReturnValueOnce(
-        createQueryBuilder([{ id: "user-1" }]),
-      )
+      mockDb.select.mockReturnValueOnce(createQueryBuilder([{ id: "user-1" }]))
 
       await expect(
         register({
@@ -184,7 +192,10 @@ describe("auth.service", () => {
       mockDb.select.mockReturnValueOnce(createQueryBuilder([user]))
       mockVerifyPassword.mockResolvedValueOnce(true)
 
-      const result = await login({ email: "user@example.com", password: "password" })
+      const result = await login({
+        email: "user@example.com",
+        password: "password",
+      })
 
       expect(result.user.email).toBe("user@example.com")
       expect(result.accessToken).toBe("access-token")

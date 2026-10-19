@@ -138,17 +138,14 @@ test.describe("Tickets E2E", () => {
     expect(ticketData.ticket).toBeDefined()
     const ticketId = ticketData.ticket.id
 
-    const messageResponse = await request.post(
-      `${API_URL}/api/tickets/${ticketId}/messages`,
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-        data: {
-          body: "Hello, this is a test message",
-        },
+    const messageResponse = await request.post(`${API_URL}/api/tickets/${ticketId}/messages`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
       },
-    )
+      data: {
+        body: "Hello, this is a test message",
+      },
+    })
 
     expect(messageResponse.ok()).toBeTruthy()
     const messageData = await messageResponse.json()

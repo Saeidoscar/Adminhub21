@@ -7,8 +7,17 @@ import { ModelSelector } from "../components/ai/ModelSelector"
 import { useAi } from "../contexts/AiContext"
 import { Icon } from "../components/layout/Icon"
 import { Button } from "../components/ui/Button"
+import type { t, Lang } from "../i18n"
 
-function ErrorBanner({ message, onDismiss }: { message: string; onDismiss: () => void }) {
+function ErrorBanner({
+  message,
+  onDismiss,
+  dismissLabel,
+}: {
+  message: string
+  onDismiss: () => void
+  dismissLabel: string
+}) {
   if (!message) return null
 
   return (
@@ -18,7 +27,7 @@ function ErrorBanner({ message, onDismiss }: { message: string; onDismiss: () =>
         {message}
       </span>
       <Button variant="ghost" className="h-7 px-2 text-xs" onClick={onDismiss}>
-        Dismiss
+        {dismissLabel}
       </Button>
     </div>
   )
@@ -27,7 +36,7 @@ function ErrorBanner({ message, onDismiss }: { message: string; onDismiss: () =>
 function LoadingBubble() {
   return (
     <div className="flex gap-3 slide-in">
-      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-bold text-foreground">
+      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-subtle text-xs font-bold text-foreground">
         AI
       </div>
       <div className="rounded-2xl rounded-bl-sm border border-border bg-surface px-4 py-3">
@@ -41,7 +50,8 @@ function LoadingBubble() {
   )
 }
 
-export default function AiPage() {
+export default function AiPage({ tr, lang }: { tr: (typeof t)["en"]; lang: Lang }) {
+  const ai = tr.ai
   const { conversationId } = useParams()
   const navigate = useNavigate()
   const [isCreatingConversation, setIsCreatingConversation] = useState(false)
@@ -66,8 +76,7 @@ export default function AiPage() {
   const hasActiveConversation = !!activeConversation
   const hasMessages = messages.length > 0
   const hasModels = models.length > 0
-  const isConversationLoaded =
-    !conversationId || activeConversation?.id === conversationId
+  const isConversationLoaded = !conversationId || activeConversation?.id === conversationId
 
   useEffect(() => {
     if (conversationId && conversationId !== activeConversation?.id) {
@@ -156,7 +165,7 @@ export default function AiPage() {
       <div className="flex h-full items-center justify-center">
         <div className="flex flex-col items-center gap-3 text-sm text-muted">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-          Loading AI...
+          {ai.loading}
         </div>
       </div>
     )
@@ -166,13 +175,11 @@ export default function AiPage() {
     return (
       <div className="flex h-full items-center justify-center p-6">
         <div className="max-w-md text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-muted">
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-subtle">
             <Icon name="bot" size={24} className="text-muted" />
           </div>
-          <h2 className="text-lg font-bold text-foreground">No models available</h2>
-          <p className="mt-2 text-sm text-muted">
-            There are no AI models configured. Please contact an administrator.
-          </p>
+          <h2 className="text-lg font-bold text-foreground">{ai.noModelsTitle}</h2>
+          <p className="mt-2 text-sm text-muted">{ai.noModelsSub}</p>
         </div>
       </div>
     )
@@ -189,6 +196,7 @@ export default function AiPage() {
           onNew={handleNewConversation}
           onRename={handleRenameConversation}
           onDelete={handleDeleteConversation}
+          tr={tr}
         />
       </div>
 
@@ -197,11 +205,11 @@ export default function AiPage() {
         {!isConversationLoaded && conversationId ? (
           <div className="flex flex-1 items-center justify-center gap-3 text-sm text-muted">
             <div className="h-5 w-5 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-            Loading conversation...
+            {ai.loadingConversation}
           </div>
         ) : hasActiveConversation ? (
           <>
-            <ErrorBanner message={error} onDismiss={clearError} />
+            <ErrorBanner message={error ?? ""} onDismiss={clearError} dismissLabel={ai.dismiss} />
 
             {/* Header */}
             <div className="flex shrink-0 items-center justify-between gap-2 border-b border-border bg-surface px-4 py-3">
@@ -227,7 +235,7 @@ export default function AiPage() {
               <MessageList messages={messages} />
             ) : (
               <div className="flex flex-1 items-center justify-center text-sm text-muted">
-                No messages yet. Start the conversation below.
+                {ai.noMessages}
               </div>
             )}
 
@@ -238,7 +246,11 @@ export default function AiPage() {
             )}
 
             {/* Input */}
-            <MessageInput onSend={handleSend} disabled={isSending || !hasModels} />
+            <MessageInput
+              onSend={handleSend}
+              disabled={isSending || !hasModels}
+              placeholder={ai.inputPlaceholder}
+            />
           </>
         ) : (
           <div className="flex flex-1 flex-col items-center justify-center gap-4 p-6 text-center">
@@ -246,20 +258,12 @@ export default function AiPage() {
               <Icon name="bot" size={32} />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-foreground">
-                Welcome to AI Chat
-              </h2>
-              <p className="mt-1 text-sm text-muted">
-                Select a conversation from the sidebar or start a new one.
-              </p>
+              <h2 className="text-lg font-bold text-foreground">{ai.welcomeTitle}</h2>
+              <p className="mt-1 text-sm text-muted">{ai.welcomeSub}</p>
             </div>
-            <Button
-              onClick={handleNewConversation}
-              variant="primary"
-              className="mt-2"
-            >
+            <Button onClick={handleNewConversation} variant="primary" className="mt-2">
               <Icon name="plus" size={16} />
-              New Conversation
+              {ai.newConversation}
             </Button>
           </div>
         )}

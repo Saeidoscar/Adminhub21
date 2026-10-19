@@ -153,7 +153,10 @@ function sanitizeProviderError(error: unknown): string {
       message = message.slice(0, 500) + "..."
     }
     message = message.replace(/Bearer\s+[A-Za-z0-9\-_]+/gi, "[REDACTED]")
-    message = message.replace(/api[_-]?key['":\s]+[A-Za-z0-9\-_]+/gi, "[REDACTED]")
+    message = message.replace(
+      /api[_-]?key['":\s]+[A-Za-z0-9\-_]+/gi,
+      "[REDACTED]",
+    )
     return message
   }
   if (error instanceof Error) {
@@ -539,7 +542,5 @@ export async function deleteConversation(
     throw new Error("Conversation not found or access denied")
   }
 
-  await db
-    .delete(aiConversations)
-    .where(eq(aiConversations.id, conversationId))
+  await db.delete(aiConversations).where(eq(aiConversations.id, conversationId))
 }

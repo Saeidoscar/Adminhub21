@@ -1,9 +1,5 @@
 import { useState, useEffect, useCallback } from "react"
-import {
-  listReviews,
-  createReview,
-  type ReviewRow,
-} from "../lib/api"
+import { listReviews, createReview, type ReviewRow } from "../lib/api"
 
 export function useReviews(adminId?: string) {
   const [reviews, setReviews] = useState<ReviewRow[]>([])

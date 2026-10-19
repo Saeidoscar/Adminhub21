@@ -47,7 +47,7 @@ coverage
 /storage/app/public/*
 !/storage/app/public/.gitignore
 
-# Vendor is mounted from host during development
+# Vendor is installed inside the image; compose keeps it in an anonymous volume.
 # /vendor
 
 # Bootstrap cache (rebuilt in Docker)

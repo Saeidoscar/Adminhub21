@@ -18,7 +18,7 @@ export function PackagesTab({
   platformPackages: ContractPackage[]
   bundlePackages: ContractPackage[]
   lang: Lang
-  tr: typeof t["en"] & typeof t["fa"]
+  tr: (typeof t)["en"] & (typeof t)["fa"]
   comparison: {
     selected: Set<string>
     has: (id: string) => boolean
@@ -34,9 +34,7 @@ export function PackagesTab({
     return (
       <div className="bg-white rounded-2xl border border-[#e2e8f0] p-12 text-center fade-in">
         <div className="text-4xl mb-3">📦</div>
-        <div className="font-bold text-[#0f172a] mb-1">
-          {tr.adminPage.noPackages}
-        </div>
+        <div className="font-bold text-[#0f172a] mb-1">{tr.adminPage.noPackages}</div>
       </div>
     )
   }

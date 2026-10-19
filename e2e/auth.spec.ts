@@ -56,7 +56,13 @@ test.describe("Auth flow", () => {
   test("should reject login with wrong password", async ({ request }) => {
     const email = uniqueEmail("badlogin")
     await request.post("/api/auth/register", {
-      data: { email, password: "password123", role: "employer", nameEn: "Test", nameFa: "تست" },
+      data: {
+        email,
+        password: "password123",
+        role: "employer",
+        nameEn: "Test",
+        nameFa: "تست",
+      },
     })
 
     const response = await request.post("/api/auth/login", {

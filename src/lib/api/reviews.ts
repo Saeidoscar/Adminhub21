@@ -3,14 +3,12 @@ import { apiFetch, unwrapList, unwrapItem } from "./core"
 
 export type { ReviewRow }
 
-export async function createReview(
-  input: {
-    adminId: string
-    contractId?: string
-    rating: number
-    comment?: string
-  },
-): Promise<ReviewRow> {
+export async function createReview(input: {
+  adminId: string
+  contractId?: string
+  rating: number
+  comment?: string
+}): Promise<ReviewRow> {
   const payload = await apiFetch<Record<string, unknown>>("/api/reviews", {
     method: "POST",
     body: JSON.stringify(input),
@@ -30,9 +28,7 @@ export interface ListReviewsQuery {
   employerId?: string
 }
 
-export async function listReviews(
-  query: ListReviewsQuery = {},
-): Promise<ReviewRow[]> {
+export async function listReviews(query: ListReviewsQuery = {}): Promise<ReviewRow[]> {
   const params = new URLSearchParams()
 
   if (query.adminId) {

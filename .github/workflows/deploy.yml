@@ -6,16 +6,26 @@ on:
     paths:
       - "Dockerfile"
       - "docker-compose.prod.yml"
-      - "apps/server/Dockerfile"
-      - "apps/server/src/**"
+      - "apps/api/Dockerfile"
+      - "apps/api/Dockerfile.nginx"
+      - "apps/api/app/**"
+      - "apps/api/config/**"
+      - "apps/api/routes/**"
+      - "apps/api/composer.json"
+      - "apps/api/composer.lock"
       - "src/**"
       - "package.json"
+      - "pnpm-lock.yaml"
 
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
-  NODE_VERSION: 22
 
+# NOTE: the compose file builds its images locally, so this workflow publishes
+# images for external hosts to consume. The final step only does something
+# useful on a runner that can reach the target deployment (self-hosted runner
+# or a configured remote Docker context); on ubuntu-latest the containers are
+# started on the throwaway runner itself.
 jobs:
   build-and-push:
     name: Build & Push Docker Images
@@ -38,11 +48,28 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract metadata
-        id: meta
+      # Two images are pushed to the same repository; the suffixes keep their
+      # tags from overwriting each other.
+      - name: Metadata (frontend)
+        id: meta-web
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          flavor: |
+            suffix=-web
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha,format=long
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Metadata (API)
+        id: meta-api
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          flavor: |
+            suffix=-api
           tags: |
             type=ref,event=branch
             type=ref,event=pr
@@ -55,22 +82,25 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: ${{ steps.meta-web.outputs.tags }}
+          labels: ${{ steps.meta-web.outputs.labels }}
 
-      - name: Build and push backend image
+      - name: Build and push API image
         uses: docker/build-push-action@v6
         with:
-          context: .
-          file: ./apps/server/Dockerfile
+          context: ./apps/api
+          file: ./apps/api/Dockerfile
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: ${{ steps.meta-api.outputs.tags }}
+          labels: ${{ steps.meta-api.outputs.labels }}
 
       - name: Deploy via docker-compose
         env:
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-          JWT_ACCESS_SECRET: ${{ secrets.JWT_ACCESS_SECRET }}
-          JWT_REFRESH_SECRET: ${{ secrets.JWT_REFRESH_SECRET }}
-          CORS_ORIGINS: ${{ secrets.CORS_ORIGINS }}
+          REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
+          APP_KEY: ${{ secrets.APP_KEY }}
+          APP_URL: ${{ secrets.APP_URL }}
+          CORS_ALLOWED_ORIGINS: ${{ secrets.CORS_ALLOWED_ORIGINS }}
         run: |
           docker compose -f docker-compose.prod.yml pull
           docker compose -f docker-compose.prod.yml up -d --remove-orphans

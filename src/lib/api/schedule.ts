@@ -47,19 +47,19 @@ export interface TimeLogRow {
   createdAt: string
 }
 
-export async function listAdminCases(query: {
-  status?: string
-  priority?: string
-  search?: string
-}): Promise<CaseRow[]> {
+export async function listAdminCases(
+  query: {
+    status?: string
+    priority?: string
+    search?: string
+  } = {},
+): Promise<CaseRow[]> {
   const params = new URLSearchParams()
   if (query.status) params.set("status", query.status)
   if (query.priority) params.set("priority", query.priority)
   if (query.search) params.set("search", query.search)
   const qs = params.toString()
-  const payload = await apiFetch<Record<string, unknown>>(
-    `/api/cases${qs ? `?${qs}` : ""}`,
-  )
+  const payload = await apiFetch<Record<string, unknown>>(`/api/cases${qs ? `?${qs}` : ""}`)
   return unwrapList<CaseRow>(payload, "cases")
 }
 
@@ -161,10 +161,12 @@ export async function updateAdminTask(
   return task
 }
 
-export async function listAdminEvents(query: {
-  from?: string
-  to?: string
-}): Promise<EventRow[]> {
+export async function listAdminEvents(
+  query: {
+    from?: string
+    to?: string
+  } = {},
+): Promise<EventRow[]> {
   const params = new URLSearchParams()
   if (query.from) params.set("from", query.from)
   if (query.to) params.set("to", query.to)
@@ -227,10 +229,12 @@ export async function deleteAdminEvent(id: string): Promise<void> {
   })
 }
 
-export async function listAdminTimeLogs(query: {
-  caseId?: string
-  taskId?: string
-}): Promise<TimeLogRow[]> {
+export async function listAdminTimeLogs(
+  query: {
+    caseId?: string
+    taskId?: string
+  } = {},
+): Promise<TimeLogRow[]> {
   const params = new URLSearchParams()
   if (query.caseId) params.set("caseId", query.caseId)
   if (query.taskId) params.set("taskId", query.taskId)

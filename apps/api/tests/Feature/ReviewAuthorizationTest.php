@@ -18,6 +18,7 @@ class ReviewAuthorizationTest extends TestCase
         return User::create([
             'name' => $name,
             'email' => $email,
+            'phone' => '+989' . random_int(100000000, 999999999),
             'password' => bcrypt('secret'),
             'role' => 'employer',
         ]);

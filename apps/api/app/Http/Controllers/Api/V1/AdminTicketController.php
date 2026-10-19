@@ -14,7 +14,7 @@ class AdminTicketController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        $query = Ticket::query()->with(['user', 'assignedTo']);
+        $query = Ticket::query()->with(['user', 'assignee']);
 
         if ($status = $request->string('status')->toString()) {
             $query->where('status', $status);
@@ -37,7 +37,7 @@ class AdminTicketController extends Controller
     {
         $this->authorize('manage', $ticket);
 
-        $ticket->load(['user', 'assignedTo', 'messages.user']);
+        $ticket->load(['user', 'assignee', 'messages.user']);
 
         return response()->json(['ticket' => $ticket]);
     }
@@ -54,7 +54,7 @@ class AdminTicketController extends Controller
 
         $ticket->update($validated);
 
-        return response()->json(['ticket' => $ticket->load(['user', 'assignedTo', 'messages.user'])]);
+        return response()->json(['ticket' => $ticket->load(['user', 'assignee', 'messages.user'])]);
     }
 
     public function assign(Request $request, Ticket $ticket): JsonResponse
@@ -68,7 +68,7 @@ class AdminTicketController extends Controller
         $agent = User::query()->findOrFail($request->assigned_to);
         $ticket->update(['assigned_to' => $agent->id]);
 
-        return response()->json(['ticket' => $ticket->load(['user', 'assignedTo', 'messages.user'])]);
+        return response()->json(['ticket' => $ticket->load(['user', 'assignee', 'messages.user'])]);
     }
 
     public function close(Request $request, Ticket $ticket): JsonResponse
@@ -77,7 +77,7 @@ class AdminTicketController extends Controller
 
         $ticket->update(['status' => TicketStatus::Closed->value]);
 
-        return response()->json(['ticket' => $ticket->load(['user', 'assignedTo', 'messages.user'])]);
+        return response()->json(['ticket' => $ticket->load(['user', 'assignee', 'messages.user'])]);
     }
 
     public function reply(Request $request, Ticket $ticket): JsonResponse

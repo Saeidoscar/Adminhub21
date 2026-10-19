@@ -1,13 +1,16 @@
 import { useState } from "react"
-import { type AdminProfile, type Lang, type PlatformKey, type PlatformConfig, type CustomOffer } from "@adminhub/shared"
+import {
+  type AdminProfile,
+  type Lang,
+  type PlatformKey,
+  type PlatformConfig,
+  type CustomOffer,
+} from "@adminhub/shared"
 import { t } from "../../i18n"
 import { Icon } from "../../components/layout/Icon"
 import { Input, Textarea, Select } from "../../components/ui/Input"
 import { Button } from "../../components/ui/Button"
-import {
-  PLATFORM_SPECS,
-  emptyPlatformConfig,
-} from "../../components/packages/platformSpecs"
+import { PLATFORM_SPECS, emptyPlatformConfig } from "../../components/packages/platformSpecs"
 import { BILLING_CYCLES, DURATION_OPTIONS } from "../AdminPublicProfilePage"
 
 export function CustomOfferForm({
@@ -19,7 +22,7 @@ export function CustomOfferForm({
 }: {
   admin: AdminProfile
   lang: Lang
-  tr: typeof t["en"] & typeof t["fa"]
+  tr: (typeof t)["en"] & (typeof t)["fa"]
   onSubmit: (offer: Omit<CustomOffer, "id" | "createdAt">) => Promise<void>
   offerSent: boolean
 }) {
@@ -51,16 +54,10 @@ export function CustomOfferForm({
     })
   }
 
-  const updateConfig = (
-    platform: PlatformKey,
-    field: string,
-    value: unknown,
-  ) => {
+  const updateConfig = (platform: PlatformKey, field: string, value: unknown) => {
     setPlatformConfigs((cfg) =>
       cfg.map((c) =>
-        c.platform === platform
-          ? { ...c, settings: { ...c.settings, [field]: value } }
-          : c,
+        c.platform === platform ? { ...c, settings: { ...c.settings, [field]: value } } : c,
       ),
     )
   }
@@ -75,11 +72,7 @@ export function CustomOfferForm({
           .filter((f) => {
             if (!f.description) return false
             const desc = isFa ? f.description.fa : f.description.en
-            return (
-              desc.includes("DM") ||
-              desc.includes("گروه") ||
-              desc.includes("پیام")
-            )
+            return desc.includes("DM") || desc.includes("گروه") || desc.includes("پیام")
           })
           .map((f) => f.id)
         if (dmFields.length === 0) return c
@@ -99,9 +92,7 @@ export function CustomOfferForm({
       adminId: String(admin.id),
       employerId: "current-employer",
       employerName,
-      name: isFa
-        ? `پیشنهاد سفارشی برای ${admin.nameFa}`
-        : `Custom Offer for ${admin.nameEn}`,
+      name: isFa ? `پیشنهاد سفارشی برای ${admin.nameFa}` : `Custom Offer for ${admin.nameEn}`,
       description: message || "",
       platforms: selectedPlatforms,
       platformConfigs,
@@ -129,24 +120,16 @@ export function CustomOfferForm({
         <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4">
           <Icon name="check" size={32} className="text-emerald-600" />
         </div>
-        <h3 className="font-bold text-[#0f172a] text-lg mb-2">
-          {tr.customOffer.offerSent}
-        </h3>
-        <p className="text-sm text-[#64748b] mb-4">
-          {tr.customOffer.offerSentSub}
-        </p>
-        <Button onClick={() => setSelectedPlatforms([])}>
-          {tr.customOffer.sendAnother}
-        </Button>
+        <h3 className="font-bold text-[#0f172a] text-lg mb-2">{tr.customOffer.offerSent}</h3>
+        <p className="text-sm text-[#64748b] mb-4">{tr.customOffer.offerSentSub}</p>
+        <Button onClick={() => setSelectedPlatforms([])}>{tr.customOffer.sendAnother}</Button>
       </div>
     )
   }
 
   return (
     <div className="bg-white rounded-2xl border border-[#e2e8f0] p-6 fade-in">
-      <h2 className="font-bold text-[#0f172a] text-lg mb-1">
-        {tr.customOffer.title}
-      </h2>
+      <h2 className="font-bold text-[#0f172a] text-lg mb-1">{tr.customOffer.title}</h2>
       <p className="text-sm text-[#64748b] mb-6">{tr.customOffer.sub}</p>
 
       <div className="space-y-6">
@@ -177,9 +160,7 @@ export function CustomOfferForm({
           <label className="block text-sm font-semibold text-[#0f172a] mb-2">
             {tr.customOffer.platforms}
           </label>
-          <p className="text-xs text-[#64748b] mb-2">
-            {tr.customOffer.platformNote}
-          </p>
+          <p className="text-xs text-[#64748b] mb-2">{tr.customOffer.platformNote}</p>
           <div className="flex flex-wrap gap-2">
             {admin.platforms.map((p) => (
               <button
@@ -191,17 +172,13 @@ export function CustomOfferForm({
                     : "border-[#e2e8f0] text-[#64748b] hover:border-[#1e3a5f]/40"
                 }`}
               >
-                {selectedPlatforms.includes(p) && (
-                  <Icon name="check" size={12} />
-                )}
+                {selectedPlatforms.includes(p) && <Icon name="check" size={12} />}
                 {platformLabel(p, lang)}
               </button>
             ))}
           </div>
           {selectedPlatforms.length === 0 && (
-            <p className="text-xs text-red-500 mt-1">
-              {tr.customOffer.platformRequired}
-            </p>
+            <p className="text-xs text-red-500 mt-1">{tr.customOffer.platformRequired}</p>
           )}
         </div>
 
@@ -221,9 +198,7 @@ export function CustomOfferForm({
                     >
                       {spec.label[lang].charAt(0)}
                     </div>
-                    <span className="font-bold text-sm text-[#0f172a]">
-                      {spec.label[lang]}
-                    </span>
+                    <span className="font-bold text-sm text-[#0f172a]">{spec.label[lang]}</span>
                   </div>
                   <div className="grid sm:grid-cols-2 gap-3">
                     {spec.fields.map((field) => (
@@ -234,11 +209,7 @@ export function CustomOfferForm({
                               type="checkbox"
                               checked={!!config.settings[field.id] as boolean}
                               onChange={(e) =>
-                                updateConfig(
-                                  config.platform,
-                                  field.id,
-                                  e.target.checked,
-                                )
+                                updateConfig(config.platform, field.id, e.target.checked)
                               }
                               className="w-4 h-4 rounded border-[#e2e8f0] text-[#1e3a5f] focus:ring-[#1e3a5f]"
                             />
@@ -312,9 +283,7 @@ export function CustomOfferForm({
               <label className="block text-sm font-semibold text-[#0f172a]">
                 {tr.customOffer.dmControl}
               </label>
-              <p className="text-xs text-[#64748b]">
-                {tr.customOffer.dmControlNote}
-              </p>
+              <p className="text-xs text-[#64748b]">{tr.customOffer.dmControlNote}</p>
             </div>
             <button
               type="button"

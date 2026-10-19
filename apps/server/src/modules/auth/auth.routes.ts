@@ -30,32 +30,35 @@ authRoutes.post(
   rateLimit({ windowMs: 60_000, max: 5 }),
   zValidator("json", registerSchema),
   async (c) => {
-  const body = c.req.valid("json")
-  const result = await service.register(body)
-  setRefreshCookie(c, result.refreshToken)
-  return c.json({ user: result.user, accessToken: result.accessToken }, 201)
-})
+    const body = c.req.valid("json")
+    const result = await service.register(body)
+    setRefreshCookie(c, result.refreshToken)
+    return c.json({ user: result.user, accessToken: result.accessToken }, 201)
+  },
+)
 
 authRoutes.post(
   "/login",
   rateLimit({ windowMs: 60_000, max: 10 }),
   zValidator("json", loginSchema),
   async (c) => {
-  const body = c.req.valid("json")
-  const result = await service.login(body)
-  setRefreshCookie(c, result.refreshToken)
-  return c.json({ user: result.user, accessToken: result.accessToken })
-})
+    const body = c.req.valid("json")
+    const result = await service.login(body)
+    setRefreshCookie(c, result.refreshToken)
+    return c.json({ user: result.user, accessToken: result.accessToken })
+  },
+)
 
 authRoutes.post(
   "/otp/send",
   rateLimit({ windowMs: 60_000, max: 5 }),
   zValidator("json", sendOtpSchema),
   async (c) => {
-  const body = c.req.valid("json")
-  const result = await otpService.sendOtp(body)
-  return c.json(result)
-})
+    const body = c.req.valid("json")
+    const result = await otpService.sendOtp(body)
+    return c.json(result)
+  },
+)
 
 authRoutes.post(
   "/otp/verify",
@@ -86,7 +89,9 @@ authRoutes.post("/refresh", async (c) => {
 
 authRoutes.post("/logout", async (c) => {
   const header = c.req.header("Authorization")
-  const token = header?.startsWith("Bearer ") ? header.slice("Bearer ".length) : null
+  const token = header?.startsWith("Bearer ")
+    ? header.slice("Bearer ".length)
+    : null
   if (token) {
     await revokeApiToken(token)
   }

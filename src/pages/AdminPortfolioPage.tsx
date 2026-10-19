@@ -16,14 +16,11 @@ import { PortfolioCardSkeleton, ListSkeleton } from "../components/ui/Skeleton"
 import { portfolioSchema, type PortfolioInput } from "../lib/validation"
 
 interface AdminPortfolioPageProps {
-  tr: typeof t["en"] & typeof t["fa"]
+  tr: (typeof t)["en"] & (typeof t)["fa"]
   lang: Lang
 }
 
-export default function AdminPortfolioPage({
-  lang,
-  tr,
-}: AdminPortfolioPageProps) {
+export default function AdminPortfolioPage({ lang, tr }: AdminPortfolioPageProps) {
   const [items, setItems] = useState<PortfolioRow[]>([])
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<"list" | "create" | "edit">("list")
@@ -95,9 +92,7 @@ export default function AdminPortfolioPage({
       const payload = result.data as PortfolioInput
       if (editingId) {
         const updated = await updateAdminPortfolio(editingId, payload)
-        setItems((prev) =>
-          prev.map((item) => (item.id === editingId ? updated : item)),
-        )
+        setItems((prev) => prev.map((item) => (item.id === editingId ? updated : item)))
       } else {
         const created = await createAdminPortfolio(payload)
         setItems((prev) => [created, ...prev])
@@ -197,9 +192,7 @@ export default function AdminPortfolioPage({
   return (
     <div className="p-6 lg:p-8 max-w-5xl mx-auto fade-in">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-[#0f172a]">
-          {tr.adminPortfolio.title}
-        </h1>
+        <h1 className="text-2xl font-bold text-[#0f172a]">{tr.adminPortfolio.title}</h1>
         <p className="text-[#64748b] mt-1">{tr.adminPortfolio.sub}</p>
       </div>
 
@@ -208,9 +201,7 @@ export default function AdminPortfolioPage({
           { id: "list", label: tr.adminProfile.manage },
           {
             id: "create",
-            label: editingId
-              ? tr.adminPortfolio.editItem
-              : tr.adminPortfolio.addItem,
+            label: editingId ? tr.adminPortfolio.editItem : tr.adminPortfolio.addItem,
           },
         ].map((tab) => (
           <button
@@ -235,9 +226,7 @@ export default function AdminPortfolioPage({
           {items.length === 0 && (
             <div className="bg-white rounded-2xl border border-[#e2e8f0] p-12 text-center">
               <div className="text-4xl mb-3">🖼️</div>
-              <div className="font-bold text-[#0f172a] mb-1">
-                {tr.adminPortfolio.noItems}
-              </div>
+              <div className="font-bold text-[#0f172a] mb-1">{tr.adminPortfolio.noItems}</div>
               <button
                 onClick={() => setActiveTab("create")}
                 className="px-4 py-2 rounded-xl bg-[#1e3a5f] text-white text-sm font-bold btn-press"
@@ -254,7 +243,7 @@ export default function AdminPortfolioPage({
               >
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex-1 min-w-0">
-                    <div className="font-bold text-sm text-[#0f172a] mb-1 truncate">
+                    <div className="font-bold text-sm text-[#0f172a] mb-1 truncate" dir="auto">
                       {item.title}
                     </div>
                     <div className="flex items-center gap-1.5">
@@ -276,12 +265,24 @@ export default function AdminPortfolioPage({
                     </button>
                   </div>
                 </div>
-                <p className="text-xs text-[#64748b] mb-3 line-clamp-2">
-                  {item.description}
-                </p>
-                <p className="text-xs text-[#64748b] mb-3 truncate">
-                  {item.mediaUrl}
-                </p>
+                {item.mediaUrl && (
+                  <div className="mb-3 overflow-hidden rounded-xl border border-[#e2e8f0] bg-[#f2f5fa] aspect-video">
+                    {item.mediaType === "image" ? (
+                      <img
+                        src={item.mediaUrl}
+                        alt=""
+                        loading="lazy"
+                        className="h-full w-full object-cover"
+                        onError={(e) => (e.currentTarget.style.display = "none")}
+                      />
+                    ) : (
+                      <div className="flex h-full items-center justify-center text-xs text-[#64748b]">
+                        <Icon name="image" size={20} />
+                      </div>
+                    )}
+                  </div>
+                )}
+                <p className="text-xs text-[#64748b] mb-3 line-clamp-2">{item.description}</p>
                 <div className="flex flex-wrap gap-1 mb-3">
                   {item.tags.slice(0, 4).map((tag) => (
                     <span
@@ -309,16 +310,14 @@ export default function AdminPortfolioPage({
           <div className="space-y-5">
             <div>
               <label className="block text-sm font-semibold text-[#0f172a] mb-1.5">
-                {tr.adminPortfolio.title}
+                {tr.adminPortfolio.fieldTitle}
               </label>
               <Input
                 value={form.title}
                 onChange={(v) => setForm((f) => ({ ...f, title: v }))}
-                placeholder={tr.adminPortfolio.title}
+                placeholder={tr.adminPortfolio.fieldTitle}
               />
-              {errors.title && (
-                <p className="mt-1 text-xs text-red-600">{errors.title}</p>
-              )}
+              {errors.title && <p className="mt-1 text-xs text-red-600">{errors.title}</p>}
             </div>
             <div>
               <label className="block text-sm font-semibold text-[#0f172a] mb-1.5">
@@ -331,9 +330,7 @@ export default function AdminPortfolioPage({
                 rows={3}
               />
               {errors.description && (
-                <p className="mt-1 text-xs text-red-600">
-                  {errors.description}
-                </p>
+                <p className="mt-1 text-xs text-red-600">{errors.description}</p>
               )}
             </div>
             <div>
@@ -345,9 +342,7 @@ export default function AdminPortfolioPage({
                 onChange={(v) => setForm((f) => ({ ...f, mediaUrl: v }))}
                 placeholder={tr.adminPortfolio.mediaUrl}
               />
-              {errors.mediaUrl && (
-                <p className="mt-1 text-xs text-red-600">{errors.mediaUrl}</p>
-              )}
+              {errors.mediaUrl && <p className="mt-1 text-xs text-red-600">{errors.mediaUrl}</p>}
             </div>
             <div>
               <label className="block text-sm font-semibold text-[#0f172a] mb-1.5">
@@ -367,9 +362,7 @@ export default function AdminPortfolioPage({
                   { value: "link", label: tr.adminPortfolio.link },
                 ]}
               />
-              {errors.mediaType && (
-                <p className="mt-1 text-xs text-red-600">{errors.mediaType}</p>
-              )}
+              {errors.mediaType && <p className="mt-1 text-xs text-red-600">{errors.mediaType}</p>}
             </div>
             <div>
               <label className="block text-sm font-semibold text-[#0f172a] mb-1.5">

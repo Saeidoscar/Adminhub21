@@ -21,9 +21,7 @@ export function Tabs({ tabs, activeId, onChange, className = "" }: TabsProps) {
           key={tab.id}
           onClick={() => onChange(tab.id)}
           className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all btn-press ${
-            activeId === tab.id
-              ? "bg-navy text-white shadow-sm"
-              : "text-muted hover:text-text"
+            activeId === tab.id ? "bg-navy text-white shadow-sm" : "text-muted hover:text-text"
           }`}
         >
           {tab.icon}
@@ -66,9 +64,7 @@ export function Stepper({ steps, currentStep }: StepperProps) {
           </div>
           {i < steps.length - 1 && (
             <div
-              className={`step-connector mx-1 mt-0 sm:-mt-4 ${
-                i + 1 < currentStep ? "active" : ""
-              }`}
+              className={`step-connector mx-1 mt-0 sm:-mt-4 ${i + 1 < currentStep ? "active" : ""}`}
             />
           )}
         </div>

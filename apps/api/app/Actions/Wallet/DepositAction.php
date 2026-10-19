@@ -10,6 +10,13 @@ use App\Models\Wallet;
 use App\Models\WalletTransaction;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * Credits a wallet and records a completed deposit.
+ *
+ * This is a SETTLEMENT step: call it only after a gateway has confirmed the
+ * payment (verified callback). It must never be reachable from a plain
+ * authenticated request - doing so hands out money for free.
+ */
 class DepositAction
 {
     /**

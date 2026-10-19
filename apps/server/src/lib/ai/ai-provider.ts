@@ -42,7 +42,10 @@ export interface AIProvider {
 }
 
 export class AIProviderError extends Error {
-  constructor(message: string, public statusCode?: number) {
+  constructor(
+    message: string,
+    public statusCode?: number,
+  ) {
     super(message)
     this.name = "AIProviderError"
   }

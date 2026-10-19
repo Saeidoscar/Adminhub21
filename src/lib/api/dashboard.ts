@@ -4,9 +4,7 @@ import { apiFetch, unwrapItem, unwrapList } from "./core"
 export type { DashboardStats, WalletRow, WalletTransactionRow }
 
 export async function getDashboardStats(): Promise<DashboardStats> {
-  const payload = await apiFetch<Record<string, unknown>>(
-    "/api/admin/dashboard/stats",
-  )
+  const payload = await apiFetch<Record<string, unknown>>("/api/admin/dashboard/stats")
 
   const stats = unwrapItem<DashboardStats>(payload, "stats")
 
@@ -40,13 +38,10 @@ export interface CreateTransactionInput {
 export async function createTransaction(
   input: CreateTransactionInput,
 ): Promise<WalletTransactionRow> {
-  const payload = await apiFetch<Record<string, unknown>>(
-    "/api/wallets/me/transactions",
-    {
-      method: "POST",
-      body: JSON.stringify(input),
-    },
-  )
+  const payload = await apiFetch<Record<string, unknown>>("/api/wallets/me/transactions", {
+    method: "POST",
+    body: JSON.stringify(input),
+  })
 
   const transaction = unwrapItem<WalletTransactionRow>(payload, "transaction")
 

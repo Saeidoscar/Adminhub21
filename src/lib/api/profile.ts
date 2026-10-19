@@ -36,12 +36,8 @@ export async function listAdminProfiles(
   return unwrapList<AdminProfile>(payload, "profiles")
 }
 
-export async function getAdminProfile(
-  id: string,
-): Promise<AdminProfile | null> {
-  const payload = await apiFetch<Record<string, unknown>>(
-    `/api/profiles/${id}`,
-  )
+export async function getAdminProfile(id: string): Promise<AdminProfile | null> {
+  const payload = await apiFetch<Record<string, unknown>>(`/api/profiles/${id}`)
 
   return unwrapItem<AdminProfile>(payload, "profile")
 }
@@ -57,16 +53,11 @@ export interface UpdateAdminProfileInput {
   monthlyUSD?: number
 }
 
-export async function updateAdminProfile(
-  data: UpdateAdminProfileInput,
-): Promise<AdminProfile> {
-  const payload = await apiFetch<Record<string, unknown>>(
-    `/api/profile/me`,
-    {
-      method: "PUT",
-      body: JSON.stringify(data),
-    },
-  )
+export async function updateAdminProfile(data: UpdateAdminProfileInput): Promise<AdminProfile> {
+  const payload = await apiFetch<Record<string, unknown>>(`/api/profile/me`, {
+    method: "PUT",
+    body: JSON.stringify(data),
+  })
 
   return unwrapItem<AdminProfile>(payload, "profile")
 }

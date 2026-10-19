@@ -1,11 +1,13 @@
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { t, type Lang } from "../i18n"
 import { Icon } from "../components/layout/Icon"
 import { Badge } from "../components/ui/Badge"
 import { ListSkeleton } from "../components/ui/Skeleton"
 import { useMarketplace } from "../hooks/useMarketplace"
+import { Stars } from "../components/platform/Stars"
 import { formatAdminPrice } from "../domain/profile"
+import { photoUrl } from "../lib/photo"
 
 const PLATFORM_LABELS: Record<string, string> = {
   instagram: "Instagram",
@@ -18,7 +20,7 @@ const PLATFORM_LABELS: Record<string, string> = {
 
 interface MarketplaceProps {
   lang: Lang
-  tr: typeof t["en"] & typeof t["fa"]
+  tr: (typeof t)["en"] & (typeof t)["fa"]
 }
 
 export default function Marketplace({ lang, tr }: MarketplaceProps) {
@@ -40,7 +42,8 @@ export default function Marketplace({ lang, tr }: MarketplaceProps) {
     [search, platform, sortBy, verifiedOnly, lang],
   )
 
-  const { admins, filtered, loading, favorites, favLoading, toggleFavorite, isFavorite } = useMarketplace(filters)
+  const { admins, filtered, loading, favorites, favLoading, toggleFavorite, isFavorite } =
+    useMarketplace(filters)
 
   return (
     <div className="p-6 lg:p-8 max-w-6xl mx-auto fade-in">
@@ -68,14 +71,7 @@ export default function Marketplace({ lang, tr }: MarketplaceProps) {
           className="px-3 py-2.5 rounded-xl border border-[#e2e8f0] bg-white text-sm text-[#0f172a] focus:border-[#1e3a5f] transition-all"
         >
           <option value="all">{tr.market.allPlatforms}</option>
-          {[
-            "instagram",
-            "telegram",
-            "whatsapp",
-            "torob",
-            "digikala",
-            "linkedin",
-          ].map((p) => (
+          {["instagram", "telegram", "whatsapp", "torob", "digikala", "linkedin"].map((p) => (
             <option key={p} value={p}>
               {PLATFORM_LABELS[p]}
             </option>
@@ -117,7 +113,8 @@ export default function Marketplace({ lang, tr }: MarketplaceProps) {
                 {/* Header */}
                 <div className="flex items-start gap-3 mb-4">
                   <img
-                    src={`https://images.unsplash.com/${admin.photo}?w=64&h=64&fit=crop&auto=format`}
+                    src={photoUrl(admin.photo, 64)}
+                    onError={(e) => (e.currentTarget.style.visibility = "hidden")}
                     alt={admin.nameEn}
                     className="w-14 h-14 rounded-2xl object-cover bg-[#f2f5fa] flex-shrink-0"
                   />
@@ -137,22 +134,14 @@ export default function Marketplace({ lang, tr }: MarketplaceProps) {
                           }`}
                           title={isFav ? tr.dash.removeFromFavorites : tr.dash.addToFavorites}
                         >
-                          <Icon
-                            name="heart"
-                            size={14}
-                            className={isFav ? "fill-current" : ""}
-                          />
+                          <Icon name="heart" size={14} className={isFav ? "fill-current" : ""} />
                         </button>
                         {admin.verified && (
                           <div
                             className="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center verified-glow"
                             title="Verified"
                           >
-                            <Icon
-                              name="check"
-                              size={11}
-                              className="text-emerald-600"
-                            />
+                            <Icon name="check" size={11} className="text-emerald-600" />
                           </div>
                         )}
                         {admin.insured && (
@@ -160,20 +149,14 @@ export default function Marketplace({ lang, tr }: MarketplaceProps) {
                             className="w-5 h-5 rounded-full bg-[#1e3a5f]/10 flex items-center justify-center"
                             title="Insured"
                           >
-                            <Icon
-                              name="shield"
-                              size={11}
-                              className="text-[#1e3a5f]"
-                            />
+                            <Icon name="shield" size={11} className="text-[#1e3a5f]" />
                           </div>
                         )}
                       </div>
                     </div>
                     <div className="flex items-center gap-1.5 mt-1">
                       <Stars rating={admin.rating} />
-                      <span className="text-xs font-bold text-[#0f172a]">
-                        {admin.rating}
-                      </span>
+                      <span className="text-xs font-bold text-[#0f172a]">{admin.rating}</span>
                       <span className="text-xs text-[#94a3b8]">
                         ({admin.reviews} {tr.market.reviews})
                       </span>
@@ -197,24 +180,20 @@ export default function Marketplace({ lang, tr }: MarketplaceProps) {
 
                 {/* Skills */}
                 <div className="flex flex-wrap gap-1 mb-4">
-                  {(isFa ? admin.skillsFa : admin.skillsEn)
-                    .slice(0, 3)
-                    .map((s) => (
-                      <span
-                        key={s}
-                        className="px-2 py-0.5 rounded-full bg-[#f2f5fa] text-[#64748b] text-xs"
-                      >
-                        {s}
-                      </span>
-                    ))}
+                  {(isFa ? admin.skillsFa : admin.skillsEn).slice(0, 3).map((s) => (
+                    <span
+                      key={s}
+                      className="px-2 py-0.5 rounded-full bg-[#f2f5fa] text-[#64748b] text-xs"
+                    >
+                      {s}
+                    </span>
+                  ))}
                 </div>
 
                 {/* Price & CTA */}
                 <div className="border-t border-[#f2f5fa] pt-4 flex items-center justify-between">
                   <div>
-                    <div className="text-xs text-[#64748b]">
-                      {tr.market.starting}
-                    </div>
+                    <div className="text-xs text-[#64748b]">{tr.market.starting}</div>
                     <div className="text-base font-bold text-[#1e3a5f]">
                       {formatAdminPrice(admin, lang)}
                       <span className="text-xs font-normal text-[#94a3b8]">
@@ -242,9 +221,7 @@ export default function Marketplace({ lang, tr }: MarketplaceProps) {
             {lang === "fa" ? "نتیجه‌ای یافت نشد" : "No results found"}
           </div>
           <div className="text-sm mt-1">
-            {lang === "fa"
-              ? "فیلترها را تغییر دهید"
-              : "Try adjusting your filters"}
+            {lang === "fa" ? "فیلترها را تغییر دهید" : "Try adjusting your filters"}
           </div>
         </div>
       )}

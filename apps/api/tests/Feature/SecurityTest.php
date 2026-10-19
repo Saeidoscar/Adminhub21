@@ -21,7 +21,7 @@ class SecurityTest extends TestCase
         return User::create([
             'name' => 'Test',
             'email' => uniqid('test') . '@test.com',
-            'phone' => '+980000000000',
+            'phone' => '+989' . random_int(100000000, 999999999),
             'password' => bcrypt('password'),
             'role' => $role,
             'is_verified' => true,
@@ -39,11 +39,17 @@ class SecurityTest extends TestCase
         $this->withToken($this->makeToken($user));
     }
 
-    public function test_non_admin_cannot_view_any_contracts(): void
+    public function test_non_admin_only_sees_their_own_contracts(): void
     {
-        $user = $this->makeUser();
-        $this->actingWithToken($user);
-        $this->getJson('/api/v1/contracts')->assertStatus(403);
+        $owner = $this->makeUser();
+        $someoneElse = $this->makeUser();
+        Contract::create(['user_id' => $owner->id, 'client_id' => $owner->id, 'title' => 'Other', 'amount' => 100, 'currency' => 'USD']);
+
+        $this->actingWithToken($someoneElse);
+        $this->getJson('/api/v1/contracts')
+            ->assertStatus(200)
+            ->assertJsonPath('total', 0)
+            ->assertJsonCount(0, 'data');
     }
 
     public function test_admin_can_view_any_contracts(): void
@@ -56,8 +62,9 @@ class SecurityTest extends TestCase
     public function test_contract_owner_can_view_contract(): void
     {
         $user = $this->makeUser();
+        $client = $this->makeUser();
         $this->actingWithToken($user);
-        $c = Contract::create(['user_id' => $user->id, 'client_id' => $user->id+1, 'title' => 'TC', 'amount' => 100, 'currency' => 'USD']);
+        $c = Contract::create(['user_id' => $user->id, 'client_id' => $client->id, 'title' => 'TC', 'amount' => 100, 'currency' => 'USD']);
         $this->getJson('/api/v1/contracts/' . $c->id)->assertStatus(200);
     }
 
@@ -100,8 +107,9 @@ class SecurityTest extends TestCase
     public function test_sender_can_view_offer(): void
     {
         $user = $this->makeUser();
+        $target = $this->makeUser();
         $this->actingWithToken($user);
-        $o = Offer::create(['user_id' => $user->id, 'target_user_id' => $user->id+1, 'message' => 'H', 'amount' => 100, 'currency' => 'USD']);
+        $o = Offer::create(['user_id' => $user->id, 'target_user_id' => $target->id, 'message' => 'H', 'amount' => 100, 'currency' => 'USD']);
         $this->getJson('/api/v1/offers/' . $o->id)->assertStatus(200);
     }
 
@@ -143,7 +151,7 @@ class SecurityTest extends TestCase
     {
         $r = $this->makeUser();
         $this->actingWithToken($r);
-        $this->postJson('/api/v1/reviews', ['contract_id' => 99999, 'rating' => 5])->assertStatus(404);
+        $this->postJson('/api/v1/reviews', ['contract_id' => 99999, 'rating' => 5])->assertStatus(422);
     }
 
     public function test_review_needs_contract_access(): void
@@ -152,7 +160,7 @@ class SecurityTest extends TestCase
         $cl = $this->makeUser();
         $this->actingWithToken($rv);
         $c = Contract::create(['user_id' => $cl->id, 'client_id' => $cl->id, 'title' => 'NA', 'amount' => 100, 'currency' => 'USD']);
-        $this->postJson('/api/v1/reviews', ['contract_id' => $c->id+1, 'rating' => 5])->assertStatus(404);
+        $this->postJson('/api/v1/reviews', ['contract_id' => $c->id+1, 'rating' => 5])->assertStatus(422);
     }
 
     public function test_sanctum_expiration_config(): void

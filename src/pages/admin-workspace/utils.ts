@@ -1,6 +1,6 @@
 import { t, type Lang } from "../../i18n"
 
-export type Tr = typeof t["en"] & typeof t["fa"]
+export type Tr = (typeof t)["en"] & (typeof t)["fa"]
 export type TabKey = "cases" | "tasks" | "events" | "timeLogs"
 
 export const CASE_STATUS: Record<string, { en: string; fa: string; color: string }> = {

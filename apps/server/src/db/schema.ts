@@ -11,7 +11,11 @@ import {
   uniqueIndex,
   uuid,
 } from "drizzle-orm/pg-core"
-import type { BillingCycle, PlatformConfig, PlatformKey } from "@adminhub/shared"
+import type {
+  BillingCycle,
+  PlatformConfig,
+  PlatformKey,
+} from "@adminhub/shared"
 
 const timestamps = {
   createdAt: timestamp("created_at", { withTimezone: true })
@@ -87,7 +91,11 @@ export const packages = pgTable("packages", {
   name: text("name").notNull(),
   description: text("description").notNull(),
   type: packageTypeEnum("type").notNull(),
-  platforms: text("platforms").array().$type<PlatformKey[]>().notNull().default([]),
+  platforms: text("platforms")
+    .array()
+    .$type<PlatformKey[]>()
+    .notNull()
+    .default([]),
   platformConfigs: jsonb("platform_configs")
     .$type<PlatformConfig[]>()
     .notNull()
@@ -117,7 +125,11 @@ export const customOffers = pgTable("custom_offers", {
   employerName: text("employer_name").notNull(),
   name: text("name").notNull(),
   description: text("description").notNull(),
-  platforms: text("platforms").array().$type<PlatformKey[]>().notNull().default([]),
+  platforms: text("platforms")
+    .array()
+    .$type<PlatformKey[]>()
+    .notNull()
+    .default([]),
   platformConfigs: jsonb("platform_configs")
     .$type<PlatformConfig[]>()
     .notNull()

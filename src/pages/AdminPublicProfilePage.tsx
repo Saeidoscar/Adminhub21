@@ -11,11 +11,7 @@ import {
   PLATFORM_SPECS,
   emptyPlatformConfig,
 } from "../components/packages/platformSpecs"
-import {
-  listReviews,
-  createReview,
-  type ReviewRow,
-} from "../lib/api"
+import { listReviews, createReview, type ReviewRow } from "../lib/api"
 import { TOMAN_PER_MILLION } from "../lib/constants"
 import type {
   ContractPackage,
@@ -29,6 +25,7 @@ import { PackagesTab } from "./admin-public-profile/PackagesTab"
 import { CustomOfferForm } from "./admin-public-profile/CustomOfferForm"
 import { ReviewsTab } from "./admin-public-profile/ReviewsTab"
 import { PackageCard } from "./admin-public-profile/PackageCard"
+import { photoUrl } from "../lib/photo"
 
 export const PLATFORM_COLORS: Record<string, string> = {
   instagram: "badge-instagram",
@@ -81,25 +78,7 @@ export default function AdminPublicProfilePage() {
   const isFa = lang === "fa"
   const tr = t[lang]
   const admin = adminId ? findAdmin(adminId) : null
-  const adminPackages = packages.filter(
-    (p) => p.adminId === adminId && p.active !== false,
-  )
-
-  if (!admin) {
-    return (
-      <div className="p-6 lg:p-8 max-w-6xl mx-auto fade-in">
-        <div className="text-center py-16">
-          <div className="text-4xl mb-3">🔍</div>
-          <div className="font-bold text-[#0f172a] mb-1">
-            {isFa ? "ادمین پیدا نشد" : "Admin not found"}
-          </div>
-          <Button onClick={() => navigate("/marketplace")}>
-            {isFa ? "بازگشت به بازار کار" : "Back to Marketplace"}
-          </Button>
-        </div>
-      </div>
-    )
-  }
+  const adminPackages = packages.filter((p) => p.adminId === adminId && p.active !== false)
 
   const platformPackages = adminPackages.filter((p) => p.type === "platform")
   const bundlePackages = adminPackages.filter((p) => p.type === "bundle")
@@ -108,9 +87,7 @@ export default function AdminPublicProfilePage() {
     comparison.toggle(pkgId)
   }
 
-  const handleSubmitOffer = async (
-    offerData: Omit<CustomOffer, "id" | "createdAt">,
-  ) => {
+  const handleSubmitOffer = async (offerData: Omit<CustomOffer, "id" | "createdAt">) => {
     await submitOffer(offerData)
     setOfferSent(true)
     setTimeout(() => setOfferSent(false), 3000)
@@ -142,6 +119,22 @@ export default function AdminPublicProfilePage() {
       cancelled = true
     }
   }, [adminId])
+
+  if (!admin) {
+    return (
+      <div className="p-6 lg:p-8 max-w-6xl mx-auto fade-in">
+        <div className="text-center py-16">
+          <div className="text-4xl mb-3">🔍</div>
+          <div className="font-bold text-[#0f172a] mb-1">
+            {isFa ? "ادمین پیدا نشد" : "Admin not found"}
+          </div>
+          <Button onClick={() => navigate("/marketplace")}>
+            {isFa ? "بازگشت به بازار کار" : "Back to Marketplace"}
+          </Button>
+        </div>
+      </div>
+    )
+  }
 
   const handleSubmitReview = async () => {
     if (!adminId || !reviewForm.comment.trim()) return
@@ -175,7 +168,8 @@ export default function AdminPublicProfilePage() {
       <div className="bg-white rounded-2xl border border-[#e2e8f0] p-6 mb-6">
         <div className="flex items-start gap-4">
           <img
-            src={`https://images.unsplash.com/${admin.photo}?w=120&h=120&fit=crop&auto=format`}
+            src={photoUrl(admin.photo, 120)}
+            onError={(e) => (e.currentTarget.style.visibility = "hidden")}
             alt={admin.nameEn}
             className="w-20 h-20 rounded-2xl object-cover bg-[#f2f5fa] flex-shrink-0"
           />
@@ -187,9 +181,7 @@ export default function AdminPublicProfilePage() {
                 </h1>
                 <div className="flex items-center gap-2 mb-2">
                   <Stars rating={admin.rating} />
-                  <span className="text-sm font-bold text-[#0f172a]">
-                    {admin.rating}
-                  </span>
+                  <span className="text-sm font-bold text-[#0f172a]">{admin.rating}</span>
                   <span className="text-xs text-[#94a3b8]">
                     ({admin.reviews} {tr.market.reviews})
                   </span>
@@ -250,9 +242,7 @@ export default function AdminPublicProfilePage() {
         ].map((tab) => (
           <button
             key={tab.id}
-            onClick={() =>
-              setActiveTab(tab.id as "profile" | "packages" | "custom" | "reviews")
-            }
+            onClick={() => setActiveTab(tab.id as "profile" | "packages" | "custom" | "reviews")}
             className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all btn-press ${
               activeTab === tab.id
                 ? "bg-[#1e3a5f] text-white shadow-sm"
@@ -285,9 +275,7 @@ export default function AdminPublicProfilePage() {
         </div>
       )}
 
-      {activeTab === "profile" && (
-        <ProfileTab admin={admin!} lang={lang} tr={tr} />
-      )}
+      {activeTab === "profile" && <ProfileTab admin={admin!} lang={lang} tr={tr} />}
 
       {activeTab === "packages" && (
         <PackagesTab

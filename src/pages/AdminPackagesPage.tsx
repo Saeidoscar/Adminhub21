@@ -5,15 +5,9 @@ import { Icon } from "../components/layout/Icon"
 import { Button } from "../components/ui/Button"
 import { usePackages } from "../contexts/PackageContext"
 import { usePackageForm } from "../hooks/usePackageForm"
-import {
-  platformLabel,
-  ALL_PLATFORM_KEYS,
-} from "../components/packages/platformSpecs"
+import { platformLabel, ALL_PLATFORM_KEYS } from "../components/packages/platformSpecs"
 import { PLATFORM_SPECS } from "../components/packages/platformSpecs"
-import type {
-  ContractPackage,
-  PlatformKey,
-} from "@adminhub/shared"
+import type { ContractPackage, PlatformKey } from "@adminhub/shared"
 import { TOMAN_PER_MILLION } from "../lib/constants"
 
 const PLATFORM_COLORS: Record<string, string> = {
@@ -72,9 +66,7 @@ export default function AdminPackagesPage() {
   return (
     <div className="p-6 lg:p-8 max-w-6xl mx-auto fade-in">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-[#0f172a]">
-          {tr.packages.title}
-        </h1>
+        <h1 className="text-2xl font-bold text-[#0f172a]">{tr.packages.title}</h1>
         <p className="text-[#64748b] mt-1">{tr.packages.sub}</p>
       </div>
 
@@ -83,9 +75,7 @@ export default function AdminPackagesPage() {
           { id: "list", label: tr.packages.manage },
           {
             id: "create",
-            label: editingId
-              ? tr.adminProfile.editPackage
-              : tr.packages.createNew,
+            label: editingId ? tr.adminProfile.editPackage : tr.packages.createNew,
           },
         ].map((tab) => (
           <button
@@ -110,12 +100,8 @@ export default function AdminPackagesPage() {
           {packages.length === 0 && (
             <div className="bg-white rounded-2xl border border-[#e2e8f0] p-12 text-center">
               <div className="text-4xl mb-3">📦</div>
-              <div className="font-bold text-[#0f172a] mb-1">
-                {tr.adminProfile.noPackages}
-              </div>
-              <div className="text-sm text-[#64748b] mb-4">
-                {tr.adminProfile.noPackagesSub}
-              </div>
+              <div className="font-bold text-[#0f172a] mb-1">{tr.adminProfile.noPackages}</div>
+              <div className="text-sm text-[#64748b] mb-4">{tr.adminProfile.noPackagesSub}</div>
               <button
                 onClick={() => setActiveTab("create")}
                 className="px-4 py-2 rounded-xl bg-[#1e3a5f] text-white text-sm font-bold btn-press"
@@ -133,9 +119,7 @@ export default function AdminPackagesPage() {
                 <div className="flex items-start justify-between mb-3">
                   <div>
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="font-bold text-sm text-[#0f172a]">
-                        {pkg.name}
-                      </span>
+                      <span className="font-bold text-sm text-[#0f172a]">{pkg.name}</span>
                       {pkg.featured && (
                         <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 text-xs font-semibold">
                           {isFa ? "ویژه" : "Featured"}
@@ -183,21 +167,15 @@ export default function AdminPackagesPage() {
                     </button>
                   </div>
                 </div>
-                <p className="text-xs text-[#64748b] mb-3 line-clamp-2">
-                  {pkg.description}
-                </p>
+                <p className="text-xs text-[#64748b] mb-3 line-clamp-2">{pkg.description}</p>
                 <div className="flex items-center justify-between pt-3 border-t border-[#f2f5fa]">
                   <div>
                     <span className="text-lg font-bold text-[#1e3a5f]">
-                       {(pkg.priceToman / TOMAN_PER_MILLION).toFixed(1)}M
+                      {(pkg.priceToman / TOMAN_PER_MILLION).toFixed(1)}M
                     </span>
-                    <span className="text-xs text-[#94a3b8] mr-1">
-                      {tr.common.perMonth}
-                    </span>
+                    <span className="text-xs text-[#94a3b8] mr-1">{tr.common.perMonth}</span>
                   </div>
-                  <span className="text-xs text-[#64748b]">
-                    {pkg.deliveryTime}
-                  </span>
+                  <span className="text-xs text-[#64748b]">{pkg.deliveryTime}</span>
                 </div>
               </div>
             ))}
@@ -227,9 +205,7 @@ export default function AdminPackagesPage() {
                 onChange={(e) => setFormField("name", e.target.value)}
                 className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] focus:ring-2 focus:ring-[#1e3a5f]/20 transition-all"
               />
-              {errors.name && (
-                <p className="text-xs text-rose-600 mt-1">{errors.name}</p>
-              )}
+              {errors.name && <p className="text-xs text-rose-600 mt-1">{errors.name}</p>}
             </div>
 
             <div>
@@ -264,9 +240,7 @@ export default function AdminPackagesPage() {
                   </button>
                 ))}
               </div>
-              {errors.platforms && (
-                <p className="text-xs text-rose-600 mt-1">{errors.platforms}</p>
-              )}
+              {errors.platforms && <p className="text-xs text-rose-600 mt-1">{errors.platforms}</p>}
             </div>
 
             <div className="grid sm:grid-cols-2 gap-4">
@@ -294,9 +268,7 @@ export default function AdminPackagesPage() {
                   dir="ltr"
                   className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus:border-[#1e3a5f] transition-all"
                 />
-                {errors.priceUSD && (
-                  <p className="text-xs text-rose-600 mt-1">{errors.priceUSD}</p>
-                )}
+                {errors.priceUSD && <p className="text-xs text-rose-600 mt-1">{errors.priceUSD}</p>}
               </div>
             </div>
 
@@ -344,9 +316,7 @@ export default function AdminPackagesPage() {
                     >
                       {spec.label.en.charAt(0)}
                     </div>
-                    <span className="text-sm font-semibold text-[#0f172a]">
-                      {spec.label[lang]}
-                    </span>
+                    <span className="text-sm font-semibold text-[#0f172a]">{spec.label[lang]}</span>
                   </div>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                     {spec.fields.map((field) => (
@@ -357,9 +327,7 @@ export default function AdminPackagesPage() {
                         {field.type === "boolean" ? (
                           <button
                             type="button"
-                            onClick={() =>
-                              updateConfig(pl, field.id, !config.settings[field.id])
-                            }
+                            onClick={() => updateConfig(pl, field.id, !config.settings[field.id])}
                             className={`w-full px-3 py-2 rounded-lg text-xs font-semibold border transition-all ${
                               config.settings[field.id]
                                 ? "border-emerald-500 bg-emerald-50 text-emerald-700"
@@ -382,7 +350,7 @@ export default function AdminPackagesPage() {
                               updateConfig(
                                 pl,
                                 field.id,
-                                e.target.value ? Number(e.target.value) : field.default ?? 0,
+                                e.target.value ? Number(e.target.value) : (field.default ?? 0),
                               )
                             }
                             className="w-full px-3 py-2 rounded-lg border border-[#e2e8f0] text-xs focus:border-[#1e3a5f] transition-all"

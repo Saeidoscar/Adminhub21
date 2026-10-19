@@ -1,11 +1,5 @@
 import { useState, useEffect, createContext, useContext } from "react"
-import {
-  useLocation,
-  useNavigate,
-  Navigate,
-  Routes,
-  Route,
-} from "react-router-dom"
+import { useLocation, useNavigate, Navigate, Routes, Route } from "react-router-dom"
 import { t, type Lang } from "./i18n"
 import { Icon } from "./components/layout/Icon"
 import { Sidebar } from "./components/layout/Sidebar"
@@ -23,9 +17,7 @@ import AdminTicketsPage from "./pages/AdminTicketsPage"
 import AdminWorkspacePage from "./pages/AdminWorkspacePage"
 import AdminPortfolioPage from "./pages/AdminPortfolioPage"
 import PackageComparisonPage from "./pages/PackageComparisonPage"
-import ContractGenerator from "./pages/ContractGenerator"
-import ContractsPage from "./pages/ContractsPage"
-import TicketsPage from "./pages/TicketsPage"
+import { WorkspaceHandoff } from "./components/workspace/WorkspaceHandoff"
 import ToolsRentalPage from "./pages/ToolsRentalPage"
 import EditorsPage from "./pages/EditorsPage"
 import VibeCodersPage from "./pages/VibeCodersPage"
@@ -34,11 +26,31 @@ import AuthPage from "./pages/AuthPage"
 import EmployerDashboard from "./components/dashboard/EmployerDashboard"
 import AdminDashboard from "./components/dashboard/AdminDashboard"
 import Marketplace from "./pages/Marketplace"
+import { DemoRoleSwitcher } from "./components/demo/DemoRoleSwitcher"
+import { isDemoMode } from "./lib/demo-mode"
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 type Role = "employer" | "admin" | "super_admin"
-type Page = "dashboard" | "marketplace" | "toolsRental" | "editors" | "vibeCoders" | "skills" | "contracts" | "contractsHistory" | "tickets" | "ai" | "profile" | "packages" | "compare" | "adminUsers" | "adminContent" | "adminTickets" | "adminWorkspace" | "adminPortfolio"
+type Page =
+  | "dashboard"
+  | "marketplace"
+  | "toolsRental"
+  | "editors"
+  | "vibeCoders"
+  | "skills"
+  | "contracts"
+  | "contractsHistory"
+  | "tickets"
+  | "ai"
+  | "profile"
+  | "packages"
+  | "compare"
+  | "adminUsers"
+  | "adminContent"
+  | "adminTickets"
+  | "adminWorkspace"
+  | "adminPortfolio"
 
 interface AppCtx {
   lang: Lang
@@ -46,7 +58,7 @@ interface AppCtx {
   role: Role
   page: Page
   setPage: (p: Page) => void
-  tr: typeof t["en"]
+  tr: (typeof t)["en"]
   dir: "ltr" | "rtl"
 }
 
@@ -87,12 +99,14 @@ const ROUTE_META: Record<string, { page: Page; titleKey?: string }> = {
 function getPageMeta(
   pathname: string,
   lang: Lang,
-  tr: typeof t["en"],
+  tr: (typeof t)["en"],
 ): { page: Page; title: string } {
   const exactMatch = ROUTE_META[pathname]
   if (exactMatch) {
     const meta = exactMatch
-    const title = meta.titleKey ? tr.nav[meta.titleKey as keyof typeof tr.nav] || tr.nav.dashboard : tr.nav.dashboard
+    const title = meta.titleKey
+      ? tr.nav[meta.titleKey as keyof typeof tr.nav] || tr.nav.dashboard
+      : tr.nav.dashboard
     return { page: meta.page, title }
   }
 
@@ -131,9 +145,7 @@ function PlaceholderPage({
       <div className="bg-white rounded-2xl border border-[#e2e8f0] p-12 text-center">
         <div className="text-4xl mb-4">🚧</div>
         <div className="font-bold text-[#0f172a] mb-1">{comingSoon}</div>
-        <div className="text-sm text-[#64748b]">
-          {underConstruction}
-        </div>
+        <div className="text-sm text-[#64748b]">{underConstruction}</div>
       </div>
     </div>
   )
@@ -168,7 +180,8 @@ export default function App() {
     { id: "editors", icon: "edit", label: tr.nav.editors },
     { id: "vibeCoders", icon: "bot", label: tr.nav.vibeCoders },
     { id: "skills", icon: "chart", label: tr.nav.skills },
-    { id: "contracts", icon: "contracts", label: tr.nav.contracts },
+    // Contracts live in the Next.js workspace now; the sidebar entry stays so
+    // the old URL keeps working, but it hands off instead of rendering here.
     ...(role === "admin"
       ? [
           { id: "packages" as Page, icon: "package", label: tr.nav.packages },
@@ -209,12 +222,7 @@ export default function App() {
   if (!user && !isLoading) {
     return (
       <Ctx.Provider value={ctx}>
-        <AuthPage
-          lang={lang}
-          tr={tr}
-          dir={dir}
-          setLang={setLang}
-        />
+        <AuthPage lang={lang} tr={tr} dir={dir} setLang={setLang} />
       </Ctx.Provider>
     )
   }
@@ -276,7 +284,9 @@ export default function App() {
               onToggleLang={() => setLang(lang === "fa" ? "en" : "fa")}
               onToggleMobileMenu={() => setMobileMenuOpen(true)}
               userName={lang === "fa" ? user?.nameFa || "علی" : user?.nameEn || "Ali"}
-              userInitial={lang === "fa" ? (user?.nameFa?.charAt(0) || "ع") : (user?.nameEn?.charAt(0) || "A")}
+              userInitial={
+                lang === "fa" ? user?.nameFa?.charAt(0) || "ع" : user?.nameEn?.charAt(0) || "A"
+              }
               theme={theme}
               onToggleTheme={toggleTheme}
               fontSize={fontSize}
@@ -354,12 +364,14 @@ export default function App() {
                   </ProtectedRoute>
                 }
               />
+              {/* The workspace modules now live in apps/web under /app/*. The
+                  old URLs forward there instead of keeping a second copy. */}
               <Route
                 path="/contracts"
                 element={
                   <ProtectedRoute>
                     <div className="flex-1 overflow-y-auto">
-                      <ContractGenerator tr={tr} lang={lang} />
+                      <WorkspaceHandoff path="/app/contracts" title={tr.nav.contracts} />
                     </div>
                   </ProtectedRoute>
                 }
@@ -369,7 +381,7 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <div className="flex-1 overflow-y-auto">
-                      <ContractsPage tr={tr} lang={lang} />
+                      <WorkspaceHandoff path="/app/contracts" title={tr.nav.contractsHistory} />
                     </div>
                   </ProtectedRoute>
                 }
@@ -379,7 +391,7 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <div className="flex-1 overflow-y-auto">
-                      <TicketsPage tr={tr} lang={lang} />
+                      <WorkspaceHandoff path="/app/tickets" title={tr.tickets.title} />
                     </div>
                   </ProtectedRoute>
                 }
@@ -389,7 +401,7 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <div className="flex-1 overflow-y-auto">
-                      <TicketsPage tr={tr} lang={lang} />
+                      <WorkspaceHandoff path="/app/tickets" title={tr.tickets.title} />
                     </div>
                   </ProtectedRoute>
                 }
@@ -479,7 +491,7 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <div className="flex-1 overflow-hidden flex flex-col">
-                      <AiPage />
+                      <AiPage tr={tr} lang={lang} />
                     </div>
                   </ProtectedRoute>
                 }
@@ -489,7 +501,7 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <div className="flex-1 overflow-hidden flex flex-col">
-                      <AiPage />
+                      <AiPage tr={tr} lang={lang} />
                     </div>
                   </ProtectedRoute>
                 }
@@ -510,6 +522,8 @@ export default function App() {
               />
             </Routes>
           </div>
+
+          {isDemoMode && <DemoRoleSwitcher role={role} lang={lang} />}
         </div>
       </Ctx.Provider>
     </ErrorBoundary>

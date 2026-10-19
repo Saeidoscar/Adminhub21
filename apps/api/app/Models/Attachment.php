@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Services\Media\MediaService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\Storage;
 
 class Attachment extends Model
 {
@@ -49,15 +49,16 @@ class Attachment extends Model
             return null;
         }
 
-        $disk = Storage::disk('s3');
+        $media = app(MediaService::class);
 
         if ($private) {
-            return $disk->temporaryUrl(
+            return $media->disk()->temporaryUrl(
                 $this->storage_key,
                 now()->addMinutes($expiresInMinutes)
             );
         }
 
-        return $disk->url($this->storage_key);
+        // Public URLs honour MEDIA_URL, so a CDN origin is applied in one place.
+        return $media->url($this->storage_key);
     }
 }

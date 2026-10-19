@@ -140,7 +140,10 @@ export async function createTransaction(
     updates.balanceToman = sql`${wallets.balanceToman} + ${delta}`
   }
   if (Object.keys(updates).length > 0) {
-    await db.update(wallets).set(updates as any).where(eq(wallets.id, wallet.id))
+    await db
+      .update(wallets)
+      .set(updates as any)
+      .where(eq(wallets.id, wallet.id))
   }
 
   return toSafeTransaction(row)

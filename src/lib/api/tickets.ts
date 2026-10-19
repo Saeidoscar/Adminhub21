@@ -76,13 +76,10 @@ export async function createTicketMessage(
   ticketId: string,
   input: CreateTicketMessageInput,
 ): Promise<TicketMessage> {
-  const payload = await apiFetch<Record<string, unknown>>(
-    `/api/tickets/${ticketId}/messages`,
-    {
-      method: "POST",
-      body: JSON.stringify(input),
-    },
-  )
+  const payload = await apiFetch<Record<string, unknown>>(`/api/tickets/${ticketId}/messages`, {
+    method: "POST",
+    body: JSON.stringify(input),
+  })
   const message = unwrapItem<TicketMessage>(payload, "message")
   if (!message) {
     throw new Error("Ticket message creation response was empty")
@@ -91,8 +88,6 @@ export async function createTicketMessage(
 }
 
 export async function listTicketMessages(ticketId: string): Promise<TicketMessage[]> {
-  const payload = await apiFetch<Record<string, unknown>>(
-    `/api/tickets/${ticketId}/messages`,
-  )
+  const payload = await apiFetch<Record<string, unknown>>(`/api/tickets/${ticketId}/messages`)
   return unwrapList<TicketMessage>(payload, "messages")
 }

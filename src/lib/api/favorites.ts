@@ -10,12 +10,9 @@ export async function listFavorites(): Promise<FavoriteRow[]> {
 }
 
 export async function addFavorite(adminId: string): Promise<FavoriteRow> {
-  const payload = await apiFetch<Record<string, unknown>>(
-    `/api/favorites/${adminId}`,
-    {
-      method: "POST",
-    },
-  )
+  const payload = await apiFetch<Record<string, unknown>>(`/api/favorites/${adminId}`, {
+    method: "POST",
+  })
 
   const favorite = unwrapItem<FavoriteRow>(payload, "favorite")
 

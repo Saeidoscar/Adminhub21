@@ -29,18 +29,18 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::get('/affiliates/{id}/commissions', [AdminController::class, 'affiliateCommissions'])->whereNumber('id');
 
     Route::get('/content/stories', [AdminContentController::class, 'stories']);
-    Route::patch('/content/stories/{id}', [AdminContentController::class, 'moderateStory'])->whereNumber('id');
+    Route::patch('/content/stories/{story}', [AdminContentController::class, 'moderateStory'])->whereNumber('story');
     Route::get('/content/blogs', [AdminContentController::class, 'blogs']);
-    Route::patch('/content/blogs/{id}', [AdminContentController::class, 'moderateBlog'])->whereNumber('id');
+    Route::patch('/content/blogs/{blog}', [AdminContentController::class, 'moderateBlog'])->whereNumber('blog');
     Route::get('/content/comments', [AdminContentController::class, 'comments']);
-    Route::delete('/content/comments/{id}', [AdminContentController::class, 'deleteComment'])->whereNumber('id');
+    Route::delete('/content/comments/{comment}', [AdminContentController::class, 'deleteComment'])->whereNumber('comment');
 
     Route::get('/tickets', [AdminTicketController::class, 'index']);
-    Route::get('/tickets/{id}', [AdminTicketController::class, 'show'])->whereNumber('id');
-    Route::patch('/tickets/{id}', [AdminTicketController::class, 'update'])->whereNumber('id');
-    Route::post('/tickets/{id}/assign', [AdminTicketController::class, 'assign'])->whereNumber('id');
-    Route::post('/tickets/{id}/close', [AdminTicketController::class, 'close'])->whereNumber('id');
-    Route::post('/tickets/{id}/reply', [AdminTicketController::class, 'reply'])->whereNumber('id');
+    Route::get('/tickets/{ticket}', [AdminTicketController::class, 'show'])->whereNumber('ticket');
+    Route::patch('/tickets/{ticket}', [AdminTicketController::class, 'update'])->whereNumber('ticket');
+    Route::post('/tickets/{ticket}/assign', [AdminTicketController::class, 'assign'])->whereNumber('ticket');
+    Route::post('/tickets/{ticket}/close', [AdminTicketController::class, 'close'])->whereNumber('ticket');
+    Route::post('/tickets/{ticket}/reply', [AdminTicketController::class, 'reply'])->whereNumber('ticket');
 });
 
 Route::middleware(['auth:sanctum', 'admin'])->prefix('admin-profiles')->group(function (): void {

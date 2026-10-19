@@ -25,8 +25,7 @@ const { mockDb, createQueryBuilder } = vi.hoisted(() => {
     }
     builder.then = (resolve: any, reject: any) =>
       Promise.resolve(result).then(resolve, reject)
-    builder.catch = (reject: any) =>
-      Promise.resolve(result).catch(reject)
+    builder.catch = (reject: any) => Promise.resolve(result).catch(reject)
     return builder
   }
 
@@ -53,9 +52,9 @@ describe("contracts.service", () => {
 
   describe("createContract", () => {
     it("should throw if neither offerId nor adminId is provided", async () => {
-      await expect(
-        createContract("user-1", "employer", {}),
-      ).rejects.toThrow("offerId or adminId is required")
+      await expect(createContract("user-1", "employer", {})).rejects.toThrow(
+        "offerId or adminId is required",
+      )
     })
 
     it("should throw if offer not found", async () => {
@@ -114,7 +113,9 @@ describe("contracts.service", () => {
 
       mockDb.insert.mockReturnValueOnce(createQueryBuilder([contract]))
 
-      const result = await createContract("user-1", "employer", { offerId: "offer-1" })
+      const result = await createContract("user-1", "employer", {
+        offerId: "offer-1",
+      })
 
       expect(result.code).toBe("CNT-123")
       expect(result.status).toBe("pending")
@@ -148,12 +149,20 @@ describe("contracts.service", () => {
 
       mockDb.select
         .mockReturnValueOnce(createQueryBuilder([employer]))
-        .mockReturnValueOnce(createQueryBuilder([{ nameEn: "Admin", nameFa: "ادمین", photo: null }]))
+        .mockReturnValueOnce(
+          createQueryBuilder([
+            { nameEn: "Admin", nameFa: "ادمین", photo: null },
+          ]),
+        )
         .mockReturnValueOnce(createQueryBuilder([employer]))
 
       mockDb.insert.mockReturnValueOnce(createQueryBuilder([contract]))
 
-      const result = await createContract("user-1", "employer", { adminId: "admin-1", platform: "telegram", amountToman: 2000000 })
+      const result = await createContract("user-1", "employer", {
+        adminId: "admin-1",
+        platform: "telegram",
+        amountToman: 2000000,
+      })
 
       expect(result.code).toBe("CNT-456")
       expect(result.employerName).toBe("کارفرما")
@@ -331,7 +340,9 @@ describe("contracts.service", () => {
         .mockReturnValueOnce(createQueryBuilder([{ nameFa: "ادمین" }]))
         .mockReturnValueOnce(createQueryBuilder([{ nameFa: "کارفرما" }]))
 
-      const result = await updateContractStatus("contract-1", { status: "completed" })
+      const result = await updateContractStatus("contract-1", {
+        status: "completed",
+      })
 
       expect(result.status).toBe("completed")
     })

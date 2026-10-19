@@ -15,9 +15,15 @@ class PaymentController extends Controller
         private readonly PaymentGatewayService $gatewayService,
     ) {}
 
+    /**
+     * Gateways available for checkout. `config` may hold merchant credentials,
+     * so it is never serialised here.
+     */
     public function index(Request $request): JsonResponse
     {
-        $gateways = PaymentGatewayModel::query()->get();
+        $gateways = PaymentGatewayModel::query()
+            ->active()
+            ->get(['id', 'code', 'name', 'provider']);
 
         return response()->json($gateways);
     }
@@ -37,7 +43,9 @@ class PaymentController extends Controller
 
     public function show($id): JsonResponse
     {
-        $payment = PaymentGatewayModel::query()->findOrFail($id);
+        $payment = PaymentGatewayModel::query()
+            ->active()
+            ->findOrFail($id, ['id', 'code', 'name', 'provider']);
 
         return response()->json($payment);
     }

@@ -25,8 +25,7 @@ export function Badge({
   size = "sm",
   className = "",
 }: BadgeProps) {
-  const sizeClasses =
-    size === "sm" ? "px-2 py-0.5 text-xs" : "px-2.5 py-1 text-sm"
+  const sizeClasses = size === "sm" ? "px-2 py-0.5 text-xs" : "px-2.5 py-1 text-sm"
 
   if (platform) {
     const platformGradients: Record<string, string> = {

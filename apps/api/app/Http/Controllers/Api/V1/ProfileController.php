@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Services\Media\MediaService;
 use App\Actions\AdminProfile\CreateAdminProfileAction;
 use App\Actions\AdminProfile\ToggleVerificationAction;
 use App\Actions\AdminProfile\UpdateAdminProfileAction;
@@ -9,7 +10,6 @@ use App\Http\Controllers\Controller;
 use App\Models\AdminProfile;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
@@ -60,7 +60,7 @@ class ProfileController extends Controller
         ]);
 
         $user = $request->user();
-        $path = $request->file('avatar')->store('avatars', 's3');
+        $path = app(MediaService::class)->store($request->file('avatar'), 'avatars');
 
         $user->avatar = $path;
         $user->save();
@@ -73,7 +73,7 @@ class ProfileController extends Controller
         $user = $request->user();
 
         if ($user->avatar) {
-            Storage::disk('s3')->delete($user->avatar);
+            app(MediaService::class)->delete($user->avatar);
             $user->avatar = null;
             $user->save();
         }

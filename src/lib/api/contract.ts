@@ -19,9 +19,7 @@ export interface CreateContractInput {
 
 export type Contract = ContractRow
 
-export async function createContract(
-  input: CreateContractInput,
-): Promise<ContractRow> {
+export async function createContract(input: CreateContractInput): Promise<ContractRow> {
   const payload = await apiFetch<Record<string, unknown>>("/api/contracts", {
     method: "POST",
     body: JSON.stringify(input),
@@ -42,13 +40,10 @@ export async function updateContractStatus(
   id: string,
   input: { status: ContractRow["status"] },
 ): Promise<ContractRow> {
-  const payload = await apiFetch<Record<string, unknown>>(
-    `/api/contracts/${id}`,
-    {
-      method: "PUT",
-      body: JSON.stringify(input),
-    },
-  )
+  const payload = await apiFetch<Record<string, unknown>>(`/api/contracts/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(input),
+  })
   const contract = unwrapItem<ContractRow>(payload, "contract")
   if (!contract) {
     throw new Error("Contract update response was empty")
@@ -61,9 +56,7 @@ export interface ListContractsQuery {
   platform?: string
 }
 
-export async function listContracts(
-  query: ListContractsQuery = {},
-): Promise<ContractRow[]> {
+export async function listContracts(query: ListContractsQuery = {}): Promise<ContractRow[]> {
   const params = new URLSearchParams()
 
   if (query.status) {

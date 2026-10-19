@@ -33,7 +33,7 @@ export default function AdminWorkspacePage({
   tr,
   lang,
 }: {
-  tr: typeof t["en"] & typeof t["fa"]
+  tr: (typeof t)["en"] & (typeof t)["fa"]
   lang: Lang
 }) {
   const isFa = lang === "fa"
@@ -49,9 +49,7 @@ export default function AdminWorkspacePage({
   return (
     <div className="p-6 lg:p-8 max-w-4xl mx-auto fade-in">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-[#0f172a]">
-          {tr.adminWorkspace.title}
-        </h1>
+        <h1 className="text-2xl font-bold text-[#0f172a]">{tr.adminWorkspace.title}</h1>
         <p className="text-[#64748b] mt-1">{tr.adminWorkspace.sub}</p>
       </div>
 
@@ -71,18 +69,10 @@ export default function AdminWorkspacePage({
         ))}
       </div>
 
-      {activeTab === "cases" && (
-        <CasesTab tr={tr} lang={lang} isFa={isFa} />
-      )}
-      {activeTab === "tasks" && (
-        <TasksTab tr={tr} lang={lang} isFa={isFa} />
-      )}
-      {activeTab === "events" && (
-        <EventsTab tr={tr} lang={lang} isFa={isFa} />
-      )}
-      {activeTab === "timeLogs" && (
-        <TimeLogsTab tr={tr} lang={lang} isFa={isFa} />
-      )}
+      {activeTab === "cases" && <CasesTab tr={tr} lang={lang} isFa={isFa} />}
+      {activeTab === "tasks" && <TasksTab tr={tr} lang={lang} isFa={isFa} />}
+      {activeTab === "events" && <EventsTab tr={tr} lang={lang} isFa={isFa} />}
+      {activeTab === "timeLogs" && <TimeLogsTab tr={tr} lang={lang} isFa={isFa} />}
     </div>
   )
 }

@@ -1,8 +1,11 @@
 node_modules/
 dist/
+.next/
 build/
 .cache/
 .env*
+!.env.demo
+!.env.example
 .vite/
 vite.config.*.timestamp-*
 *.tsbuildinfo
@@ -13,3 +16,6 @@ logs/
 .tmp-*
 playwright-report/
 test-results/
+.phpunit.cache/
+coverage/
+coverage.xml

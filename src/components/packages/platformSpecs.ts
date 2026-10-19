@@ -344,8 +344,7 @@ export function platformLabel(key: PlatformKey, lang: "en" | "fa"): string {
 export function emptyPlatformConfig(platform: PlatformKey): PlatformConfig {
   const spec = PLATFORM_SPECS[platform]
   const settings: Record<string, unknown> = {}
-  for (const f of spec.fields)
-    settings[f.id] = f.default ?? (f.type === "boolean" ? false : "")
+  for (const f of spec.fields) settings[f.id] = f.default ?? (f.type === "boolean" ? false : "")
   return { platform, settings }
 }
 
@@ -353,8 +352,5 @@ export function configForPlatform(
   configs: PlatformConfig[],
   platform: PlatformKey,
 ): PlatformConfig | undefined {
-  return (
-    configs.find((c) => c.platform === platform) ??
-    emptyPlatformConfig(platform)
-  )
+  return configs.find((c) => c.platform === platform) ?? emptyPlatformConfig(platform)
 }

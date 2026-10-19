@@ -38,13 +38,11 @@ export default function AdminContentModerationPage({
   tr,
   lang = "fa",
 }: {
-  tr: typeof t["en"] & typeof t["fa"]
+  tr: (typeof t)["en"] & (typeof t)["fa"]
   lang: Lang
 }) {
   const isFa = lang === "fa"
-  const [activeTab, setActiveTab] = useState<"stories" | "blogs" | "comments">(
-    "stories",
-  )
+  const [activeTab, setActiveTab] = useState<"stories" | "blogs" | "comments">("stories")
   const [items, setItems] = useState<(StoryRow | BlogRow | CommentRow)[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState("")
@@ -96,10 +94,7 @@ export default function AdminContentModerationPage({
     }
   }, [activeTab, search, statusFilter, postTypeFilter])
 
-  const handleModerate = async (
-    id: string,
-    action: "approve" | "reject" | "archive",
-  ) => {
+  const handleModerate = async (id: string, action: "approve" | "reject" | "archive") => {
     try {
       if (activeTab === "stories") {
         await moderateStoryAdmin(id, action)
@@ -139,11 +134,13 @@ export default function AdminContentModerationPage({
   const getStatusBadge = (status: string) => {
     const colors: Record<string, string> = {
       draft: "bg-gray-100 text-gray-700",
+      pending: "bg-amber-100 text-amber-700",
       published: "bg-emerald-100 text-emerald-700",
       archived: "bg-amber-100 text-amber-700",
     }
     const labels: Record<string, string> = {
       draft: tr.adminContent.draft,
+      pending: tr.adminContent.pending,
       published: tr.adminContent.published,
       archived: tr.adminContent.archived,
     }
@@ -182,9 +179,7 @@ export default function AdminContentModerationPage({
   return (
     <div className="p-6 lg:p-8 max-w-6xl mx-auto fade-in">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-[#0f172a]">
-          {tr.adminContent.title}
-        </h1>
+        <h1 className="text-2xl font-bold text-[#0f172a]">{tr.adminContent.title}</h1>
         <p className="text-[#64748b] mt-1">{tr.adminContent.sub}</p>
       </div>
 
@@ -219,11 +214,7 @@ export default function AdminContentModerationPage({
         {(activeTab === "stories" || activeTab === "blogs") && (
           <>
             <div className="flex-1 min-w-[200px]">
-              <Input
-                value={search}
-                onChange={setSearch}
-                placeholder={tr.adminContent.search}
-              />
+              <Input value={search} onChange={setSearch} placeholder={tr.adminContent.search} />
             </div>
             <div className="min-w-[160px]">
               <Select
@@ -268,10 +259,7 @@ export default function AdminContentModerationPage({
             if (activeTab === "comments") {
               const comment = item as CommentRow
               return (
-                <div
-                  key={comment.id}
-                  className="bg-white rounded-2xl border border-[#e2e8f0] p-5"
-                >
+                <div key={comment.id} className="bg-white rounded-2xl border border-[#e2e8f0] p-5">
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-2">
@@ -283,9 +271,7 @@ export default function AdminContentModerationPage({
                           {formatDate(comment.createdAt)}
                         </span>
                       </div>
-                      <p className="text-sm text-[#64748b] leading-relaxed">
-                        {comment.body}
-                      </p>
+                      <p className="text-sm text-[#64748b] leading-relaxed">{comment.body}</p>
                     </div>
                     <div className="flex-shrink-0">
                       <Button
@@ -305,10 +291,7 @@ export default function AdminContentModerationPage({
             const isStory = activeTab === "stories"
 
             return (
-              <div
-                key={storyBlog.id}
-                className="bg-white rounded-2xl border border-[#e2e8f0] p-5"
-              >
+              <div key={storyBlog.id} className="bg-white rounded-2xl border border-[#e2e8f0] p-5">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-2 flex-wrap">
@@ -323,9 +306,7 @@ export default function AdminContentModerationPage({
                         </span>
                       )}
                     </div>
-                    <h3 className="font-bold text-[#0f172a] text-base mb-2">
-                      {storyBlog.title}
-                    </h3>
+                    <h3 className="font-bold text-[#0f172a] text-base mb-2">{storyBlog.title}</h3>
                     <div className="flex items-center gap-4 text-xs text-[#64748b]">
                       <span>
                         {tr.adminContent.author}: {storyBlog.authorName}
@@ -337,21 +318,14 @@ export default function AdminContentModerationPage({
                     </div>
                   </div>
                   <div className="flex gap-2 flex-shrink-0">
-                    <Button
-                      size="sm"
-                      onClick={() =>
-                        handleModerate(storyBlog.id, "approve")
-                      }
-                    >
+                    <Button size="sm" onClick={() => handleModerate(storyBlog.id, "approve")}>
                       {tr.adminContent.approve}
                     </Button>
                     {isStory && (
                       <Button
                         variant="danger"
                         size="sm"
-                        onClick={() =>
-                          handleModerate(storyBlog.id, "reject")
-                        }
+                        onClick={() => handleModerate(storyBlog.id, "reject")}
                       >
                         {tr.adminContent.reject}
                       </Button>
@@ -360,9 +334,7 @@ export default function AdminContentModerationPage({
                       <Button
                         variant="secondary"
                         size="sm"
-                        onClick={() =>
-                          handleModerate(storyBlog.id, "archive")
-                        }
+                        onClick={() => handleModerate(storyBlog.id, "archive")}
                       >
                         {tr.adminContent.archive}
                       </Button>

@@ -5,10 +5,11 @@ import { Stars } from "../components/platform/Stars"
 import { listVibeCoders, type VibeCoder } from "../lib/api"
 import { ListSkeleton } from "../components/ui/Skeleton"
 import { TOMAN_PER_MILLION } from "../lib/constants"
+import { photoUrl } from "../lib/photo"
 
 type Stack = "webApp" | "automation" | "bots" | "landing" | "frontend"
 
-const STACK_LABELS: Record<Stack, { en: string fa: string }> = {
+const STACK_LABELS: Record<Stack, { en: string; fa: string }> = {
   webApp: { en: "Web Apps", fa: "وب‌اپلیکیشن" },
   automation: { en: "Automation", fa: "اتوماسیون" },
   bots: { en: "Bots & Integrations", fa: "بات و اتصالات" },
@@ -16,13 +17,7 @@ const STACK_LABELS: Record<Stack, { en: string fa: string }> = {
   frontend: { en: "Frontend", fa: "فرانت‌اند" },
 }
 
-export default function VibeCodersPage({
-  tr,
-  lang,
-}: {
-  tr: typeof t["en"]
-  lang: Lang
-}) {
+export default function VibeCodersPage({ tr, lang }: { tr: (typeof t)["en"]; lang: Lang }) {
   const [coders, setCoders] = useState<VibeCoder[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState("")
@@ -61,15 +56,12 @@ export default function VibeCodersPage({
     return matchSearch && matchStack
   })
 
-  const stackKey = (key: Stack) =>
-    isFa ? STACK_LABELS[key].fa : STACK_LABELS[key].en
+  const stackKey = (key: Stack) => (isFa ? STACK_LABELS[key].fa : STACK_LABELS[key].en)
 
   return (
     <div className="p-6 lg:p-8 max-w-6xl mx-auto fade-in">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-[#0f172a]">
-          {tr.vibeCoders.title}
-        </h1>
+        <h1 className="text-2xl font-bold text-[#0f172a]">{tr.vibeCoders.title}</h1>
         <p className="text-[#64748b] mt-1">{tr.vibeCoders.sub}</p>
       </div>
 
@@ -110,7 +102,8 @@ export default function VibeCodersPage({
             >
               <div className="flex items-start gap-3 mb-4">
                 <img
-                  src={`https://images.unsplash.com/${coder.photo}?w=64&h=64&fit=crop&auto=format`}
+                  src={photoUrl(coder.photo, 64)}
+                  onError={(e) => (e.currentTarget.style.visibility = "hidden")}
                   alt={isFa ? coder.nameFa : coder.nameEn}
                   className="w-14 h-14 rounded-2xl object-cover bg-[#f2f5fa] flex-shrink-0"
                 />
@@ -120,12 +113,8 @@ export default function VibeCodersPage({
                   </span>
                   <div className="flex items-center gap-1.5 mt-1">
                     <Stars rating={coder.rating} />
-                    <span className="text-xs font-bold text-[#0f172a]">
-                      {coder.rating}
-                    </span>
-                    <span className="text-xs text-[#94a3b8]">
-                      ({coder.reviews})
-                    </span>
+                    <span className="text-xs font-bold text-[#0f172a]">{coder.rating}</span>
+                    <span className="text-xs text-[#94a3b8]">({coder.reviews})</span>
                   </div>
                   <span className="inline-flex mt-1.5 px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 text-xs font-semibold">
                     {stackKey(coder.stack)}
@@ -150,9 +139,7 @@ export default function VibeCodersPage({
 
               <div className="border-t border-[#f2f5fa] pt-4 flex items-center justify-between">
                 <div>
-                  <div className="text-xs text-[#64748b]">
-                    {tr.vibeCoders.starting}
-                  </div>
+                  <div className="text-xs text-[#64748b]">{tr.vibeCoders.starting}</div>
                   <div className="text-base font-bold text-[#1e3a5f]">
                     {isFa
                       ? `${(coder.rateToman / TOMAN_PER_MILLION).toFixed(1)}M ${tr.common.toman}`
@@ -174,9 +161,7 @@ export default function VibeCodersPage({
       {!loading && filtered.length === 0 && (
         <div className="text-center py-16 text-[#64748b]">
           <div className="text-4xl mb-3">⚡</div>
-          <div className="font-semibold">
-            {isFa ? "نتیجه‌ای یافت نشد" : "No results found"}
-          </div>
+          <div className="font-semibold">{isFa ? "نتیجه‌ای یافت نشد" : "No results found"}</div>
           <div className="text-sm mt-1">
             {isFa ? "فیلترها را تغییر دهید" : "Try adjusting your filters"}
           </div>

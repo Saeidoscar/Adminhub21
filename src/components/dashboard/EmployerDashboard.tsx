@@ -25,14 +25,11 @@ const PLATFORM_LABELS: Record<string, string> = {
 
 interface EmployerDashboardProps {
   lang: Lang
-  tr: typeof t["en"] & typeof t["fa"]
+  tr: (typeof t)["en"] & (typeof t)["fa"]
   role: "employer" | "admin"
 }
 
-export default function EmployerDashboard({
-  lang,
-  tr,
-}: EmployerDashboardProps) {
+export default function EmployerDashboard({ lang, tr }: EmployerDashboardProps) {
   const navigate = useNavigate()
   const { user } = useAuth()
   const [loading, setLoading] = useState(true)
@@ -42,11 +39,9 @@ export default function EmployerDashboard({
   const [showSubModal, setShowSubModal] = useState(false)
 
   const fmt = (toman: number, usd: number) =>
-    lang === "fa"
-      ? `${(toman / TOMAN_PER_MILLION).toFixed(1)}M ${tr.common.toman}`
-      : `$${usd}`
+    lang === "fa" ? `${(toman / TOMAN_PER_MILLION).toFixed(1)}M ${tr.common.toman}` : `$${usd}`
 
-  const userName = lang === "fa" ? (user?.nameFa || "علی") : (user?.nameEn || "Ali")
+  const userName = lang === "fa" ? user?.nameFa || "علی" : user?.nameEn || "Ali"
 
   useEffect(() => {
     let cancelled = false
@@ -140,14 +135,10 @@ export default function EmployerDashboard({
             key={s.label}
             className="bg-white rounded-2xl p-5 border border-[#e2e8f0] card-hover"
           >
-            <div
-              className={`w-10 h-10 ${s.bg} rounded-xl flex items-center justify-center mb-3`}
-            >
+            <div className={`w-10 h-10 ${s.bg} rounded-xl flex items-center justify-center mb-3`}>
               <Icon name={s.icon} size={20} className={s.color} />
             </div>
-            <div className={`text-xl font-bold ${s.color} mb-0.5`}>
-              {s.value}
-            </div>
+            <div className={`text-xl font-bold ${s.color} mb-0.5`}>{s.value}</div>
             <div className="text-xs text-[#64748b]">{s.label}</div>
           </div>
         ))}
@@ -176,9 +167,7 @@ export default function EmployerDashboard({
           {/* Recent Contracts */}
           <div className="lg:col-span-2 bg-white rounded-2xl border border-[#e2e8f0] overflow-hidden">
             <div className="flex items-center justify-between px-6 py-4 border-b border-[#e2e8f0]">
-              <h2 className="font-bold text-[#0f172a]">
-                {tr.dash.recentContracts}
-              </h2>
+              <h2 className="font-bold text-[#0f172a]">{tr.dash.recentContracts}</h2>
               <button className="text-xs text-[#1e3a5f] font-semibold hover:underline">
                 {tr.dash.viewAll}
               </button>
@@ -212,8 +201,7 @@ export default function EmployerDashboard({
                       <div className="flex items-center gap-3 text-xs text-[#64748b]">
                         <span className="font-mono">{c.code}</span>
                         <span>
-                          {fmt(c.amountToman, c.amountUSD)}/
-                          {lang === "fa" ? "ماه" : "mo"}
+                          {fmt(c.amountToman, c.amountUSD)}/{lang === "fa" ? "ماه" : "mo"}
                         </span>
                         {c.hasInsurance && (
                           <span className="flex items-center gap-1 text-emerald-600">
@@ -235,7 +223,7 @@ export default function EmployerDashboard({
                                 : "bg-red-100 text-red-700"
                         }`}
                       >
-                        {tr.dash.status[(c.status as keyof typeof tr.dash.status)]}
+                        {tr.dash.status[c.status as keyof typeof tr.dash.status]}
                       </span>
                     </div>
                   </div>
@@ -252,32 +240,20 @@ export default function EmployerDashboard({
                 <Icon name="shield" size={20} className="text-amber-400" />
                 <span className="font-bold text-sm">{tr.dash.insTitle}</span>
               </div>
-              <p className="text-blue-200 text-xs leading-relaxed mb-4">
-                {tr.dash.insDesc}
-              </p>
+              <p className="text-blue-200 text-xs leading-relaxed mb-4">{tr.dash.insDesc}</p>
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span className="text-emerald-300 text-xs font-semibold">
-                  {tr.dash.insActive}
-                </span>
+                <span className="text-emerald-300 text-xs font-semibold">{tr.dash.insActive}</span>
               </div>
             </div>
 
             {/* Request substitute */}
             <div className="bg-white rounded-2xl border border-[#e2e8f0] p-5">
-              <h3 className="font-bold text-sm text-[#0f172a] mb-3">
-                {tr.dash.subStatus}
-              </h3>
+              <h3 className="font-bold text-sm text-[#0f172a] mb-3">{tr.dash.subStatus}</h3>
               <div className="bg-orange-50 border border-orange-200 rounded-xl p-3 mb-4">
                 <div className="flex items-start gap-2">
-                  <Icon
-                    name="warning"
-                    size={14}
-                    className="text-orange-500 mt-0.5 flex-shrink-0"
-                  />
-                  <p className="text-xs text-orange-700 leading-relaxed">
-                    {tr.dash.subActive}
-                  </p>
+                  <Icon name="warning" size={14} className="text-orange-500 mt-0.5 flex-shrink-0" />
+                  <p className="text-xs text-orange-700 leading-relaxed">{tr.dash.subActive}</p>
                 </div>
               </div>
               <button
@@ -290,25 +266,31 @@ export default function EmployerDashboard({
 
             {/* Quick actions */}
             <div className="bg-white rounded-2xl border border-[#e2e8f0] p-5">
-              <h3 className="font-bold text-sm text-[#0f172a] mb-3">
-                {tr.dash.quickActions}
-              </h3>
+              <h3 className="font-bold text-sm text-[#0f172a] mb-3">{tr.dash.quickActions}</h3>
               <div className="space-y-2">
                 {[
-                  { label: tr.dash.findAdmin, icon: "search", action: () => navigate("/marketplace") },
-                  { label: tr.dash.newContract, icon: "contracts", action: () => navigate("/contracts") },
-                  { label: tr.dash.manageInsurance, icon: "shield", action: () => {} },
+                  {
+                    label: tr.dash.findAdmin,
+                    icon: "search",
+                    action: () => navigate("/marketplace"),
+                  },
+                  {
+                    label: tr.dash.newContract,
+                    icon: "contracts",
+                    action: () => navigate("/contracts"),
+                  },
+                  {
+                    label: tr.dash.manageInsurance,
+                    icon: "shield",
+                    action: () => {},
+                  },
                 ].map((a) => (
                   <button
                     key={a.label}
                     onClick={a.action}
                     className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-[#1e3a5f] hover:bg-[#f2f5fa] transition-colors text-start font-medium"
                   >
-                    <Icon
-                      name={a.icon}
-                      size={16}
-                      className="text-[#1e3a5f] flex-shrink-0"
-                    />
+                    <Icon name={a.icon} size={16} className="text-[#1e3a5f] flex-shrink-0" />
                     {a.label}
                   </button>
                 ))}
@@ -328,13 +310,10 @@ export default function EmployerDashboard({
               </div>
               <h3 className="font-bold text-[#0f172a]">{tr.dash.requestSub}</h3>
             </div>
-            <p className="text-sm text-[#64748b] mb-6 leading-relaxed">
-              {tr.dash.subRequest}
-            </p>
+            <p className="text-sm text-[#64748b] mb-6 leading-relaxed">{tr.dash.subRequest}</p>
             <div className="bg-[#f2f5fa] rounded-xl p-4 mb-6">
               <div className="text-sm font-semibold text-[#0f172a] mb-2">
-                {lang === "fa" ? "قرارداد مورد نظر:" : "Contract:"}{" "}
-                {contracts[0]?.code || "N/A"}
+                {lang === "fa" ? "قرارداد مورد نظر:" : "Contract:"} {contracts[0]?.code || "N/A"}
               </div>
               <div className="text-xs text-[#64748b]">
                 {contracts[0]

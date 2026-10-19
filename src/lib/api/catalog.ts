@@ -63,9 +63,7 @@ export async function listTools(query: ListToolsQuery = {}): Promise<Tool[]> {
   if (typeof query.minRating === "number") params.set("minRating", String(query.minRating))
   if (query.search) params.set("search", query.search)
   const qs = params.toString()
-  const payload = await apiFetch<Record<string, unknown>>(
-    `/api/catalog/tools${qs ? `?${qs}` : ""}`,
-  )
+  const payload = await apiFetch<Record<string, unknown>>(`/api/catalog/tools${qs ? `?${qs}` : ""}`)
   return unwrapList<Tool>(payload, "tools")
 }
 
