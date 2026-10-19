@@ -73,12 +73,7 @@ class Ticket extends Model
 
     public function scopeOpen(Builder $query): Builder
     {
-        return $query->whereIn('status', [
-            TicketStatus::Open->value,
-            TicketStatus::Answered->value,
-            TicketStatus::Referred->value,
-            TicketStatus::Pending->value,
-        ]);
+        return $query->whereIn('status', TicketStatus::openStatuses());
     }
 
     public function scopeClosed(Builder $query): Builder
@@ -94,7 +89,10 @@ class Ticket extends Model
 
     public function isOpen(): bool
     {
-        return $this->status !== TicketStatus::Closed->value;
+        return in_array($this->status, [
+            TicketStatus::Open->value,
+            TicketStatus::InProgress->value,
+        ], true);
     }
 
     public function isClosed(): bool
