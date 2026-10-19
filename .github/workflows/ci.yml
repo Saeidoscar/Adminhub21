@@ -56,7 +56,16 @@ jobs:
 
       - run: pnpm install
 
-      - run: pnpm build
+      # The workspace (Vite) and the public surface (Next.js) are separate
+      # builds; a 1.0 is only shippable when both compile.
+      - name: Build workspace app
+        run: pnpm build
+
+      - name: Build public site
+        run: pnpm build:web
+        env:
+          NEXT_PUBLIC_API_BASE_URL: http://localhost:8000
+          NEXT_PUBLIC_SITE_URL: https://adminhub21.example
 
   api-tests:
     name: API · PHP 8.4 · PostgreSQL 16

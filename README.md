@@ -34,21 +34,41 @@ Prefer `apps/api/` for all new backend work.
 3. Protected routes enforce role-based access (`employer`, `admin`, `super_admin`); the API enforces the same rules again through policies.
 4. The API returns normalized payloads; the frontend unwraps lists and items before rendering.
 
+## Two surfaces
+
+The repository ships two frontends that share one design-token package:
+
+| Surface | App | Rendering | Purpose |
+| ------- | --- | --------- | ------- |
+| Public site | `apps/web` (Next.js 16, App Router) | server-rendered, indexable | home, marketplace catalogue, package pages, pricing, changelog |
+| Workspace | root `src/` (Vite + React Router) | client-side, authenticated | dashboards, contracts, wallet, tickets, admin |
+
+Both import `@adminhub/design-tokens/theme.css`, so colour and typography tokens cannot drift between them. The public site is Persian-first (`lang="fa" dir="rtl"`), ships `sitemap.xml` and `robots.txt`, and treats `/app/*` as a private surface that redirects anonymous visitors through `/sign-in?redirectUrl=…`.
+
+Run them with:
+
+```bash
+pnpm dev        # workspace on :8443
+pnpm dev:web    # public site on :3000
+```
+
+The workspace modules are being moved into the Next shell progressively; until then `/app` presents the authenticated shell and the migrated modules, and every other `/app/*` path returns the visitor to sign-in and back.
+
 ## Tech stack
 
-| Layer | Technology |
-|-------|-----------|
-| Frontend | React 19, React Router 7, TypeScript 5.7 |
-| Styling | Tailwind CSS v4 (`@tailwindcss/vite`) |
-| Backend | Laravel 13, PHP 8.3+, Sanctum, Actions + Policies |
-| Database | PostgreSQL 16 (47 migrations) |
-| Queue | Redis + Laravel Horizon (`ai-*`, `pdf-*`, `notifications-*` queues) |
-| PDF | `barryvdh/laravel-dompdf` (contract generation) |
-| AI | OpenRouter / OpenAI / Anthropic providers |
-| Payments | Zibal, SEP, crypto callbacks with signature + replay protection |
-| Mobile | Capacitor (Android) |
-| Testing | PHPUnit (API), Playwright (E2E) |
-| Formatting | `oxfmt` |
+| Layer      | Technology                                                          |
+| ---------- | ------------------------------------------------------------------- |
+| Frontend   | React 19, React Router 7, TypeScript 5.7                            |
+| Styling    | Tailwind CSS v4 (`@tailwindcss/vite`)                               |
+| Backend    | Laravel 13, PHP 8.3+, Sanctum, Actions + Policies                   |
+| Database   | PostgreSQL 16 (47 migrations)                                       |
+| Queue      | Redis + Laravel Horizon (`ai-*`, `pdf-*`, `notifications-*` queues) |
+| PDF        | `barryvdh/laravel-dompdf` (contract generation)                     |
+| AI         | OpenRouter / OpenAI / Anthropic providers                           |
+| Payments   | Zibal, SEP, crypto callbacks with signature + replay protection     |
+| Mobile     | Capacitor (Android)                                                 |
+| Testing    | PHPUnit (API), Playwright (E2E)                                     |
+| Formatting | `oxfmt`                                                             |
 
 ## User roles
 
@@ -61,21 +81,27 @@ Prefer `apps/api/` for all new backend work.
 ## Key features
 
 ### Marketplace
+
 Browse verified professionals by platform, rating, and price. Each admin profile exposes skills, pricing packages, verification status, and insurance eligibility. Employers can save favorites and request custom offers.
 
 ### Packages & comparison
+
 Admins create platform-specific or multi-platform bundles. Employers can select up to three packages and compare them side-by-side on features, billing cycle, and price.
 
 ### Contract generator
+
 A five-step wizard (Parties → Scope → Payment → Terms → Review) produces a styled service agreement. It supports termination clauses, substitution and insurance terms, payment schedules, and PDF generation on a dedicated queue.
 
 ### AI assistant
+
 An MCP-connected chat interface provides hiring intelligence for employers and career guidance for admins. It supports multiple model providers and conversation management; completions run through `ProcessAiRequest` on the AI queues.
 
 ### Admin panel
+
 Super admins manage users, moderate stories/blogs/comments, triage support tickets, and oversee workspace cases, tasks, events, and time logs. Admins manage their own portfolios and packages.
 
 ### Mobile
+
 The web shell is wrapped with Capacitor for Android. The UI is responsive by default, with a dedicated mobile topbar and collapsible sidebar.
 
 ## Prerequisites
@@ -122,13 +148,13 @@ docker compose up --build          # production-shaped stack
 docker compose -f docker-compose.demo.yml up --build   # demo stack
 ```
 
-| Service | URL |
-|---------|-----|
-| API through nginx | http://localhost:8080 |
+| Service                                           | URL                   |
+| ------------------------------------------------- | --------------------- |
+| API through nginx                                 | http://localhost:8080 |
 | Frontend, production build (`docker-compose.yml`) | http://localhost:8443 |
-| Frontend, demo stack (`docker-compose.demo.yml`) | http://localhost:8444 |
-| Mailpit | http://localhost:8025 |
-| Vite dev server (`pnpm dev`) | http://localhost:8443 |
+| Frontend, demo stack (`docker-compose.demo.yml`)  | http://localhost:8444 |
+| Mailpit                                           | http://localhost:8025 |
+| Vite dev server (`pnpm dev`)                      | http://localhost:8443 |
 
 `pnpm dev` and the Docker `web` service both bind port 8443, so run one or the other (or change the published port in the compose file).
 
@@ -171,13 +197,15 @@ Locally, `phpunit.xml` runs the suite against in-memory SQLite so no database se
 
 ### Continuous integration
 
-| Job | What it runs |
-|-----|--------------|
-| `frontend-format` | `pnpm format --check` (oxfmt) |
-| `frontend-build` | `pnpm build` |
-| `api-tests` | `php artisan test` on PHP 8.4 with a PostgreSQL 16 service container |
+| Job               | What it runs                                                         |
+| ----------------- | -------------------------------------------------------------------- |
+| `frontend-format` | `pnpm format --check` (oxfmt)                                        |
+| `frontend-build`  | `pnpm build` (workspace) and `pnpm build:web` (public site)          |
+| `api-tests`       | `php artisan test` on PHP 8.4 with a PostgreSQL 16 service container |
 
 `api-tests` caches Composer downloads via `ramsey/composer-install`, copies `apps/api/.env.example` to `.env`, generates a key, and then runs the suite. Any change to the API requires a green run here.
+
+`api-tests` also publishes one check annotation per failing test (from its JUnit report), so a red run is diagnosable without downloading the job log.
 
 `apps/api/phpstan.neon.dist` is currently not wired into CI: it includes `larastan/larastan`, which is not in `composer.json`, and it targets level 8, so it cannot run until that dependency is added and the baseline is cleared.
 
