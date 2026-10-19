@@ -49,15 +49,16 @@ class Attachment extends Model
             return null;
         }
 
-        $disk = app(MediaService::class)->disk();
+        $media = app(MediaService::class);
 
         if ($private) {
-            return $disk->temporaryUrl(
+            return $media->disk()->temporaryUrl(
                 $this->storage_key,
                 now()->addMinutes($expiresInMinutes)
             );
         }
 
-        return $disk->url($this->storage_key);
+        // Public URLs honour MEDIA_URL, so a CDN origin is applied in one place.
+        return $media->url($this->storage_key);
     }
 }
