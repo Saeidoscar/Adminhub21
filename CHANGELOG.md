@@ -23,6 +23,15 @@ that ships it is the same one that tests it.
   refuses invalid ones with `422` and a reason.
 - `GET /api/v1/users/lookup?email=` resolves a counterparty by exact address (no
   directory, no listing).
+- **Wallet in the workspace shell.** `/app/wallet` shows the three balances
+  (total, withdrawable, blocked), the statement with pagination, and separate
+  tabs for topping up through a payment gateway, withdrawing, and transferring to
+  another user by exact email address.
+- **Tickets in the workspace shell.** `/app/tickets` lists the caller's requests
+  with status filters, `/app/tickets/{id}` renders the thread and accepts a
+  reply, and `/app/tickets/new` opens a ticket with a priority. Support agents
+  additionally see internal notes and their author; requesters never receive
+  them from the API at all.
 - `GET /api/v1/health` now returns the release version alongside the API version.
 - Continuous integration on three lanes: frontend formatting, frontend build,
   and the Laravel API suite against a PostgreSQL 16 service container.
@@ -61,6 +70,27 @@ that ships it is the same one that tests it.
   method — every submission returned 403.
 - **Ticket creators could not read their own tickets.** `TicketPolicy::view`
   admitted admins only while `update` already allowed the participants.
+- **Replying to any ticket failed with a 500.** `TicketService` wrote
+  `tickets.last_message_at` on every message, but no migration ever created that
+  column.
+- **The ticket status enum disagreed with the schema.** `answered`, `referred`
+  and `pending` existed only in PHP; the database constraint, the TypeScript
+  types and the filters all use `open`, `in_progress`, `resolved` and `closed`.
+- **`POST /wallet/deposit` credited the balance synchronously**, so anyone who
+  could reach the endpoint could mint money without paying. It now starts a
+  pending gateway payment, and only the signed callback settles it.
+- **`App\Models\PaymentGateway` did not exist**, though two classes referenced
+  it, so every `/payments` request was a fatal error. The gateway list also
+  serialised each row's `config`, including credentials; the API now returns
+  only `id`, `code`, `name` and `provider`.
+- **Insufficient funds returned 500** instead of a client error. Withdrawals and
+  transfers now answer `422` with a readable message.
+- **A ticket's requester could see internal notes** and could set `priority` and
+  `assigned_to`. Internal notes are filtered out server-side for non-staff, and
+  staff-only fields are rejected for requesters, who may still close their own
+  ticket.
+- **The tickets index was not scoped to a group.** `where(...)->orWhere(...)`
+  evaluated without grouping, so a status filter could widen it.
 - Migrations failed on PostgreSQL: `affiliate_commissions.referral_id` inferred a
   `referrals` table that does not exist, and `admin_profiles` was created before
   the `attachments` table it references.

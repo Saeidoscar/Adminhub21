@@ -18,7 +18,7 @@ class TicketResource extends JsonResource
             'attachments' => $this->attachments,
             'resolved_at' => $this->resolved_at,
             'user' => new UserResource($this->whenLoaded('user')),
-            'assigned_to' => new UserResource($this->whenLoaded('assignedTo')),
+            'assigned_to' => new UserResource($this->whenLoaded('assignee')),
             'messages' => TicketMessageResource::collection($this->whenLoaded('messages')),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

@@ -14,7 +14,7 @@ class AssignTicketAction
             $ticket->assigned_to = $agent->id;
             $ticket->save();
 
-            return $ticket->load(['assignedTo']);
+            return $ticket->load(['assignee']);
         });
     }
 }

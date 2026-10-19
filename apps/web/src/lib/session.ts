@@ -23,6 +23,23 @@ export async function requireSessionToken(pathname: string): Promise<string> {
   return token
 }
 
+export type SessionUser = {
+  id: number
+  name: string
+  email: string
+  role: string
+}
+
+/** True only for the support roles that may see internal ticket notes. */
+export function isStaff(user: SessionUser | null): boolean {
+  return user?.role === "admin" || user?.role === "super_admin"
+}
+
+export async function getMe(token: string): Promise<SessionUser | null> {
+  const result = await apiRequest<SessionUser>(token, "/api/v1/auth/me")
+  return result.ok ? result.data : null
+}
+
 export type ApiResult<T> = { ok: true; data: T } | { ok: false; status: number; message: string }
 
 type ApiError = { message?: string; errors?: Record<string, string[]> }

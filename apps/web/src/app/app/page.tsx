@@ -38,9 +38,17 @@ const MODULES: { label: string; note: string; href?: string }[] = [
     note: "ساخت، امضا و چرخه وضعیت",
     href: "/app/contracts",
   },
+  {
+    label: "کیف پول",
+    note: "موجودی، شارژ، برداشت و انتقال",
+    href: "/app/wallet",
+  },
   { label: "بازار و سفارش‌ها", note: "مرور، سفارش و پیگیری" },
-  { label: "کیف پول", note: "موجودی، تراکنش و تسویه" },
-  { label: "تیکت‌ها", note: "پشتیبانی و مکالمه" },
+  {
+    label: "تیکت‌ها",
+    note: "پشتیبانی و مکالمه",
+    href: "/app/tickets",
+  },
 ]
 
 export default async function WorkspacePage() {

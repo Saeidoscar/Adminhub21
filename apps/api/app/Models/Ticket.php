@@ -50,7 +50,12 @@ class Ticket extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function assignedTo(): BelongsTo
+    /**
+     * Named `assignee` on purpose: Eloquent serialises a relation called
+     * `assignedTo` under the key `assigned_to`, which would overwrite the
+     * integer foreign-key column in every JSON response.
+     */
+    public function assignee(): BelongsTo
     {
         return $this->belongsTo(User::class, 'assigned_to');
     }

@@ -29,7 +29,7 @@ class TicketController extends Controller
                 $request->query('status'),
                 fn ($query, string $status) => $query->where('status', $status),
             )
-            ->with(['user', 'assignedTo'])
+            ->with(['user', 'assignee'])
             ->orderByDesc('updated_at')
             ->paginate(min(50, max(1, (int) $request->query('per_page', 20))));
 
@@ -53,7 +53,7 @@ class TicketController extends Controller
 
         $ticket->load([
             'user',
-            'assignedTo',
+            'assignee',
             'messages' => fn ($query) => $this->canSeeInternalNotes($request->user())
                 ? $query->with('user')->orderBy('created_at')
                 : $query->where('is_internal', false)->with('user')->orderBy('created_at'),
@@ -95,7 +95,7 @@ class TicketController extends Controller
 
         $ticket->update($data);
 
-        return response()->json($ticket->load(['user', 'assignedTo']));
+        return response()->json($ticket->load(['user', 'assignee']));
     }
 
     public function assign(Request $request, Ticket $ticket): JsonResponse

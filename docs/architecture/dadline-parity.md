@@ -268,10 +268,37 @@ The lifecycle is enforced server-side (`ContractLifecycle`), not by hiding
 buttons: the UI only offers transitions the API will accept, and the API rejects
 the rest with `422`.
 
+### M2 — workspace: wallet — **done (second module)**
+
+| capability | route |
+| --- | --- |
+| balances, statement, pagination | `/app/wallet` |
+| top up through an active gateway | `/app/wallet?tab=deposit` |
+| withdraw, capped by the withdrawable balance | `/app/wallet?tab=withdraw` |
+| transfer to another user by exact email | `/app/wallet?tab=transfer` |
+
+Deposits create a pending payment and are settled by the gateway callback; the
+request path never credits a balance. Insufficient funds is a `422`, and the
+gateway list never exposes credentials.
+
+### M2 — workspace: tickets — **done (third module)**
+
+| capability | route |
+| --- | --- |
+| list, status filters, pagination | `/app/tickets` |
+| thread + reply | `/app/tickets/{id}` |
+| open a ticket with a priority | `/app/tickets/new` |
+| internal notes (staff only) | reply form, staff roles |
+
+The API decides visibility: internal notes are removed from the payload for
+requesters, and `priority`/`assigned_to` are rejected for them. The UI mirrors
+that boundary by not rendering the controls, but the boundary itself lives on the
+server.
+
 ### Next
 
-1. Port the remaining workspace modules into `/app/*` (wallet, tickets,
-   marketplace orders) and retire the Vite routes as each lands.
+1. Port the remaining workspace modules into `/app/*` (marketplace orders) and
+   retire the Vite routes as each lands.
 2. Make categories a first-class resource (database-backed, slugged, cached).
 3. Media: move uploads to a configurable CDN origin.
 4. Content inventory: knowledge base and a document/contract template bank.

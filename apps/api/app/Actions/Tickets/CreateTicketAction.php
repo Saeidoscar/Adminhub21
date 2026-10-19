@@ -20,7 +20,7 @@ class CreateTicketAction
             $ticket->priority = $data['priority'] ?? TicketPriority::Medium->value;
             $ticket->save();
 
-            return $ticket->load(['user', 'assignedTo', 'messages']);
+            return $ticket->load(['user', 'assignee', 'messages']);
         });
     }
 }
