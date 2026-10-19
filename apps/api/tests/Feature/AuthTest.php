@@ -14,6 +14,8 @@ class AuthTest extends TestCase
         $response = $this->get('/api/v1/health');
 
         $response->assertStatus(200)
-            ->assertJson(['status' => 'ok', 'version' => 'v1']);
+            ->assertJsonPath('status', 'ok')
+            ->assertJsonPath('api', 'v1')
+            ->assertJsonPath('version', config('version.current'));
     }
 }
