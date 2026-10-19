@@ -31,6 +31,15 @@ async function readChangelog(): Promise<string> {
   return "# Changelog\n\nCHANGELOG.md پیدا نشد."
 }
 
+/**
+ * The changelog is Markdown; the page renders it without a parser, so the two
+ * inline markers that actually appear in it are stripped here. Kept in one
+ * place so a future Markdown renderer can replace it wholesale.
+ */
+function plain(line: string): string {
+  return line.replace(/\*\*(.+?)\*\*/g, "$1").replace(/`([^`]+)`/g, "$1")
+}
+
 function render(lines: string[]) {
   return lines.map((line, index) => {
     const key = `${index}-${line.slice(0, 12)}`
@@ -41,7 +50,7 @@ function render(lines: string[]) {
           key={key}
           className="mt-10 border-b border-border pb-2 text-xl font-extrabold text-foreground"
         >
-          {line.replace("## ", "")}
+          {plain(line.replace("## ", ""))}
         </h2>
       )
     }
@@ -49,15 +58,15 @@ function render(lines: string[]) {
     if (line.startsWith("### ")) {
       return (
         <h3 key={key} className="mt-6 text-base font-bold text-navy">
-          {line.replace("### ", "")}
+          {plain(line.replace("### ", ""))}
         </h3>
       )
     }
 
-    if (line.startsWith("- ")) {
+    if (/^\s*- /.test(line)) {
       return (
         <li key={key} className="ms-5 list-disc text-sm leading-7 text-muted">
-          {line.replace("- ", "")}
+          {plain(line.replace(/^\s*- /, ""))}
         </li>
       )
     }
@@ -66,7 +75,7 @@ function render(lines: string[]) {
 
     return (
       <p key={key} className="mt-3 text-sm leading-7 text-muted">
-        {line}
+        {plain(line)}
       </p>
     )
   })
