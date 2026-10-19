@@ -158,4 +158,36 @@ class ContractLifecycleTest extends TestCase
         $this->postJson("/api/v1/contracts/{$contract->id}/sign", ['name' => 'X'])->assertForbidden();
         $this->postJson("/api/v1/contracts/{$contract->id}/cancel")->assertForbidden();
     }
+
+    public function test_a_counterparty_can_be_resolved_by_exact_email(): void
+    {
+        $me = $this->user();
+        $client = $this->user();
+        Sanctum::actingAs($me, [], 'sanctum');
+
+        $this->getJson('/api/v1/users/lookup?email=' . urlencode($client->email))
+            ->assertOk()
+            ->assertJsonPath('id', $client->id)
+            ->assertJsonMissingPath('phone');
+
+        $this->getJson('/api/v1/users/lookup?email=nobody@example.test')->assertNotFound();
+    }
+
+    public function test_creating_a_contract_defaults_to_draft(): void
+    {
+        $me = $this->user();
+        $client = $this->user();
+        Sanctum::actingAs($me, [], 'sanctum');
+
+        $this->postJson('/api/v1/contracts', [
+            'title' => 'Landing page',
+            'amount' => 12_000_000,
+            'currency' => 'IRR',
+            'client_id' => $client->id,
+        ])
+            ->assertCreated()
+            ->assertJsonPath('status', ContractStatus::Draft->value)
+            ->assertJsonPath('user_id', $me->id)
+            ->assertJsonPath('client_id', $client->id);
+    }
 }

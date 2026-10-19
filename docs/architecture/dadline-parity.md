@@ -254,10 +254,24 @@ a test artifact:
 | P8 CDN media | **not started** |
 | P9 public changelog | **done** |
 
+### M2 — workspace: contracts — **done (first module)**
+
+| capability | route |
+| --- | --- |
+| contract list, status filters, pagination | `/app/contracts` |
+| contract detail: parties, amount, clauses, signatures | `/app/contracts/{id}` |
+| create a draft (counterparty resolved by exact email) | `/app/contracts/new` |
+| sign, activate, complete, cancel | server actions → `POST /contracts/{id}/…` |
+| PDF download (token never reaches the browser) | `/app/contracts/{id}/pdf` |
+
+The lifecycle is enforced server-side (`ContractLifecycle`), not by hiding
+buttons: the UI only offers transitions the API will accept, and the API rejects
+the rest with `422`.
+
 ### Next
 
-1. Port workspace modules into `/app/*` (marketplace, contracts, wallet, tickets)
-   and retire the Vite routes as each lands.
+1. Port the remaining workspace modules into `/app/*` (wallet, tickets,
+   marketplace orders) and retire the Vite routes as each lands.
 2. Make categories a first-class resource (database-backed, slugged, cached).
 3. Media: move uploads to a configurable CDN origin.
 4. Content inventory: knowledge base and a document/contract template bank.

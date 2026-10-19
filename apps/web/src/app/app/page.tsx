@@ -32,9 +32,13 @@ async function loadMe(token: string): Promise<Me | null> {
   }
 }
 
-const MODULES = [
+const MODULES: { label: string; note: string; href?: string }[] = [
+  {
+    label: "قراردادها",
+    note: "ساخت، امضا و چرخه وضعیت",
+    href: "/app/contracts",
+  },
   { label: "بازار و سفارش‌ها", note: "مرور، سفارش و پیگیری" },
-  { label: "قراردادها", note: "امضا، پیوست و تاریخچه" },
   { label: "کیف پول", note: "موجودی، تراکنش و تسویه" },
   { label: "تیکت‌ها", note: "پشتیبانی و مکالمه" },
 ]
@@ -59,21 +63,37 @@ export default async function WorkspacePage() {
       </p>
 
       <div className="mt-10 grid gap-4 sm:grid-cols-2">
-        {MODULES.map((module) => (
-          <section
-            key={module.label}
-            aria-disabled="true"
-            className="rounded-2xl border border-border bg-card p-6 opacity-70"
-          >
-            <div className="flex items-center justify-between gap-3">
-              <h2 className="font-bold text-foreground">{module.label}</h2>
-              <span className="rounded-full bg-subtle px-2 py-0.5 text-[11px] font-semibold text-muted">
-                در حال انتقال
-              </span>
-            </div>
-            <p className="mt-1 text-sm text-muted">{module.note}</p>
-          </section>
-        ))}
+        {MODULES.map((module) =>
+          module.href ? (
+            <Link
+              key={module.label}
+              href={module.href}
+              className="rounded-2xl border border-border bg-card p-6 transition hover:border-navy/30 hover:shadow-md"
+            >
+              <div className="flex items-center justify-between gap-3">
+                <h2 className="font-bold text-foreground">{module.label}</h2>
+                <span className="rounded-full bg-emerald/15 px-2 py-0.5 text-[11px] font-semibold text-emerald">
+                  فعال
+                </span>
+              </div>
+              <p className="mt-1 text-sm text-muted">{module.note}</p>
+            </Link>
+          ) : (
+            <section
+              key={module.label}
+              aria-disabled="true"
+              className="rounded-2xl border border-border bg-card p-6 opacity-70"
+            >
+              <div className="flex items-center justify-between gap-3">
+                <h2 className="font-bold text-foreground">{module.label}</h2>
+                <span className="rounded-full bg-subtle px-2 py-0.5 text-[11px] font-semibold text-muted">
+                  در حال انتقال
+                </span>
+              </div>
+              <p className="mt-1 text-sm text-muted">{module.note}</p>
+            </section>
+          ),
+        )}
       </div>
 
       <p className="mt-10 rounded-xl border border-dashed border-border bg-card p-4 text-xs leading-6 text-muted">

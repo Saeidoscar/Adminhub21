@@ -29,5 +29,6 @@ Route::prefix('v1')->group(function (): void {
     require base_path('routes/api/v1/catalog.php');
     require base_path('routes/api/v1/favorites.php');
     require base_path('routes/api/v1/public.php');
+    require base_path('routes/api/v1/users.php');
     require base_path('routes/api/v1/admin.php');
 });

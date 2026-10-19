@@ -12,6 +12,17 @@ that ships it is the same one that tests it.
 
 ### Added
 
+- **Contracts in the new workspace shell.** `/app/contracts` lists the caller's
+  contracts with status filters and pagination, `/app/contracts/{id}` shows the
+  parties, amount, clauses, signatures and the actions allowed *in that state*,
+  and `/app/contracts/new` creates a draft by resolving the counterparty from an
+  exact email address.
+- Contract lifecycle over HTTP: `POST /contracts/{id}/{sign,activate,complete,cancel,review}`.
+  These methods existed in the controller with no routes, so a contract could
+  never leave `draft`. A `ContractLifecycle` service owns the transitions and
+  refuses invalid ones with `422` and a reason.
+- `GET /api/v1/users/lookup?email=` resolves a counterparty by exact address (no
+  directory, no listing).
 - `GET /api/v1/health` now returns the release version alongside the API version.
 - Continuous integration on three lanes: frontend formatting, frontend build,
   and the Laravel API suite against a PostgreSQL 16 service container.
@@ -32,6 +43,10 @@ that ships it is the same one that tests it.
 - PHPUnit configuration migrated to the PHPUnit 12 schema.
 
 ### Fixed
+
+- The first signature did not move a contract out of `draft`, and the contracts
+  index grouped its ownership check ambiguously (`where(...)->orWhere(...)`), so a
+  later scope could have widened it.
 
 - **Every detail endpoint bound no model.** 48 routes declared `{id}` while the
   controllers asked for a type-hinted model, so Laravel's implicit binding never
