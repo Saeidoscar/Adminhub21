@@ -13,6 +13,7 @@ class DatabaseSeeder extends Seeder
             ToolSeeder::class,
             EditorSeeder::class,
             VibeCoderSeeder::class,
+            DemoSeeder::class,
         ]);
     }
 }

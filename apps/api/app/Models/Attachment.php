@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Services\Media\MediaService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\Storage;
 
 class Attachment extends Model
 {
@@ -49,7 +49,7 @@ class Attachment extends Model
             return null;
         }
 
-        $disk = Storage::disk('s3');
+        $disk = app(MediaService::class)->disk();
 
         if ($private) {
             return $disk->temporaryUrl(

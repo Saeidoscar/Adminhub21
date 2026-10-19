@@ -5,7 +5,7 @@ namespace App\Actions\Contracts;
 use App\Models\Contract;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
+use App\Services\Media\MediaService;
 
 class GenerateContractPdfAction
 {
@@ -17,7 +17,7 @@ class GenerateContractPdfAction
             $pdf = Pdf::loadHTML($html);
             $path = 'contracts/' . $contract->id . '_' . time() . '.pdf';
 
-            Storage::disk('public')->put($path, $pdf->output());
+            app(MediaService::class)->disk()->put($path, $pdf->output());
 
             $contract->pdf_path = $path;
             $contract->save();

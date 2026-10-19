@@ -12,6 +12,18 @@ that ships it is the same one that tests it.
 
 ### Added
 
+- **A one-command stack.** `docker compose up --build` now waits for
+  PostgreSQL, applies the migrations, links the media directory and seeds the
+  demo dataset before php-fpm starts. `DemoSeeder` creates an employer with a
+  funded wallet, two contracts and a support thread, plus two active payment
+  gateways; every seeder is idempotent, so restarts do not duplicate rows.
+- **A Next.js workspace image** (`apps/web/Dockerfile`) and a `workspace`
+  compose service on `:3000`, so the surface that owns `/app/*` is part of the
+  stack rather than a separate `pnpm dev` command.
+- `MediaService` and `config/media.php`: `MEDIA_DISK` chooses where uploads are
+  written and `MEDIA_URL` chooses the origin they are served from. Avatars,
+  portfolio files, attachments and contract PDFs all go through it, and nginx
+  serves `/storage` locally.
 - **Contracts in the new workspace shell.** `/app/contracts` lists the caller's
   contracts with status filters and pagination, `/app/contracts/{id}` shows the
   parties, amount, clauses, signatures and the actions allowed *in that state*,
@@ -43,6 +55,14 @@ that ships it is the same one that tests it.
 
 ### Changed
 
+- **The Vite workspace no longer implements contracts, wallet or tickets.**
+  `/contracts` and `/tickets` render a hand-off component that forwards to
+  `/app/contracts` and `/app/tickets` on the Next.js surface, so there is one
+  authenticated prefix and one implementation per module. The contract
+  generator, contract detail view, wallet page and their domain helpers were
+  removed with the routes.
+- The API image builds on PHP 8.4 (matching CI) and installs its own Composer
+  dependencies, so a fresh clone no longer needs a host `vendor/` directory.
 - The API test suite runs on PostgreSQL in CI while staying on in-memory SQLite
   locally; the CI job overrides the connection through real environment
   variables, which take precedence over `phpunit.xml`.
@@ -91,6 +111,12 @@ that ships it is the same one that tests it.
   ticket.
 - **The tickets index was not scoped to a group.** `where(...)->orWhere(...)`
   evaluated without grouping, so a status filter could widen it.
+- **The wallet transfer endpoint crashed with a 500.** It called
+  `$request->validated()`, which only exists on a `FormRequest`.
+- **Reply timestamps were silently discarded.** `Ticket::last_message_at` was
+  missing from `$fillable`, so the column never moved.
+- **`UserSeeder` could not run twice.** It used `create()` on a unique email;
+  the seeders now use `updateOrCreate()` throughout.
 - Migrations failed on PostgreSQL: `affiliate_commissions.referral_id` inferred a
   `referrals` table that does not exist, and `admin_profiles` was created before
   the `attachments` table it references.

@@ -43,6 +43,14 @@ services:
       APP_ENV: production
       APP_DEBUG: "false"
       APP_URL: ${APP_URL:-https://api.adminhub21.com}
+      # Required: the entrypoint refuses to start without it.
+      APP_KEY: ${APP_KEY:?set APP_KEY in the deploy environment}
+      APP_VERSION: ${APP_VERSION:-1.0.0}
+      # The API container owns schema changes; Horizon waits for it.
+      RUN_MIGRATIONS: "true"
+      SEED_DEMO: "false"
+      MEDIA_DISK: ${MEDIA_DISK:-s3}
+      MEDIA_URL: ${MEDIA_URL:-}
       DB_HOST: postgres
       DB_PORT: 5432
       DB_DATABASE: adminhub
@@ -93,6 +101,11 @@ services:
     environment:
       APP_ENV: production
       APP_DEBUG: "false"
+      APP_KEY: ${APP_KEY:?set APP_KEY in the deploy environment}
+      APP_VERSION: ${APP_VERSION:-1.0.0}
+      RUN_MIGRATIONS: "false"
+      MEDIA_DISK: ${MEDIA_DISK:-s3}
+      MEDIA_URL: ${MEDIA_URL:-}
       DB_HOST: postgres
       DB_PORT: 5432
       DB_DATABASE: adminhub
@@ -104,6 +117,20 @@ services:
       CACHE_DRIVER: redis
       QUEUE_CONNECTION: redis
       SESSION_DRIVER: redis
+    init: true
+
+  workspace:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    container_name: adminhub-workspace
+    restart: unless-stopped
+    depends_on:
+      - nginx
+    ports:
+      - "${WORKSPACE_PORT:-3000}:3000"
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: http://nginx
     init: true
 
   web:

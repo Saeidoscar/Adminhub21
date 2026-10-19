@@ -17,9 +17,7 @@ import AdminTicketsPage from "./pages/AdminTicketsPage"
 import AdminWorkspacePage from "./pages/AdminWorkspacePage"
 import AdminPortfolioPage from "./pages/AdminPortfolioPage"
 import PackageComparisonPage from "./pages/PackageComparisonPage"
-import ContractGenerator from "./pages/ContractGenerator"
-import ContractsPage from "./pages/ContractsPage"
-import TicketsPage from "./pages/TicketsPage"
+import { WorkspaceHandoff } from "./components/workspace/WorkspaceHandoff"
 import ToolsRentalPage from "./pages/ToolsRentalPage"
 import EditorsPage from "./pages/EditorsPage"
 import VibeCodersPage from "./pages/VibeCodersPage"
@@ -182,7 +180,8 @@ export default function App() {
     { id: "editors", icon: "edit", label: tr.nav.editors },
     { id: "vibeCoders", icon: "bot", label: tr.nav.vibeCoders },
     { id: "skills", icon: "chart", label: tr.nav.skills },
-    { id: "contracts", icon: "contracts", label: tr.nav.contracts },
+    // Contracts live in the Next.js workspace now; the sidebar entry stays so
+    // the old URL keeps working, but it hands off instead of rendering here.
     ...(role === "admin"
       ? [
           { id: "packages" as Page, icon: "package", label: tr.nav.packages },
@@ -365,12 +364,14 @@ export default function App() {
                   </ProtectedRoute>
                 }
               />
+              {/* The workspace modules now live in apps/web under /app/*. The
+                  old URLs forward there instead of keeping a second copy. */}
               <Route
                 path="/contracts"
                 element={
                   <ProtectedRoute>
                     <div className="flex-1 overflow-y-auto">
-                      <ContractGenerator tr={tr} lang={lang} />
+                      <WorkspaceHandoff path="/app/contracts" title={tr.nav.contracts} />
                     </div>
                   </ProtectedRoute>
                 }
@@ -380,7 +381,7 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <div className="flex-1 overflow-y-auto">
-                      <ContractsPage tr={tr} lang={lang} />
+                      <WorkspaceHandoff path="/app/contracts" title={tr.nav.contractsHistory} />
                     </div>
                   </ProtectedRoute>
                 }
@@ -390,7 +391,7 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <div className="flex-1 overflow-y-auto">
-                      <TicketsPage tr={tr} lang={lang} />
+                      <WorkspaceHandoff path="/app/tickets" title={tr.tickets.title} />
                     </div>
                   </ProtectedRoute>
                 }
@@ -400,7 +401,7 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <div className="flex-1 overflow-y-auto">
-                      <TicketsPage tr={tr} lang={lang} />
+                      <WorkspaceHandoff path="/app/tickets" title={tr.tickets.title} />
                     </div>
                   </ProtectedRoute>
                 }

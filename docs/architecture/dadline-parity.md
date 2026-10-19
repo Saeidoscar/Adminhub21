@@ -1,6 +1,6 @@
 # AdminHub21 1.0 — architectural parity with dadline.net
 
-Status: **M0 shipped, M1 in progress** · Owner: platform · Last updated: 2026-10-19
+Status: **M0, M1, M2 and the M5 ops items shipped** · Owner: platform · Last updated: 2026-10-19
 
 This document records what could be **observed** about dadline.net's engineering
 architecture, maps it onto AdminHub21, and defines what "1.0.0" means for this
@@ -144,6 +144,16 @@ A version we can point a paying customer at:
    the app container in production.
 7. A public `/changelog` route exists.
 
+| # | requirement | where it is satisfied |
+| - | ----------- | --------------------- |
+| 1 | green API suite | `api-tests` on PHP 8.4 + PostgreSQL 16, 69 tests, every failure annotated |
+| 2 | indexable public surface | `/`, `/marketplace`, `/marketplace/{slug}`, `/pricing`, `/changelog`, `sitemap.xml`, `robots.txt`, `lang="fa" dir="rtl"` |
+| 3 | one authenticated prefix | `/app/*` in `apps/web`; anonymous deep links round-trip through `/sign-in?redirectUrl=`; legacy Vite `/contracts` and `/tickets` forward there |
+| 4 | one command + seed | `docker compose up --build` runs migrations and the idempotent demo seed in the API entrypoint |
+| 5 | version declared once | `APP_VERSION` → `config/version.php` → `GET /api/v1/health`; `CHANGELOG.md`; `v1.0.0` tag |
+| 6 | CDN-backed media | `MEDIA_DISK` / `MEDIA_URL` → `MediaService`; no domain code names a disk |
+| 7 | public changelog | `/changelog`, rendered from the repository's `CHANGELOG.md` |
+
 Explicit non-goals for 1.0: real payment-gateway certification, native mobile
 release, multi-region deployment, and full content-team tooling.
 
@@ -161,6 +171,11 @@ release, multi-region deployment, and full content-team tooling.
 | **M5 — ops**           | CDN-backed media, seed command, deploy runbook                                 | P8, DoD-4/6 |
 
 M0 is a prerequisite: shipping a 1.0 on a red pipeline is not a 1.0.
+
+M5's media and seed items are done: uploads go through `MediaService` and the
+`MEDIA_DISK`/`MEDIA_URL` pair, and `DemoSeeder` runs from the container
+entrypoint so `docker compose up` produces a populated instance. The deploy
+runbook remains the open item.
 
 ---
 

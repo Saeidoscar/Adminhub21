@@ -44,6 +44,12 @@ services:
       APP_ENV: local
       APP_DEBUG: "true"
       APP_URL: http://localhost:8080
+      APP_VERSION: "1.0.0"
+      # Throwaway key for a local stack only. Never reuse it outside a laptop.
+      APP_KEY: "base64:BDN30Rf98Z8zu02fgWxd5DjiKaRnwncD+f477BNdaDU="
+      RUN_MIGRATIONS: "true"
+      SEED_DEMO: "true"
+      DB_CONNECTION: pgsql
       DB_HOST: postgres
       DB_PORT: 5432
       DB_DATABASE: adminhub
@@ -57,10 +63,11 @@ services:
       MAIL_HOST: mailpit
       MAIL_PORT: 1025
       MAIL_ENCRYPTION: ""
+      MEDIA_DISK: public
     volumes:
       - ./apps/api:/var/www/html
       - /var/www/html/vendor
-      - /var/www/html/storage
+      - api_storage:/var/www/html/storage
     init: true
 
   nginx:
@@ -72,6 +79,11 @@ services:
       - api
     ports:
       - "8080:80"
+    volumes:
+      # Nginx serves /storage directly, so it needs the same files the API
+      # writes; in production that path is a CDN origin instead.
+      - ./apps/api:/var/www/html:ro
+      - api_storage:/var/www/html/storage:ro
     init: true
 
   horizon:
@@ -85,9 +97,14 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      api:
+        condition: service_started
     environment:
       APP_ENV: local
       APP_DEBUG: "true"
+      APP_VERSION: "1.0.0"
+      APP_KEY: "base64:BDN30Rf98Z8zu02fgWxd5DjiKaRnwncD+f477BNdaDU="
+      DB_CONNECTION: pgsql
       DB_HOST: postgres
       DB_PORT: 5432
       DB_DATABASE: adminhub
@@ -101,6 +118,21 @@ services:
     volumes:
       - ./apps/api:/var/www/html
       - /var/www/html/vendor
+    init: true
+
+  workspace:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    container_name: adminhub-workspace
+    depends_on:
+      - nginx
+    ports:
+      - "3000:3000"
+    environment:
+      # Server components and server actions call the API over the compose
+      # network; the browser never talks to it directly.
+      NEXT_PUBLIC_API_BASE_URL: http://nginx
     init: true
 
   web:
@@ -128,6 +160,7 @@ services:
 volumes:
   pg_data:
   redis_data:
+  api_storage:
 
 # Archived: Hono backend service (apps/server)
 # The Node.js/Hono API has been replaced with Laravel PHP-FPM + Nginx

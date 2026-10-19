@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\Media\MediaService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Storage;
@@ -42,6 +43,6 @@ class OfficeAttachment extends Model
 
     public function getUrlAttribute(): ?string
     {
-        return blank($this->storage_key) ? null : Storage::disk('s3')->url($this->storage_key);
+        return app(MediaService::class)->url($this->storage_key);
     }
 }

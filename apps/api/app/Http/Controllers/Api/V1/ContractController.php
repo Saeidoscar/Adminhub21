@@ -17,7 +17,7 @@ use App\Models\Contract;
 use App\Services\Contracts\ContractLifecycle;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use App\Services\Media\MediaService;
 
 class ContractController extends Controller
 {
@@ -122,7 +122,7 @@ class ContractController extends Controller
     public function downloadPdf(Contract $contract): Symfony\Component\HttpFoundation\BinaryFileResponse
     {
         $this->authorize('view', $contract);
-        if (! $contract->pdf_path || ! Storage::disk('public')->exists($contract->pdf_path)) {
+        if (! $contract->pdf_path || ! app(MediaService::class)->disk()->exists($contract->pdf_path)) {
             abort(404, 'PDF not generated yet.');
         }
 

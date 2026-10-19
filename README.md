@@ -40,8 +40,12 @@ The repository ships two frontends that share one design-token package:
 
 | Surface | App | Rendering | Purpose |
 | ------- | --- | --------- | ------- |
-| Public site | `apps/web` (Next.js 16, App Router) | server-rendered, indexable | home, marketplace catalogue, package pages, pricing, changelog |
-| Workspace | root `src/` (Vite + React Router) | client-side, authenticated | dashboards, contracts, wallet, tickets, admin |
+| Public site + workspace | `apps/web` (Next.js 16, App Router) | server-rendered public pages, server-rendered authenticated `/app/*` | home, marketplace catalogue, package pages, pricing, changelog, contracts, wallet, tickets |
+| Admin SPA | root `src/` (Vite + React Router) | client-side, authenticated | admin panel, workspace cases, portfolio and content moderation |
+
+Contracts, wallet and tickets no longer have a Vite implementation: the legacy
+`/contracts` and `/tickets` URLs forward to `/app/*` on the Next.js surface, so
+there is exactly one authenticated prefix to maintain.
 
 Both import `@adminhub/design-tokens/theme.css`, so colour and typography tokens cannot drift between them. The public site is Persian-first (`lang="fa" dir="rtl"`), ships `sitemap.xml` and `robots.txt`, and treats `/app/*` as a private surface that redirects anonymous visitors through `/sign-in?redirectUrl=…`.
 
@@ -60,7 +64,7 @@ The workspace modules are being moved into the Next shell progressively; until t
 | ---------- | ------------------------------------------------------------------- |
 | Frontend   | React 19, React Router 7, TypeScript 5.7                            |
 | Styling    | Tailwind CSS v4 (`@tailwindcss/vite`)                               |
-| Backend    | Laravel 13, PHP 8.3+, Sanctum, Actions + Policies                   |
+| Backend    | Laravel 13, PHP 8.4, Sanctum, Actions + Policies                    |
 | Database   | PostgreSQL 16 (47 migrations)                                       |
 | Queue      | Redis + Laravel Horizon (`ai-*`, `pdf-*`, `notifications-*` queues) |
 | PDF        | `barryvdh/laravel-dompdf` (contract generation)                     |
@@ -107,7 +111,7 @@ The web shell is wrapped with Capacitor for Android. The UI is responsive by def
 ## Prerequisites
 
 - Node.js 22 and pnpm
-- Docker (for the full stack), or PHP 8.3+, Composer, PostgreSQL 16 and Redis for a local backend
+- Docker (for the full stack), or PHP 8.4+, Composer, PostgreSQL 16 and Redis for a local backend
 - Optional: Android SDK (for mobile builds)
 
 ## Setup
@@ -141,20 +145,40 @@ Then create the schema and an admin user:
 docker compose exec api php artisan migrate --seed
 ```
 
-### Full Docker stack
+### Full Docker stack (one command)
 
 ```bash
-docker compose up --build          # production-shaped stack
-docker compose -f docker-compose.demo.yml up --build   # demo stack
+docker compose up --build
 ```
 
-| Service                                           | URL                   |
-| ------------------------------------------------- | --------------------- |
-| API through nginx                                 | http://localhost:8080 |
-| Frontend, production build (`docker-compose.yml`) | http://localhost:8443 |
-| Frontend, demo stack (`docker-compose.demo.yml`)  | http://localhost:8444 |
-| Mailpit                                           | http://localhost:8025 |
-| Vite dev server (`pnpm dev`)                      | http://localhost:8443 |
+That command is the whole setup story. On first boot the API container waits for
+PostgreSQL, applies the migrations, seeds the demo dataset, links the media
+directory, and only then starts php-fpm. No manual `migrate`, `seed` or
+`key:generate` step is required — the local stack ships a throwaway `APP_KEY`,
+and the public site, workspace, admin SPA, API and Mailpit all come up together.
+
+| Service                                        | URL                   |
+| ---------------------------------------------- | --------------------- |
+| Public site + workspace (Next.js 16)           | http://localhost:3000 |
+| API through nginx                              | http://localhost:8080 |
+| Admin SPA, production build (`docker-compose.yml`) | http://localhost:8443 |
+| Frontend, demo stack (`docker-compose.demo.yml`)   | http://localhost:8444 |
+| Mailpit                                        | http://localhost:8025 |
+
+The seeded accounts are:
+
+| Role        | Email                   | Password   |
+| ----------- | ----------------------- | ---------- |
+| Employer    | `demo@adminhub21.test`  | `password` |
+| Specialist  | `expert@adminhub21.test`| `password` |
+| Super admin | `admin@adminhub21.com`  | `password` |
+
+The employer arrives with a funded wallet, two contracts and a support thread,
+so every screen has something to show. The seeders are idempotent: restarting
+the stack does not duplicate rows.
+
+`docker compose exec api php artisan migrate --seed` remains available if you
+want to reseed by hand.
 
 `pnpm dev` and the Docker `web` service both bind port 8443, so run one or the other (or change the published port in the compose file).
 
@@ -164,8 +188,13 @@ Frontend — create `.env` in the project root:
 
 ```
 VITE_API_BASE_URL=http://localhost:8080
+VITE_WORKSPACE_URL=http://localhost:3000   # where /contracts and /tickets forward
 VITE_AUTH_TOKEN=  # optional; used for demo / CI login
 ```
+
+Next.js workspace — `apps/web` reads `NEXT_PUBLIC_API_BASE_URL` (default
+`http://localhost:8000`). Every call happens in a server component or a server
+action, so the browser never receives the API origin or the session token.
 
 Backend — copy `apps/api/.env.example` to `apps/api/.env` and run `php artisan key:generate`. The template documents every variable the files in `apps/api/config/` read, including Redis, Sanctum, hashing, mail, AI providers, and payment callbacks.
 
