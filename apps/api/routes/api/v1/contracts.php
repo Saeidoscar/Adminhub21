@@ -6,9 +6,9 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->group(function (): void {
     Route::get('/contracts', [ContractController::class, 'index']);
     Route::post('/contracts', [ContractController::class, 'store']);
-    Route::get('/contracts/{id}', [ContractController::class, 'show'])->whereNumber('id');
-    Route::put('/contracts/{id}', [ContractController::class, 'update'])->whereNumber('id');
-    Route::post('/contracts/{id}/sign', [ContractController::class, 'sign'])->whereNumber('id');
-    Route::post('/contracts/{id}/pdf', [ContractController::class, 'generatePdf'])->whereNumber('id');
-    Route::get('/contracts/{id}/pdf', [ContractController::class, 'downloadPdf'])->whereNumber('id');
+    Route::get('/contracts/{contract}', [ContractController::class, 'show'])->whereNumber('contract');
+    Route::put('/contracts/{contract}', [ContractController::class, 'update'])->whereNumber('contract');
+    Route::post('/contracts/{contract}/sign', [ContractController::class, 'sign'])->whereNumber('contract');
+    Route::post('/contracts/{contract}/pdf', [ContractController::class, 'generatePdf'])->whereNumber('contract');
+    Route::get('/contracts/{contract}/pdf', [ContractController::class, 'downloadPdf'])->whereNumber('contract');
 });

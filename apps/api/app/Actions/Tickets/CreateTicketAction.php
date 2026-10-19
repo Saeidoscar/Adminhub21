@@ -16,7 +16,7 @@ class CreateTicketAction
             $ticket = new Ticket($data);
             $ticket->user_id = $sender->id;
             $ticket->status = TicketStatus::Open->value;
-            $ticket->priority = TicketPriority::Normal->value;
+            $ticket->priority = TicketPriority::Medium->value;
             $ticket->save();
 
             return $ticket->load(['user', 'assignedTo', 'messages']);

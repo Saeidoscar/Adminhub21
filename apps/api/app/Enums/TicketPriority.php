@@ -5,7 +5,7 @@ namespace App\Enums;
 enum TicketPriority: string
 {
     case Low = 'low';
-    case Normal = 'normal';
+    case Medium = 'medium';
     case High = 'high';
     case Urgent = 'urgent';
 
@@ -13,7 +13,7 @@ enum TicketPriority: string
     {
         return match ($this) {
             self::Low => 'Low',
-            self::Normal => 'Normal',
+            self::Medium => 'Medium',
             self::High => 'High',
             self::Urgent => 'Urgent',
         };
