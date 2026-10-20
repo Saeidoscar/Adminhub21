@@ -101,7 +101,7 @@ docker compose logs -f api workspace
 می‌توانید خودتان ببینید:
 
 ```bash
-docker compose exec api php artisan tinker --execute="echo App\Models\Package::count();"
+docker compose exec postgres psql -U postgres -d adminhub -c "select count(*) from packages;"
 curl -s http://localhost:8080/api/v1/marketplace/search | head -c 300
 ```
 
