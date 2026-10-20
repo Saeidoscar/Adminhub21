@@ -16,6 +16,9 @@ on:
 
 permissions:
   contents: read
+  # Used only to paste the builder log into the open pull request when a build
+  # fails: workflow logs are not always reachable from the API.
+  pull-requests: write
 
 env:
   NODE_VERSION: "22"
@@ -72,10 +75,30 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
-      # Runs the two servers from the *packaged* directory and checks the
-      # catalogue, the workspace and the PDF — the same script used locally.
+      # `extraResources` puts app/ and build/ straight under resources/, so the
+      # packaged layout is resources/{app,build} and not resources/app/app.
       - name: Smoke test the packaged app
-        run: node desktop/smoke.mjs --root desktop/release/win-unpacked/resources/app
+        run: node desktop/smoke.mjs --root desktop/release/win-unpacked/resources
+
+      - name: Report a failed build on the pull request
+        if: failure()
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $parts = @("Desktop build failed for commit ${{ github.sha }} (run ${{ github.run_id }}).")
+          if (Test-Path electron-builder.log) {
+            $parts += "electron-builder.log (last 80 lines):"
+            $parts += '```'
+            $parts += (Get-Content electron-builder.log -Tail 80)
+            $parts += '```'
+          }
+          $parts += "release/ contents:"
+          $parts += '```'
+          if (Test-Path release) { $parts += (Get-ChildItem release | Select-Object -ExpandProperty Name) } else { $parts += "no release directory" }
+          $parts += '```'
+          Set-Content -Path ..\desktop-failure.md -Value $parts -Encoding utf8
+          gh pr comment 2 --body-file ..\desktop-failure.md
 
       - name: List installers
         shell: pwsh
