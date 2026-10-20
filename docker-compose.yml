@@ -133,6 +133,9 @@ services:
       # Server components and server actions call the API over the compose
       # network; the browser never talks to it directly.
       NEXT_PUBLIC_API_BASE_URL: http://nginx
+      # Canonical URLs, sitemap and Open Graph tags are built from this. It must
+      # be the address the *browser* uses, not the compose service name.
+      NEXT_PUBLIC_SITE_URL: http://localhost:3000
     init: true
 
   web:

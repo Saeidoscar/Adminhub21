@@ -235,9 +235,14 @@ The seeded accounts are:
 | Specialist  | `expert@adminhub21.test` | `password` |
 | Super admin | `admin@adminhub21.com`   | `password` |
 
-The employer arrives with a funded wallet, two contracts and a support thread,
+The employer arrives with a funded wallet, two contracts (the active one ships
+with a generated PDF), a support thread and six published marketplace listings,
 so every screen has something to show. The seeders are idempotent: restarting
 the stack does not duplicate rows.
+
+A step-by-step Persian walkthrough — ports, accounts, reseeding, rebuilding and
+the usual fixes — is in
+[`docs/operations/docker-demo.md`](docs/operations/docker-demo.md).
 
 `docker compose exec api php artisan migrate --seed` remains available if you
 want to reseed by hand.

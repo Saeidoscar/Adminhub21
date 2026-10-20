@@ -84,6 +84,11 @@ services:
       - api
     ports:
       - "8080:80"
+    volumes:
+      # nginx serves Laravel's public/ directory; without these mounts the
+      # container has no application code and every request returns 404.
+      - ./apps/api:/var/www/html:ro
+      - api_storage:/var/www/html/storage:ro
     init: true
 
   horizon:
@@ -131,6 +136,7 @@ services:
       - "${WORKSPACE_PORT:-3000}:3000"
     environment:
       NEXT_PUBLIC_API_BASE_URL: http://nginx
+      NEXT_PUBLIC_SITE_URL: ${SITE_URL:-http://localhost:3000}
     init: true
 
   web:

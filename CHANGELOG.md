@@ -8,6 +8,31 @@ All notable changes to AdminHub21 are documented here. The format follows
 
 ### Added
 
+- **`docs/operations/docker-demo.md`** — a Persian walkthrough for running the
+  whole product locally with Docker: services and ports, demo accounts, the
+  seeded dataset, reseeding, rebuilding after a code change, and the fixes for
+  the usual problems (port clashes, empty catalogue, permissions, CRLF).
+- **A populated Docker demo.** `DemoSeeder` now publishes six marketplace
+  listings and generates the PDF for the active contract through
+  `GenerateContractPdfAction`, so a fresh `docker compose up` shows a real
+  catalogue and a downloadable contract instead of empty states.
+
+### Fixed
+
+- **`docker compose up --build` failed at the SPA image.** The root `Dockerfile`
+  ran `npm ci` against a repository that only has a pnpm lockfile; it now uses
+  pnpm and copies every workspace manifest, like the Next image does.
+- **The SPA's nginx proxied `/api` to the retired Hono backend on `:8787`.**
+  Relative API calls now go to the Laravel nginx service.
+- **The production compose gave nginx no application code.** It now mounts the
+  Laravel tree and the storage volume read-only, so `/api` is not a 404.
+- **Shell scripts could be checked out with CRLF on Windows**, which makes the
+  PHP entrypoint fail with "exec format error"; `.gitattributes` now forces LF
+  for `*.sh`.
+- **The Next workspace had no canonical site URL in compose**, so sitemap and
+  Open Graph tags pointed at the default. `NEXT_PUBLIC_SITE_URL` is set for the
+  local and production stacks.
+
 - **A Windows desktop demo of the whole product.** `desktop/` wraps the
   standalone Next.js build in an Electron shell and starts a bundled demo API
   on `127.0.0.1:41731`; the shell opens the Next server on `:41730`. Every
