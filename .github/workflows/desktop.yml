@@ -15,7 +15,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   # Used only to paste the builder log into the open pull request when a build
   # fails: workflow logs are not always reachable from the API.
   pull-requests: write
@@ -115,3 +115,16 @@ jobs:
             desktop/release/*.blockmap
           if-no-files-found: error
           retention-days: 30
+
+      # A tag build also becomes a release, so the .exe can be downloaded
+      # without signing in to GitHub.
+      - name: Publish the release
+        if: startsWith(github.ref, 'refs/tags/')
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $files = Get-ChildItem desktop/release -Filter *.exe | ForEach-Object { $_.FullName }
+          gh release create "${{ github.ref_name }}" @files `
+            --title "AdminHub21 Desktop ${{ github.ref_name }}" `
+            --notes-file docs/operations/desktop-release-notes.md

@@ -89,6 +89,10 @@ The workspace modules are being moved into the Next shell progressively; until t
 into a Windows executable that runs on the seeded dataset, with no database and
 no network access:
 
+Download the installer or the portable build from the
+[latest desktop release](https://github.com/Saeidoscar/Adminhub21/releases/latest).
+To build it yourself:
+
 ```bash
 cd desktop && npm install
 node prepare.mjs      # Next standalone build + bundled demo API

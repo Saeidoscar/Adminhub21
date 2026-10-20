@@ -53,8 +53,10 @@
 
 ## ۴) گرفتن فایل
 
-از GitHub Actions → workflow «Desktop» → آخرین اجرا → artifact با نام
-`adminhub21-desktop-windows`. دو فایل خروجی دارد:
+از صفحه‌ی [Releases](https://github.com/Saeidoscar/Adminhub21/releases/latest)
+فایل‌ها را دانلود کنید (هر تگ `desktop-v*` یک release می‌سازد). همین فایل‌ها
+به‌صورت artifact در GitHub Actions → workflow «Desktop» هم هست. دو فایل خروجی
+دارد:
 
 - `AdminHub21-1.0.0-x64.exe` — نصب‌کننده (NSIS)
 - `AdminHub21-portable-1.0.0.exe` — نسخه‌ی بدون نصب
