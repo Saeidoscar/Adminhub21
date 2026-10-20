@@ -73,7 +73,7 @@ async function main() {
     PREVIEW_GATEWAY_HOST: "127.0.0.1",
   })
 
-  start(path.join(root, "app", "apps", "web", "server.js"), {
+  start(path.join(root, "app", "server.js"), {
     PORT: String(WEB_PORT),
     HOSTNAME: "127.0.0.1",
   })

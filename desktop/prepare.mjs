@@ -1,15 +1,18 @@
 /**
  * Builds everything the Electron shell serves:
  *
- *   1. the Next.js app with `output: "standalone"`, compiled against the local
- *      demo API (the base URL is inlined at build time, hence the fixed port)
- *   2. the demo API bundled to a single CommonJS file
- *   3. `app/` — the standalone server plus the static assets it expects
+ *   1. a self-contained copy of `apps/web` with a plain npm install — pnpm's
+ *      symlinked store produces absolute links in the standalone output, which
+ *      would break on a machine that only has the packaged folder
+ *   2. the Next.js build with `output: "standalone"`, compiled against the
+ *      local demo API (the base URL is inlined at build time)
+ *   3. the demo API bundled to a single CommonJS file
+ *   4. `app/` — the standalone server plus the static assets it expects
  *
  * Run from `desktop/`:  node prepare.mjs
  */
 import { execFileSync } from "node:child_process"
-import { cp, mkdir, rm, stat } from "node:fs/promises"
+import { cp, mkdir, rm, stat, writeFile, readFile } from "node:fs/promises"
 import { createRequire } from "node:module"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
@@ -18,9 +21,22 @@ const require = createRequire(import.meta.url)
 const here = path.dirname(fileURLToPath(import.meta.url))
 const repo = path.resolve(here, "..")
 const web = path.join(repo, "apps", "web")
+const buildDir = path.join(here, ".build", "web")
 
 const WEB_PORT = 41730
 const API_PORT = 41731
+
+const BUILD_ENV = {
+  NEXT_STANDALONE: "1",
+  NEXT_TRACING_ROOT: buildDir,
+  NEXT_TELEMETRY_DISABLED: "1",
+  NEXT_PUBLIC_API_BASE_URL: `http://127.0.0.1:${API_PORT}`,
+  NEXT_PUBLIC_SITE_URL: `http://127.0.0.1:${WEB_PORT}`,
+  NEXT_PUBLIC_DESKTOP_DEMO: "1",
+}
+
+const shell = process.platform === "win32"
+const npm = shell ? "npm.cmd" : "npm"
 
 async function exists(target) {
   try {
@@ -35,21 +51,49 @@ async function main() {
   console.log("[prepare] cleaning")
   await rm(path.join(here, "app"), { recursive: true, force: true })
   await rm(path.join(here, "build"), { recursive: true, force: true })
+  await rm(path.join(here, ".build"), { recursive: true, force: true })
   await mkdir(path.join(here, "build"), { recursive: true })
+  await mkdir(buildDir, { recursive: true })
+
+  console.log("[prepare] staging the web app")
+  for (const entry of [
+    "src",
+    "public",
+    "package.json",
+    "next.config.ts",
+    "postcss.config.mjs",
+    "tsconfig.json",
+    "icon.png",
+    "apple-icon.png",
+  ]) {
+    await cp(path.join(web, entry), path.join(buildDir, entry), { recursive: true })
+  }
+
+  // The only workspace dependency is the CSS token package; a relative file
+  // dependency keeps the staged tree installable on its own.
+  await cp(
+    path.join(repo, "packages", "design-tokens"),
+    path.join(buildDir, "design-tokens"),
+    { recursive: true },
+  )
+
+  const manifest = JSON.parse(await readFile(path.join(buildDir, "package.json"), "utf8"))
+  manifest.dependencies["@adminhub/design-tokens"] = "file:./design-tokens"
+  await writeFile(path.join(buildDir, "package.json"), `${JSON.stringify(manifest, null, 2)}\n`)
+
+  console.log("[prepare] npm install (staged)")
+  execFileSync(npm, ["install", "--no-audit", "--no-fund"], {
+    cwd: buildDir,
+    stdio: "inherit",
+    shell,
+  })
 
   console.log("[prepare] next build (standalone)")
-  execFileSync("pnpm", ["--filter", "@adminhub/web", "build"], {
-    cwd: repo,
+  execFileSync(npm, ["exec", "--", "next", "build"], {
+    cwd: buildDir,
     stdio: "inherit",
-    shell: process.platform === "win32",
-    env: {
-      ...process.env,
-      NEXT_STANDALONE: "1",
-      NEXT_TELEMETRY_DISABLED: "1",
-      NEXT_PUBLIC_API_BASE_URL: `http://127.0.0.1:${API_PORT}`,
-      NEXT_PUBLIC_SITE_URL: `http://127.0.0.1:${WEB_PORT}`,
-      NEXT_PUBLIC_DESKTOP_DEMO: "1",
-    },
+    shell,
+    env: { ...process.env, ...BUILD_ENV },
   })
 
   console.log("[prepare] bundling the demo API")
@@ -66,24 +110,20 @@ async function main() {
   })
 
   console.log("[prepare] assembling app/")
-  const standalone = path.join(web, ".next", "standalone")
-  if (!(await exists(standalone))) {
+  const standalone = path.join(buildDir, ".next", "standalone")
+  if (!(await exists(path.join(standalone, "server.js")))) {
     throw new Error("standalone output missing — did next build run with NEXT_STANDALONE=1?")
   }
 
-  await cp(standalone, path.join(here, "app"), { recursive: true })
-
-  const target = path.join(here, "app", "apps", "web")
-  await mkdir(path.join(target, ".next"), { recursive: true })
-  await cp(path.join(web, ".next", "static"), path.join(target, ".next", "static"), {
+  await cp(standalone, path.join(here, "app"), { recursive: true, dereference: true })
+  await cp(
+    path.join(buildDir, ".next", "static"),
+    path.join(here, "app", ".next", "static"),
+    { recursive: true },
+  )
+  await cp(path.join(buildDir, "public"), path.join(here, "app", "public"), {
     recursive: true,
   })
-  await cp(path.join(web, "public"), path.join(target, "public"), { recursive: true })
-
-  const server = path.join(target, "server.js")
-  if (!(await exists(server))) {
-    throw new Error(`expected ${server} — the standalone layout changed`)
-  }
 
   console.log("[prepare] done")
 }

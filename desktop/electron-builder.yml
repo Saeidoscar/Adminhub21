@@ -13,10 +13,15 @@ asar: false
 files:
   - main.cjs
   - package.json
-  - app/**/*
-  # electron-builder treats dot-directories specially; name the Next internals.
-  - app/apps/web/.next/**/*
-  - build/demo-api.cjs
+
+# The Next runtime and the demo API are copied verbatim into resources/.
+# They must not go through `files`: electron-builder prunes node_modules there,
+# and the standalone Next server needs its nested node_modules intact.
+extraResources:
+  - from: app
+    to: app
+  - from: build/demo-api.cjs
+    to: build/demo-api.cjs
 
 win:
   target:
