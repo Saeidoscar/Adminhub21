@@ -2,9 +2,12 @@
 
 namespace Database\Seeders;
 
+use App\Actions\Contracts\GenerateContractPdfAction;
+use App\Enums\ContentStatus;
 use App\Enums\TicketPriority;
 use App\Enums\TicketStatus;
 use App\Models\Contract;
+use App\Models\Package;
 use App\Models\PaymentGateway;
 use App\Models\Ticket;
 use App\Models\TicketMessage;
@@ -33,6 +36,7 @@ class DemoSeeder extends Seeder
         $this->gateways();
         $this->contract($demo, $expert);
         $this->ticket($demo, $expert);
+        $this->marketplace($demo, $expert);
     }
 
     private function user(string $name, string $email, string $role): User
@@ -103,9 +107,112 @@ class DemoSeeder extends Seeder
         );
     }
 
+    /**
+     * Published listings for the public catalogue.
+     *
+     * Without these the marketplace would only show empty states on a fresh
+     * database; the catalogue is the first thing a visitor opens.
+     */
+    private function marketplace(User $demo, User $expert): void
+    {
+        $listings = [
+            [
+                'slug' => 'instagram-growth-basic',
+                'user_id' => $demo->id,
+                'title' => 'رشد اینستاگرام — پایه',
+                'description' => 'پست روزانه، مدیریت استوری و پاسخ به مخاطبان برای برندهای در حال رشد؛ مناسب یک خط محصول.',
+                'price' => 15_000_000,
+                'features' => ['۱۲ پست در ماه', 'مدیریت روزانه‌ی استوری', 'پاسخ به دایرکت و کامنت', 'گزارش ماهانه'],
+                'views' => 1240,
+                'sales' => 18,
+                'platforms' => ['instagram' => ['posts_per_month' => 12, 'stories_per_month' => 30, 'comments_per_month' => 200]],
+            ],
+            [
+                'slug' => 'instagram-studio',
+                'user_id' => $demo->id,
+                'title' => 'استودیوی حرفه‌ای اینستاگرام',
+                'description' => 'تولید محتوای ریلزمحور با کارگردانی هنری، عکاسی ماهانه و تقویم محتوای فروش‌محور.',
+                'price' => 28_000_000,
+                'features' => ['۳۰ پست در ماه', '۱۶ ریلز', 'عکاسی محصول', 'تقویم محتوای فروش‌محور'],
+                'views' => 2310,
+                'sales' => 34,
+                'platforms' => ['instagram' => ['posts_per_month' => 30, 'stories_per_month' => 60, 'reels_per_month' => 16]],
+            ],
+            [
+                'slug' => 'social-media-complete',
+                'user_id' => $demo->id,
+                'title' => 'بسته‌ی کامل شبکه‌های اجتماعی',
+                'description' => 'مدیریت اینستاگرام و تلگرام با کمپین چندکاناله، گزارش هفتگی و پشتیبانی با اولویت بالا.',
+                'price' => 42_000_000,
+                'features' => ['اینستاگرام + تلگرام', 'گزارش هفتگی', 'پشتیبانی با اولویت بالا'],
+                'views' => 1870,
+                'sales' => 21,
+                'platforms' => [
+                    'instagram' => ['posts_per_month' => 24, 'reels_per_month' => 8],
+                    'telegram' => ['posts_per_month' => 30],
+                ],
+            ],
+            [
+                'slug' => 'campaign-sprint',
+                'user_id' => $demo->id,
+                'title' => 'اسپرینت کمپین (۲ هفته)',
+                'description' => 'کمپین آماده‌ی پرتاب: کارگردانی خلاق، ۶ ریلز، ۱۲ استوری و راه‌اندازی تبلیغات پرداختی.',
+                'price' => 45_000_000,
+                'features' => ['۶ ریلز', '۱۲ استوری', 'راه‌اندازی تبلیغات', 'تحویل ۳ روزه'],
+                'views' => 960,
+                'sales' => 9,
+                'platforms' => ['instagram' => ['posts_per_month' => 6, 'stories_per_month' => 12, 'reels_per_month' => 6]],
+            ],
+            [
+                'slug' => 'contract-review',
+                'user_id' => $expert->id,
+                'title' => 'بازبینی و تنظیم قرارداد',
+                'description' => 'بررسی حقوقی قرارداد همکاری، پیشنهاد اصلاحات و تهیه‌ی پیوست الحاقی در ۴۸ ساعت.',
+                'price' => 6_500_000,
+                'features' => ['بازبینی بندها', 'پیشنهاد اصلاحات', 'پیوست الحاقی'],
+                'views' => 640,
+                'sales' => 27,
+                'platforms' => [],
+            ],
+            [
+                'slug' => 'content-calendar',
+                'user_id' => $expert->id,
+                'title' => 'تقویم محتوای سه‌ماهه',
+                'description' => 'برنامه‌ریزی محتوای سه ماه با موضوعات، قالب‌ها و زمان‌بندی انتشار برای یک برند.',
+                'price' => 9_800_000,
+                'features' => ['۳۶ ایده‌ی محتوا', 'تقویم انتشار', 'راهنمای لحن برند'],
+                'views' => 780,
+                'sales' => 14,
+                'platforms' => [],
+            ],
+        ];
+
+        foreach ($listings as $listing) {
+            $platforms = $listing['platforms'];
+            unset($listing['platforms']);
+
+            $package = Package::query()->updateOrCreate(
+                ['slug' => $listing['slug']],
+                [
+                    ...$listing,
+                    'currency' => 'IRT',
+                    'status' => ContentStatus::Published->value,
+                    'media' => [],
+                ],
+            );
+
+            foreach ($platforms as $platform => $counts) {
+                $package->platformConfigs()->updateOrCreate(
+                    ['platform' => $platform],
+                    $counts,
+                );
+            }
+        }
+    }
+
     private function contract(User $client, User $provider): void
     {
-        Contract::query()->updateOrCreate(
+        $active = Contract::query()->updateOrCreate(
             ['client_id' => $client->id, 'title' => 'قرارداد مشاوره حقوقی'],
             [
                 'user_id' => $provider->id,
@@ -128,6 +235,29 @@ class DemoSeeder extends Seeder
                 'status' => 'draft',
             ],
         );
+
+        $this->contractPdf($active);
+    }
+
+    /**
+     * The contract screen links to a PDF download; without a file the link only
+     * says "not generated yet". Generating it through the same action the API
+     * uses keeps the demo honest — and a rendering failure must never stop the
+     * dataset from seeding.
+     *
+     * @return void
+     */
+    private function contractPdf(Contract $contract): void
+    {
+        if (filled($contract->pdf_path)) {
+            return;
+        }
+
+        try {
+            app(GenerateContractPdfAction::class)->execute($contract);
+        } catch (\Throwable $error) {
+            report($error);
+        }
     }
 
     private function ticket(User $requester, User $agent): void

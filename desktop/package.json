@@ -1,0 +1,20 @@
+{
+  "name": "adminhub21-desktop",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AdminHub21 desktop demo — the full Next.js app on mock data",
+  "main": "main.cjs",
+  "author": "AdminHub21",
+  "license": "UNLICENSED",
+  "scripts": {
+    "prepare:app": "node prepare.mjs",
+    "start": "electron .",
+    "dist": "node prepare.mjs && electron-builder --win --publish never",
+    "dist:dir": "node prepare.mjs && electron-builder --win --dir"
+  },
+  "devDependencies": {
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8",
+    "esbuild": "^0.24.0"
+  }
+}

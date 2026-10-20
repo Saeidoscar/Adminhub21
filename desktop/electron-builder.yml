@@ -1,0 +1,42 @@
+appId: com.adminhub21.desktop
+productName: AdminHub21
+copyright: AdminHub21
+
+directories:
+  output: release
+  buildResources: assets
+
+# No asar: the shell has to spawn two long-lived child processes from files on
+# disk, and a plain directory keeps those paths simple and debuggable.
+asar: false
+
+files:
+  - main.cjs
+  - package.json
+
+# The Next runtime and the demo API are copied verbatim into resources/runtime.
+# They must not go through `files`: electron-builder prunes node_modules there,
+# and the standalone Next server needs its nested node_modules intact.
+extraResources:
+  - from: runtime
+    to: runtime
+
+win:
+  target:
+    - target: nsis
+      arch: [x64]
+    - target: portable
+      arch: [x64]
+  artifactName: AdminHub21-${version}-${arch}.${ext}
+
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: AdminHub21
+  deleteAppDataOnUninstall: false
+
+portable:
+  artifactName: AdminHub21-portable-${version}.${ext}

@@ -3,6 +3,7 @@ import Link from "next/link"
 import { redirect } from "next/navigation"
 
 import { apiBaseUrl } from "@/lib/api"
+import { siteUrl } from "@/lib/site"
 
 export const metadata: Metadata = {
   title: "ورود",
@@ -51,7 +52,9 @@ async function signIn(formData: FormData) {
     ;(await cookies()).set("ah_token", token, {
       httpOnly: true,
       sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
+      // The desktop build serves the app over http://127.0.0.1, where a Secure
+      // cookie would be dropped. Any real deployment is https.
+      secure: siteUrl().startsWith("https://"),
       path: "/",
       maxAge: 60 * 60 * 24 * 7,
     })
@@ -67,6 +70,13 @@ const ERRORS: Record<string, string> = {
   credentials: "ایمیل یا گذرواژه درست نیست.",
   unreachable: "ارتباط با سرویس برقرار نشد. کمی بعد دوباره تلاش کنید.",
 }
+
+/**
+ * The desktop build runs entirely on the seeded demo dataset, so the form ships
+ * with working credentials. Web deployments never set this flag and keep the
+ * empty fields.
+ */
+const DESKTOP_DEMO = process.env.NEXT_PUBLIC_DESKTOP_DEMO === "1"
 
 export default async function SignInPage({ searchParams }: { searchParams: SearchParams }) {
   const { redirectUrl = "/app", error } = await searchParams
@@ -89,6 +99,16 @@ export default async function SignInPage({ searchParams }: { searchParams: Searc
           </p>
         )}
 
+        {DESKTOP_DEMO && (
+          <div className="mt-5 rounded-xl border border-amber/30 bg-amber/10 p-4 text-sm text-foreground">
+            <p className="font-bold">نسخه‌ی نمایشی دسکتاپ</p>
+            <p className="mt-1 text-xs leading-6 text-muted">
+              همه‌ی داده‌ها نمونه و محلی است. با هر ایمیل و گذرواژه‌ای وارد می‌شوید؛ کادرها از قبل پر
+              شده‌اند.
+            </p>
+          </div>
+        )}
+
         <form action={signIn} className="mt-8 space-y-4">
           <input type="hidden" name="redirectUrl" value={redirectUrl} />
 
@@ -102,6 +122,7 @@ export default async function SignInPage({ searchParams }: { searchParams: Searc
               type="email"
               required
               autoComplete="email"
+              defaultValue={DESKTOP_DEMO ? "demo@adminhub21.test" : undefined}
               className="mt-1 h-11 w-full rounded-xl border border-border bg-card px-4 text-sm outline-none focus:border-navy"
             />
           </div>
@@ -116,6 +137,7 @@ export default async function SignInPage({ searchParams }: { searchParams: Searc
               type="password"
               required
               autoComplete="current-password"
+              defaultValue={DESKTOP_DEMO ? "demo" : undefined}
               className="mt-1 h-11 w-full rounded-xl border border-border bg-card px-4 text-sm outline-none focus:border-navy"
             />
           </div>

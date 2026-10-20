@@ -81,10 +81,18 @@ export default async function PackagePage({ params }: { params: Params }) {
               تأییدشده
             </span>
             <span>ارائه‌دهنده: {pkg.user?.name ?? "متخصص"}</span>
-            <span aria-hidden>·</span>
-            <span>{Number(pkg.sales ?? 0).toLocaleString("fa-IR")} فروش</span>
-            <span aria-hidden>·</span>
-            <span>{Number(pkg.views ?? 0).toLocaleString("fa-IR")} بازدید</span>
+            {Number(pkg.sales ?? 0) > 0 && (
+              <>
+                <span aria-hidden>·</span>
+                <span>{Number(pkg.sales).toLocaleString("fa-IR")} فروش</span>
+              </>
+            )}
+            {Number(pkg.views ?? 0) > 0 && (
+              <>
+                <span aria-hidden>·</span>
+                <span>{Number(pkg.views).toLocaleString("fa-IR")} بازدید</span>
+              </>
+            )}
           </p>
 
           <section className="mt-8" aria-labelledby="about">

@@ -5,7 +5,7 @@
  * consumes, so the whole UI can be explored without Postgres or an AI key.
  * State is kept in memory and resets whenever the dev server restarts.
  */
-import { demoDb } from "./demo-data"
+import { demoDb } from "./demo-data.ts"
 
 type Json = Record<string, unknown>
 type Result = { status: number; body?: Json | null }

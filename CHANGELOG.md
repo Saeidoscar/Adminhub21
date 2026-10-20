@@ -4,6 +4,79 @@ All notable changes to AdminHub21 are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project follows
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **`docs/operations/docker-demo.md`** — a Persian walkthrough for running the
+  whole product locally with Docker: services and ports, demo accounts, the
+  seeded dataset, reseeding, rebuilding after a code change, and the fixes for
+  the usual problems (port clashes, empty catalogue, permissions, CRLF).
+- **A populated Docker demo.** `DemoSeeder` now publishes six marketplace
+  listings and generates the PDF for the active contract through
+  `GenerateContractPdfAction`, so a fresh `docker compose up` shows a real
+  catalogue and a downloadable contract instead of empty states.
+
+### Fixed
+
+- **`docker compose up --build` failed at the SPA image.** The root `Dockerfile`
+  ran `npm ci` against a repository that only has a pnpm lockfile; it now uses
+  pnpm and copies every workspace manifest, like the Next image does.
+- **The SPA's nginx proxied `/api` to the retired Hono backend on `:8787`.**
+  Relative API calls now go to the Laravel nginx service.
+- **The production compose gave nginx no application code.** It now mounts the
+  Laravel tree and the storage volume read-only, so `/api` is not a 404.
+- **Shell scripts could be checked out with CRLF on Windows**, which makes the
+  PHP entrypoint fail with "exec format error"; `.gitattributes` now forces LF
+  for `*.sh`.
+- **The Next workspace had no canonical site URL in compose**, so sitemap and
+  Open Graph tags pointed at the default. `NEXT_PUBLIC_SITE_URL` is set for the
+  local and production stacks.
+
+- **A Windows desktop demo of the whole product.** `desktop/` wraps the
+  standalone Next.js build in an Electron shell and starts a bundled demo API
+  on `127.0.0.1:41731`; the shell opens the Next server on `:41730`. Every
+  surface works offline on seeded data — catalogue, sign-in, contracts (with a
+  downloadable PDF), wallet and tickets. `desktop/smoke.mjs` exercises the built
+  bundle, and `.github/workflows/desktop.yml` produces the NSIS installer and a
+  portable `.exe` on `windows-latest`.
+- **`dev/demo-contract.ts`** — translates the seeded dataset to the Laravel API
+  contract, so both the desktop build and the local preview serve the same
+  shapes the app expects (marketplace, auth, contracts, wallet, tickets).
+- **A public company surface.** `/about`, `/roadmap`, `/terms` and `/privacy`
+  are new pages on the Next.js site: what we sell, how we earn, the phases R0–R5
+  with an exit criterion each, the ArvanCloud starting proposal, the operating
+  principles and the legal text a buyer expects before paying.
+- **`docs/company/`** — the company book: profile, organisation chart, RACI,
+  approval gates, one job description per operating role, and a print-ready
+  one-pager (`one-pager.html`).
+- **`docs/roadmap.md`** — R0 through R5, each with measurable exit criteria, the
+  hosting proposal (≈4.48M Toman/month to start), and an explicit non-goals list.
+- **`.opencompany/skills/`** — seven importable skills (ticket triage, listing
+  review, release checklist, wallet reconciliation, growth report, competitor
+  scan, daily brief) plus `docs/operations/opencompany.md` and
+  `docs/company/hiring-briefs.md` for standing up an AI back office under human
+  approval gates.
+- **Identity assets.** `icon.svg`, `icon.png`, `apple-icon.png`,
+  `manifest.webmanifest`, a generated `og.png`, and Organization + WebSite
+  JSON-LD in the root layout.
+- **`dev/preview-gateway.mjs`** — adapts the seeded demo dataset to the Laravel
+  marketplace contract so the public site can be presented without a backend.
+
+### Changed
+
+- The header and footer now link About, Roadmap and the legal pages; the sitemap
+  lists them with their own priorities.
+- Package cards say "بسته‌ی جدید" instead of "۰ فروش", and the package page
+  hides empty sales/views counters.
+- Demo package titles, descriptions and delivery times are Persian, and the
+  marketplace preview shows named specialists instead of a single owner.
+- `dev/demo-api-handler.ts` imports `./demo-data.ts` explicitly so the handler
+  also runs under Node's type stripping outside Vite.
+- The sign-in page pre-fills demo credentials only when the desktop build sets
+  `NEXT_PUBLIC_DESKTOP_DEMO=1`, and only marks the cookie `Secure` on https
+  deployments — `http://127.0.0.1` would otherwise drop it.
+
 ## [1.0.0] — 2026-10-19
 
 The first release that is safe to point a paying customer at: the API is green
@@ -26,7 +99,7 @@ that ships it is the same one that tests it.
   serves `/storage` locally.
 - **Contracts in the new workspace shell.** `/app/contracts` lists the caller's
   contracts with status filters and pagination, `/app/contracts/{id}` shows the
-  parties, amount, clauses, signatures and the actions allowed *in that state*,
+  parties, amount, clauses, signatures and the actions allowed _in that state_,
   and `/app/contracts/new` creates a draft by resolving the counterparty from an
   exact email address.
 - Contract lifecycle over HTTP: `POST /contracts/{id}/{sign,activate,complete,cancel,review}`.
