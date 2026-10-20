@@ -83,6 +83,25 @@ pnpm dev:web    # public site on :3000
 
 The workspace modules are being moved into the Next shell progressively; until then `/app` presents the authenticated shell and the migrated modules, and every other `/app/*` path returns the visitor to sign-in and back.
 
+## Desktop demo (Windows)
+
+`desktop/` packages the **full Next.js app** — public site and `/app` workspace —
+into a Windows executable that runs on the seeded dataset, with no database and
+no network access:
+
+```bash
+cd desktop && npm install
+node prepare.mjs      # Next standalone build + bundled demo API
+node smoke.mjs        # starts both servers, checks catalogue/workspace/PDF
+npx electron-builder --win
+```
+
+The Electron shell starts the bundled API on `127.0.0.1:41731` and the Next
+server on `127.0.0.1:41730`, then opens the window. GitHub Actions builds the
+installer on `windows-latest` (`.github/workflows/desktop.yml`, tag
+`desktop-v*`). Details and the honest limitations:
+[`docs/operations/desktop-demo.md`](docs/operations/desktop-demo.md).
+
 ## Tech stack
 
 | Layer      | Technology                                                          |

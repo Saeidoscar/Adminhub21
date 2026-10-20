@@ -1,0 +1,75 @@
+name: Desktop
+
+# Builds the Windows demo (.exe) with the full Next.js app inside.
+#
+#  1. `desktop/prepare.mjs` builds Next in standalone mode against the bundled
+#     demo API, then bundles that API to a single CommonJS file.
+#  2. electron-builder produces an NSIS installer and a portable executable.
+#
+# Trigger it with a tag (`desktop-v1.0.0`) or from the Actions tab.
+
+on:
+  push:
+    tags:
+      - "desktop-v*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  NODE_VERSION: "22"
+  PNPM_VERSION: "10"
+
+jobs:
+  windows:
+    name: Windows · installer
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install workspace
+        run: pnpm install --frozen-lockfile
+
+      # `desktop/` is intentionally outside the pnpm workspace: it needs Electron
+      # and electron-builder only when a Windows binary is being produced, and
+      # keeping it out means the Docker and CI installs stay lean.
+      - name: Install desktop toolchain
+        working-directory: desktop
+        run: npm install --no-audit --no-fund
+
+      - name: Build app and demo API
+        run: node desktop/prepare.mjs
+
+      - name: Package
+        working-directory: desktop
+        run: npx electron-builder --win --publish never
+
+      # Runs the two servers from the *packaged* directory and checks the
+      # catalogue, the workspace and the PDF — the same script used locally.
+      - name: Smoke test the packaged app
+        run: node desktop/smoke.mjs --root desktop/release/win-unpacked/resources/app
+
+      - name: List installers
+        shell: pwsh
+        run: Get-ChildItem desktop/release -Filter *.exe | Select-Object Name, Length
+
+      - name: Upload installers
+        uses: actions/upload-artifact@v4
+        with:
+          name: adminhub21-desktop-windows
+          path: |
+            desktop/release/*.exe
+            desktop/release/*.blockmap
+          if-no-files-found: error
+          retention-days: 30

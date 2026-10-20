@@ -31,9 +31,8 @@ export default function RoadmapPage() {
         <p className="text-xs font-semibold uppercase tracking-wider text-amber">Roadmap</p>
         <h1 className="mt-2 text-3xl font-extrabold text-foreground md:text-4xl">نقشه‌ی راه</h1>
         <p className="mt-4 max-w-2xl text-sm leading-7 text-muted">
-          نسخه ۱.۰ منتشر شده است. از اینجا به بعد هر فاز یک معیار خروج دارد و تا آن معیار محقق
-          نشود، فاز بعد شروع نمی‌شود. ترتیب مهم است: تیم و اعتماد قبل از درآمد، درآمد قبل از
-          زیرساخت سنگین.
+          نسخه ۱.۰ منتشر شده است. از اینجا به بعد هر فاز یک معیار خروج دارد و تا آن معیار محقق نشود،
+          فاز بعد شروع نمی‌شود. ترتیب مهم است: تیم و اعتماد قبل از درآمد، درآمد قبل از زیرساخت سنگین.
         </p>
       </header>
 
@@ -53,9 +52,7 @@ export default function RoadmapPage() {
                   <h2 className="text-lg font-extrabold text-foreground">{phase.title}</h2>
                   <p className="text-xs text-muted">{phase.window}</p>
                 </div>
-                <span
-                  className={`rounded-full px-3 py-1 text-xs font-bold ${status.className}`}
-                >
+                <span className={`rounded-full px-3 py-1 text-xs font-bold ${status.className}`}>
                   {status.label}
                 </span>
               </div>
@@ -73,7 +70,9 @@ export default function RoadmapPage() {
                     >
                       {item.done ? "✓" : "•"}
                     </span>
-                    <span className={item.done ? "text-muted" : "text-foreground"}>{item.label}</span>
+                    <span className={item.done ? "text-muted" : "text-foreground"}>
+                      {item.label}
+                    </span>
                   </li>
                 ))}
               </ul>
@@ -129,8 +128,8 @@ export default function RoadmapPage() {
           </table>
         </div>
         <p className="mt-3 text-xs leading-6 text-muted">
-          قیمت‌ها بر اساس تعرفه‌ی ابر آروان در زمان انتشار. Redis مدیریت‌شده وجود ندارد، ایمیل
-          تراکنشی روی پورت ۲۵/۴۶۵ بسته است و APM ندارد؛ هر سه در طراحی لحاظ شده‌اند.
+          قیمت‌ها بر اساس تعرفه‌ی ابر آروان در زمان انتشار. Redis مدیریت‌شده وجود ندارد، ایمیل تراکنشی
+          روی پورت ۲۵/۴۶۵ بسته است و APM ندارد؛ هر سه در طراحی لحاظ شده‌اند.
         </p>
       </section>
 
@@ -151,8 +150,8 @@ export default function RoadmapPage() {
       <div className="mt-16 rounded-2xl bg-navy px-6 py-8 text-white">
         <h2 className="text-xl font-extrabold">سؤال یا پیشنهاد دارید؟</h2>
         <p className="mt-2 max-w-xl text-sm leading-7 text-white/70">
-          نقشه‌ی راه یک قول نیست؛ یک ترتیب است. اگر داده چیز دیگری گفت، ترتیب عوض می‌شود — ولی
-          دلیلش نوشته می‌شود.
+          نقشه‌ی راه یک قول نیست؛ یک ترتیب است. اگر داده چیز دیگری گفت، ترتیب عوض می‌شود — ولی دلیلش
+          نوشته می‌شود.
         </p>
         <Link
           href="/about"

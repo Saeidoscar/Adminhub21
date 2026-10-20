@@ -18,7 +18,13 @@ const LEGAL = [
   { href: "/privacy", label: "حریم خصوصی" },
 ]
 
-function Column({ title, links }: { title: string; links: { href: string; label: string; external?: boolean }[] }) {
+function Column({
+  title,
+  links,
+}: {
+  title: string
+  links: { href: string; label: string; external?: boolean }[]
+}) {
   return (
     <div>
       <h2 className="text-sm font-bold text-foreground">{title}</h2>

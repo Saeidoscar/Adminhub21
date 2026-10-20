@@ -220,8 +220,8 @@ export default async function HomePage() {
           <div className="rounded-2xl border border-border bg-card p-6">
             <h3 className="text-base font-extrabold text-foreground">شفافیت، مکتوب</h3>
             <p className="mt-2 text-sm leading-7 text-muted">
-              شرایط استفاده، حریم خصوصی، تاریخ انتشار نسخه‌ها و نقشه‌ی راه همه منتشر شده‌اند. اگر
-              چیزی را نمی‌فهمید، همان‌جا می‌توانید بپرسید.
+              شرایط استفاده، حریم خصوصی، تاریخ انتشار نسخه‌ها و نقشه‌ی راه همه منتشر شده‌اند. اگر چیزی
+              را نمی‌فهمید، همان‌جا می‌توانید بپرسید.
             </p>
             <div className="mt-5 flex flex-wrap gap-2 text-xs">
               {[
@@ -248,8 +248,8 @@ export default async function HomePage() {
         <div className="rounded-3xl bg-navy px-6 py-12 text-center text-white md:px-12">
           <h2 className="text-2xl font-extrabold md:text-3xl">اولین سفارش را دقیق بسپارید.</h2>
           <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-white/70">
-            بسته‌ای با قیمت شفاف انتخاب کنید، قرارداد را آنلاین امضا کنید و تحویل را از میزکار
-            پیگیری کنید. اگر مطمئن نیستید کدام بسته مناسب است، از بازار شروع کنید.
+            بسته‌ای با قیمت شفاف انتخاب کنید، قرارداد را آنلاین امضا کنید و تحویل را از میزکار پیگیری
+            کنید. اگر مطمئن نیستید کدام بسته مناسب است، از بازار شروع کنید.
           </p>
           <div className="mt-7 flex flex-wrap justify-center gap-3">
             <Link

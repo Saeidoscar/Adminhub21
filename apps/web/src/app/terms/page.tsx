@@ -2,7 +2,8 @@ import type { Metadata } from "next"
 
 export const metadata: Metadata = {
   title: "شرایط استفاده",
-  description: "شرایط استفاده از بازار و میزکار AdminHub21: حساب، سفارش، قرارداد، کیف پول و مسئولیت‌ها.",
+  description:
+    "شرایط استفاده از بازار و میزکار AdminHub21: حساب، سفارش، قرارداد، کیف پول و مسئولیت‌ها.",
   alternates: { canonical: "/terms" },
 }
 

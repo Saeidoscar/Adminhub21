@@ -54,8 +54,7 @@ export default function PrivacyPage() {
       </div>
 
       <p className="mt-12 rounded-xl border border-border bg-subtle p-4 text-xs leading-6 text-muted">
-        برای هر درخواست مربوط به داده، از داخل حساب تیکت بزنید یا به hello@adminhub21.com
-        بنویسید.
+        برای هر درخواست مربوط به داده، از داخل حساب تیکت بزنید یا به hello@adminhub21.com بنویسید.
       </p>
     </div>
   )

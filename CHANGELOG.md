@@ -8,6 +8,16 @@ All notable changes to AdminHub21 are documented here. The format follows
 
 ### Added
 
+- **A Windows desktop demo of the whole product.** `desktop/` wraps the
+  standalone Next.js build in an Electron shell and starts a bundled demo API
+  on `127.0.0.1:41731`; the shell opens the Next server on `:41730`. Every
+  surface works offline on seeded data — catalogue, sign-in, contracts (with a
+  downloadable PDF), wallet and tickets. `desktop/smoke.mjs` exercises the built
+  bundle, and `.github/workflows/desktop.yml` produces the NSIS installer and a
+  portable `.exe` on `windows-latest`.
+- **`dev/demo-contract.ts`** — translates the seeded dataset to the Laravel API
+  contract, so both the desktop build and the local preview serve the same
+  shapes the app expects (marketplace, auth, contracts, wallet, tickets).
 - **A public company surface.** `/about`, `/roadmap`, `/terms` and `/privacy`
   are new pages on the Next.js site: what we sell, how we earn, the phases R0–R5
   with an exit criterion each, the ArvanCloud starting proposal, the operating
@@ -38,6 +48,9 @@ All notable changes to AdminHub21 are documented here. The format follows
   marketplace preview shows named specialists instead of a single owner.
 - `dev/demo-api-handler.ts` imports `./demo-data.ts` explicitly so the handler
   also runs under Node's type stripping outside Vite.
+- The sign-in page pre-fills demo credentials only when the desktop build sets
+  `NEXT_PUBLIC_DESKTOP_DEMO=1`, and only marks the cookie `Secure` on https
+  deployments — `http://127.0.0.1` would otherwise drop it.
 
 ## [1.0.0] — 2026-10-19
 
