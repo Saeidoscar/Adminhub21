@@ -1,0 +1,481 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AdminHub21 — معرفی یک‌صفحه‌ای</title>
+    <style>
+      @page {
+        size: A4;
+        margin: 0;
+      }
+
+      :root {
+        --navy: #1e3a5f;
+        --navy-dark: #122435;
+        --amber: #f59e0b;
+        --amber-soft: #fef3c7;
+        --surface: #f2f5fa;
+        --text: #0f172a;
+        --muted: #64748b;
+        --border: #e2e8f0;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: #e9eef6;
+        color: var(--text);
+        font-family: Vazirmatn, "IRANSans", Tahoma, system-ui, sans-serif;
+        font-size: 10.5pt;
+        line-height: 1.75;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .page {
+        width: 210mm;
+        min-height: 297mm;
+        margin: 24px auto;
+        padding: 16mm 15mm 12mm;
+        background: #fff;
+        box-shadow: 0 18px 50px rgba(15, 23, 42, 0.16);
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* ---------- header ---------- */
+      header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+        padding-bottom: 14px;
+        border-bottom: 2px solid var(--navy);
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .mark {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        background: var(--navy);
+        color: #fff;
+        font-weight: 800;
+        font-size: 13px;
+        display: grid;
+        place-items: center;
+        letter-spacing: 0.5px;
+      }
+
+      .brand h1 {
+        margin: 0;
+        font-size: 20pt;
+        line-height: 1.2;
+        letter-spacing: -0.5px;
+      }
+
+      .brand p {
+        margin: 2px 0 0;
+        font-size: 9pt;
+        color: var(--muted);
+      }
+
+      .stamp {
+        text-align: left;
+        font-size: 8.5pt;
+        color: var(--muted);
+      }
+
+      .stamp strong {
+        display: block;
+        color: var(--navy);
+        font-size: 9.5pt;
+      }
+
+      /* ---------- hero ---------- */
+      .hero {
+        margin-top: 18px;
+        padding: 18px 20px;
+        border-radius: 14px;
+        background: linear-gradient(135deg, var(--navy) 0%, #2d5a8e 100%);
+        color: #fff;
+      }
+
+      .hero h2 {
+        margin: 0 0 6px;
+        font-size: 17pt;
+        line-height: 1.45;
+        font-weight: 800;
+      }
+
+      .hero p {
+        margin: 0;
+        font-size: 10pt;
+        color: #dbe6f5;
+        max-width: 150mm;
+      }
+
+      /* ---------- stats ---------- */
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+        margin-top: 14px;
+      }
+
+      .stat {
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 10px 12px;
+        background: var(--surface);
+      }
+
+      .stat b {
+        display: block;
+        font-size: 15pt;
+        color: var(--navy);
+        line-height: 1.3;
+      }
+
+      .stat span {
+        font-size: 8.5pt;
+        color: var(--muted);
+      }
+
+      /* ---------- sections ---------- */
+      section {
+        margin-top: 16px;
+      }
+
+      h3 {
+        margin: 0 0 8px;
+        font-size: 11.5pt;
+        color: var(--navy);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      h3::before {
+        content: "";
+        width: 4px;
+        height: 15px;
+        border-radius: 2px;
+        background: var(--amber);
+        display: inline-block;
+      }
+
+      p {
+        margin: 0 0 8px;
+      }
+
+      .muted {
+        color: var(--muted);
+      }
+
+      .cols {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+
+      ul {
+        margin: 0;
+        padding-inline-start: 18px;
+      }
+
+      li {
+        margin-bottom: 4px;
+      }
+
+      /* ---------- table ---------- */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 9.5pt;
+      }
+
+      th,
+      td {
+        text-align: right;
+        padding: 7px 10px;
+        border-bottom: 1px solid var(--border);
+        vertical-align: top;
+      }
+
+      th {
+        background: var(--surface);
+        color: var(--navy);
+        font-weight: 700;
+        font-size: 9pt;
+      }
+
+      tr:last-child td {
+        border-bottom: none;
+      }
+
+      .pill {
+        display: inline-block;
+        padding: 1px 8px;
+        border-radius: 999px;
+        background: var(--amber-soft);
+        color: #92400e;
+        font-size: 8.5pt;
+        font-weight: 700;
+      }
+
+      /* ---------- flow ---------- */
+      .flow {
+        display: flex;
+        align-items: stretch;
+        gap: 6px;
+        margin-top: 6px;
+      }
+
+      .step {
+        flex: 1;
+        border: 1px solid var(--border);
+        border-radius: 9px;
+        padding: 8px 9px;
+        background: #fbfcfe;
+        font-size: 8.8pt;
+        text-align: center;
+      }
+
+      .step b {
+        display: block;
+        color: var(--navy);
+        font-size: 9.5pt;
+        margin-bottom: 2px;
+      }
+
+      .arrow {
+        align-self: center;
+        color: var(--muted);
+        font-size: 13pt;
+      }
+
+      /* ---------- quote ---------- */
+      blockquote {
+        margin: 0;
+        padding: 12px 16px;
+        border-right: 4px solid var(--amber);
+        background: #fffbeb;
+        border-radius: 8px;
+        font-size: 10pt;
+        color: #78350f;
+      }
+
+      /* ---------- footer ---------- */
+      footer {
+        margin-top: auto;
+        padding-top: 14px;
+        border-top: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 12px;
+        font-size: 8.5pt;
+        color: var(--muted);
+      }
+
+      footer b {
+        color: var(--navy);
+      }
+
+      @media print {
+        body {
+          background: #fff;
+        }
+
+        .page {
+          margin: 0;
+          box-shadow: none;
+          width: auto;
+          min-height: auto;
+        }
+
+        section {
+          break-inside: avoid;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header>
+        <div class="brand">
+          <div class="mark">AH</div>
+          <div>
+            <h1>AdminHub21</h1>
+            <p>بازار متخصصان محتوا، ابزار و قرارداد</p>
+          </div>
+        </div>
+        <div class="stamp">
+          <strong>معرفی شرکت</strong>
+          نسخه ۱.۰ · مهر ۱۴۰۵
+        </div>
+      </header>
+
+      <div class="hero">
+        <h2>کارِ محتوایی را از «دایرکت» به یک قرارداد قابل استناد ببرید.</h2>
+        <p>
+          AdminHub21 بازار دوطرفه‌ای است که کارفرما را به متخصص تأییدشده وصل می‌کند و
+          کل مسیر را تا قیمت شفاف، قرارداد الکترونیکی، تحویل و تسویه در یک سیستم
+          نگه می‌دارد.
+        </p>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><b>۱۵٪</b><span>کارمزد شفاف، بدون هزینه پنهان</span></div>
+        <div class="stat"><b>۴ گام</b><span>انتخاب، قرارداد، تحویل، تسویه</span></div>
+        <div class="stat"><b>۱.۰.۰</b><span>نسخه منتشرشده و پایدار</span></div>
+        <div class="stat"><b>۲۴/۷</b><span>پیگیری وضعیت در میزکار</span></div>
+      </div>
+
+      <section>
+        <h3>مشکلی که حل می‌کنیم</h3>
+        <div class="cols">
+          <div>
+            <p><b>قیمت نامعلوم.</b> مشتری نمی‌داند یک خدمت باید چقدر باشد، پس مذاکره جای قیمت شفاف را می‌گیرد.</p>
+            <p><b>تعهد نامکتوب.</b> توافق در واتساپ می‌ماند؛ نه دامنه‌ی تحویل مشخص است، نه راه پیگیری.</p>
+          </div>
+          <div>
+            <p><b>پول بی‌صاحب.</b> پرداخت مستقیم، ریسک بدحسابی را برای هر دو طرف می‌سازد.</p>
+            <p>
+              <b>پاسخ ما:</b> بسته‌ی قیمت‌گذاری‌شده، قرارداد الکترونیکی، کیف پول و
+              تسویه در یک مسیر.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h3>چطور کار می‌کند</h3>
+        <div class="flow">
+          <div class="step"><b>۱. انتخاب</b>بسته با قیمت و دامنه‌ی تحویل</div>
+          <div class="arrow">←</div>
+          <div class="step"><b>۲. قرارداد</b>امضای الکترونیکی و PDF</div>
+          <div class="arrow">←</div>
+          <div class="step"><b>۳. تحویل</b>پیگیری در میزکار</div>
+          <div class="arrow">←</div>
+          <div class="step"><b>۴. تسویه</b>کیف پول و برداشت کنترل‌شده</div>
+        </div>
+      </section>
+
+      <section>
+        <h3>محصول</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>سطح</th>
+              <th>چه چیزی</th>
+              <th>وضعیت</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>بازار عمومی</td>
+              <td>جستجو، فیلتر دسته و قیمت، صفحه‌ی هر بسته با سئوی مستقل</td>
+              <td><span class="pill">منتشرشده</span></td>
+            </tr>
+            <tr>
+              <td>پروفایل متخصص</td>
+              <td>تأیید هویت، نمونه‌کار، امتیاز و سابقه</td>
+              <td><span class="pill">منتشرشده</span></td>
+            </tr>
+            <tr>
+              <td>قرارداد</td>
+              <td>ساخت، امضا، خروجی PDF و آرشیو</td>
+              <td><span class="pill">منتشرشده</span></td>
+            </tr>
+            <tr>
+              <td>کیف پول</td>
+              <td>شارژ، تراکنش، برداشت با تأیید ادمین</td>
+              <td><span class="pill">منتشرشده</span></td>
+            </tr>
+            <tr>
+              <td>پشتیبانی</td>
+              <td>تیکت، اولویت، یادداشت داخلی، ارجاع</td>
+              <td><span class="pill">منتشرشده</span></td>
+            </tr>
+            <tr>
+              <td>دستیار هوشمند</td>
+              <td>چت با مدل زبانی برای پیشنهاد قیمت و متن</td>
+              <td><span class="pill">آماده‌ی اتصال</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h3>مدل درآمد</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>منبع</th>
+              <th>مدل</th>
+              <th>توضیح</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>کارمزد بازار</td>
+              <td>۱۵٪ از هر فروش بسته</td>
+              <td>درگاه اصلی درآمد</td>
+            </tr>
+            <tr>
+              <td>پلن سازمانی</td>
+              <td>قرارداد ماهانه</td>
+              <td>تیم، گزارش، پشتیبانی اختصاصی</td>
+            </tr>
+            <tr>
+              <td>خدمات قرارداد</td>
+              <td>کارمزد صدور و امضا</td>
+              <td>پس از رسیدن به حجم مشخص</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h3>چرا AdminHub21</h3>
+        <div class="cols">
+          <ul>
+            <li><b>کل مسیر، نه یک تکه.</b> از کشف تا تسویه در یک سیستم.</li>
+            <li><b>شفافیت قیمت.</b> هر بسته قیمت و دامنه‌ی تحویل دارد.</li>
+          </ul>
+          <ul>
+            <li><b>پول تا تحویل می‌ماند.</b> اطمینان کارفرما، تعهد متخصص.</li>
+            <li><b>ساخت ایران، آماده‌ی مقیاس.</b> ابر داخلی، درگاه ایرانی.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section>
+        <blockquote>
+          «هر تصمیم یک سند دارد؛ قیمت، changelog، runbook و این یک صفحه.»
+        </blockquote>
+      </section>
+
+      <footer>
+        <div>
+          <b>AdminHub21</b><br />
+          adminhub21.com · hello@adminhub21.com
+        </div>
+        <div style="text-align: left">
+          <b>github.com/Saeidoscar/Adminhub21</b><br />
+          نسخه ۱.۰.۰ · CI سبز · ۸۴ تست خودکار
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

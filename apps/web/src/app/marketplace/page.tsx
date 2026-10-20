@@ -167,8 +167,10 @@ export default async function MarketplacePage({ searchParams }: { searchParams: 
                     {Number(pkg.price).toLocaleString("fa-IR")} {pkg.currency}
                   </span>
                   <span className="text-xs text-muted">
-                    {pkg.user?.name ?? "متخصص"} · {Number(pkg.sales ?? 0).toLocaleString("fa-IR")}{" "}
-                    فروش
+                    {pkg.user?.name ?? "متخصص"} ·{" "}
+                    {Number(pkg.sales ?? 0) > 0
+                      ? `${Number(pkg.sales).toLocaleString("fa-IR")} فروش`
+                      : "بسته‌ی جدید"}
                   </span>
                 </div>
               </Link>

@@ -2,6 +2,31 @@
 
 A bilingual (English / Persian) freelance marketplace connecting employers with verified social media and e-commerce professionals. The platform supports the full hiring lifecycle: discovery, comparison, contracting, and ongoing management.
 
+## The company
+
+AdminHub21 is run as a one-founder company with a written operating system, not
+as a side project with implicit rules:
+
+| Document                                                             | What it answers                                 |
+| -------------------------------------------------------------------- | ----------------------------------------------- |
+| [`docs/company/company-profile.md`](docs/company/company-profile.md) | what we sell, to whom, and how we earn          |
+| [`docs/company/organization.md`](docs/company/organization.md)       | roles, KPIs, decision rights and approval gates |
+| [`docs/company/employees/`](docs/company/employees/)                 | a job description per operating role            |
+| [`docs/company/one-pager.html`](docs/company/one-pager.html)         | print-ready company one-pager                   |
+| [`docs/roadmap.md`](docs/roadmap.md)                                 | phases R0–R5, each with an exit criterion       |
+| [`docs/operations/opencompany.md`](docs/operations/opencompany.md)   | how the AI back office is installed and bounded |
+
+The public site mirrors these: `/about`, `/roadmap`, `/terms` and `/privacy` are
+generated from the same source of truth as the metadata, sitemap and JSON-LD.
+
+### Hiring the back office
+
+`.opencompany/skills/` and `docs/company/hiring-briefs.md` contain importable job briefs and skills for
+[OpenCompany](https://github.com/zeenie-ai/OpenCompany) — seven roles (chief of
+staff, support, marketplace ops, billing, release, growth, research), each with
+explicit approval gates so no agent moves money, publishes publicly or deletes
+data on its own.
+
 ## What it does
 
 Employers find specialists across Instagram, Telegram, WhatsApp, Torob, Digikala, and LinkedIn. Admins publish packages, receive custom offers, and manage contracts. The platform also includes an MCP-powered AI assistant for hiring intelligence, a contract generator with legally styled clauses, and a full admin panel for user, content, ticket, and workspace management.
@@ -38,10 +63,10 @@ Prefer `apps/api/` for all new backend work.
 
 The repository ships two frontends that share one design-token package:
 
-| Surface | App | Rendering | Purpose |
-| ------- | --- | --------- | ------- |
+| Surface                 | App                                 | Rendering                                                            | Purpose                                                                                    |
+| ----------------------- | ----------------------------------- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
 | Public site + workspace | `apps/web` (Next.js 16, App Router) | server-rendered public pages, server-rendered authenticated `/app/*` | home, marketplace catalogue, package pages, pricing, changelog, contracts, wallet, tickets |
-| Admin SPA | root `src/` (Vite + React Router) | client-side, authenticated | admin panel, workspace cases, portfolio and content moderation |
+| Admin SPA               | root `src/` (Vite + React Router)   | client-side, authenticated                                           | admin panel, workspace cases, portfolio and content moderation                             |
 
 Contracts, wallet and tickets no longer have a Vite implementation: the legacy
 `/contracts` and `/tickets` URLs forward to `/app/*` on the Next.js surface, so
@@ -127,6 +152,20 @@ pnpm dev:demo        # http://localhost:8443
 
 You are signed in automatically as an employer; the floating role switcher in the bottom-left corner toggles between the employer and admin views. Seed data lives in `dev/demo-data.ts`.
 
+### Public site against the demo data
+
+The Next.js public site reads the Laravel contract (`/api/v1/marketplace/*`), so
+`pnpm dev:web` renders an empty catalogue until an API is reachable.
+`dev/preview-gateway.mjs` adapts the seeded demo dataset to that contract:
+
+```bash
+node --experimental-strip-types dev/preview-gateway.mjs   # demo API on :8090
+NEXT_PUBLIC_API_BASE_URL=http://127.0.0.1:8090 pnpm dev:web
+```
+
+It is presentation tooling only — the production site always talks to
+`apps/api`.
+
 ### Frontend + real Laravel backend
 
 ```bash
@@ -157,21 +196,21 @@ directory, and only then starts php-fpm. No manual `migrate`, `seed` or
 `key:generate` step is required — the local stack ships a throwaway `APP_KEY`,
 and the public site, workspace, admin SPA, API and Mailpit all come up together.
 
-| Service                                        | URL                   |
-| ---------------------------------------------- | --------------------- |
-| Public site + workspace (Next.js 16)           | http://localhost:3000 |
-| API through nginx                              | http://localhost:8080 |
+| Service                                            | URL                   |
+| -------------------------------------------------- | --------------------- |
+| Public site + workspace (Next.js 16)               | http://localhost:3000 |
+| API through nginx                                  | http://localhost:8080 |
 | Admin SPA, production build (`docker-compose.yml`) | http://localhost:8443 |
 | Frontend, demo stack (`docker-compose.demo.yml`)   | http://localhost:8444 |
-| Mailpit                                        | http://localhost:8025 |
+| Mailpit                                            | http://localhost:8025 |
 
 The seeded accounts are:
 
-| Role        | Email                   | Password   |
-| ----------- | ----------------------- | ---------- |
-| Employer    | `demo@adminhub21.test`  | `password` |
-| Specialist  | `expert@adminhub21.test`| `password` |
-| Super admin | `admin@adminhub21.com`  | `password` |
+| Role        | Email                    | Password   |
+| ----------- | ------------------------ | ---------- |
+| Employer    | `demo@adminhub21.test`   | `password` |
+| Specialist  | `expert@adminhub21.test` | `password` |
+| Super admin | `admin@adminhub21.com`   | `password` |
 
 The employer arrives with a funded wallet, two contracts and a support thread,
 so every screen has something to show. The seeders are idempotent: restarting

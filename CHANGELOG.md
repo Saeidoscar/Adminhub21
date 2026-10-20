@@ -4,6 +4,41 @@ All notable changes to AdminHub21 are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project follows
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **A public company surface.** `/about`, `/roadmap`, `/terms` and `/privacy`
+  are new pages on the Next.js site: what we sell, how we earn, the phases R0–R5
+  with an exit criterion each, the ArvanCloud starting proposal, the operating
+  principles and the legal text a buyer expects before paying.
+- **`docs/company/`** — the company book: profile, organisation chart, RACI,
+  approval gates, one job description per operating role, and a print-ready
+  one-pager (`one-pager.html`).
+- **`docs/roadmap.md`** — R0 through R5, each with measurable exit criteria, the
+  hosting proposal (≈4.48M Toman/month to start), and an explicit non-goals list.
+- **`.opencompany/skills/`** — seven importable skills (ticket triage, listing
+  review, release checklist, wallet reconciliation, growth report, competitor
+  scan, daily brief) plus `docs/operations/opencompany.md` and
+  `docs/company/hiring-briefs.md` for standing up an AI back office under human
+  approval gates.
+- **Identity assets.** `icon.svg`, `icon.png`, `apple-icon.png`,
+  `manifest.webmanifest`, a generated `og.png`, and Organization + WebSite
+  JSON-LD in the root layout.
+- **`dev/preview-gateway.mjs`** — adapts the seeded demo dataset to the Laravel
+  marketplace contract so the public site can be presented without a backend.
+
+### Changed
+
+- The header and footer now link About, Roadmap and the legal pages; the sitemap
+  lists them with their own priorities.
+- Package cards say "بسته‌ی جدید" instead of "۰ فروش", and the package page
+  hides empty sales/views counters.
+- Demo package titles, descriptions and delivery times are Persian, and the
+  marketplace preview shows named specialists instead of a single owner.
+- `dev/demo-api-handler.ts` imports `./demo-data.ts` explicitly so the handler
+  also runs under Node's type stripping outside Vite.
+
 ## [1.0.0] — 2026-10-19
 
 The first release that is safe to point a paying customer at: the API is green
@@ -26,7 +61,7 @@ that ships it is the same one that tests it.
   serves `/storage` locally.
 - **Contracts in the new workspace shell.** `/app/contracts` lists the caller's
   contracts with status filters and pagination, `/app/contracts/{id}` shows the
-  parties, amount, clauses, signatures and the actions allowed *in that state*,
+  parties, amount, clauses, signatures and the actions allowed _in that state_,
   and `/app/contracts/new` creates a draft by resolving the counterparty from an
   exact email address.
 - Contract lifecycle over HTTP: `POST /contracts/{id}/{sign,activate,complete,cancel,review}`.
