@@ -52,7 +52,7 @@ jobs:
         run: npm install --no-audit --no-fund
 
       - name: Build app and demo API
-        run: node desktop/prepare.mjs
+        run: node desktop/prepare.mjs 2>&1 | Tee-Object -FilePath desktop-prepare.log
 
       - name: Package
         working-directory: desktop
@@ -87,18 +87,20 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           $parts = @("Desktop build failed for commit ${{ github.sha }} (run ${{ github.run_id }}).")
-          if (Test-Path electron-builder.log) {
-            $parts += "electron-builder.log (last 80 lines):"
-            $parts += '```'
-            $parts += (Get-Content electron-builder.log -Tail 80)
-            $parts += '```'
+          foreach ($log in @("desktop/electron-builder.log", "desktop-prepare.log")) {
+            if (Test-Path $log) {
+              $parts += "**$log** (last 80 lines):"
+              $parts += '```'
+              $parts += (Get-Content $log -Tail 80)
+              $parts += '```'
+            }
           }
-          $parts += "release/ contents:"
+          $parts += "desktop/release contents:"
           $parts += '```'
-          if (Test-Path release) { $parts += (Get-ChildItem release | Select-Object -ExpandProperty Name) } else { $parts += "no release directory" }
+          if (Test-Path desktop/release) { $parts += (Get-ChildItem desktop/release | Select-Object -ExpandProperty Name) } else { $parts += "no release directory" }
           $parts += '```'
-          Set-Content -Path ..\desktop-failure.md -Value $parts -Encoding utf8
-          gh pr comment 2 --body-file ..\desktop-failure.md
+          Set-Content -Path desktop-failure.md -Value $parts -Encoding utf8
+          gh pr comment 2 --body-file desktop-failure.md
 
       - name: List installers
         shell: pwsh
