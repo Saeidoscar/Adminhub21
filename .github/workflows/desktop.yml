@@ -53,7 +53,24 @@ jobs:
 
       - name: Package
         working-directory: desktop
-        run: npx electron-builder --win --publish never
+        shell: pwsh
+        env:
+          # We do not sign, so skip the certificate discovery (and the symlink
+          # extraction that comes with it on Windows runners).
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+        run: |
+          npx electron-builder --win --publish never 2>&1 |
+            Tee-Object -FilePath electron-builder.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Upload builder log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-builder-log
+          path: desktop/electron-builder.log
+          if-no-files-found: ignore
+          retention-days: 7
 
       # Runs the two servers from the *packaged* directory and checks the
       # catalogue, the workspace and the PDF — the same script used locally.
