@@ -6,8 +6,8 @@
  * the public catalogue renders Persian listings, the workspace is reachable
  * with a session, and the contract PDF downloads.
  *
- *   node desktop/smoke.mjs                 # uses desktop/app and desktop/build
- *   node desktop/smoke.mjs --root <dir>    # uses a packaged resources/app dir
+ *   node desktop/smoke.mjs                 # uses desktop/runtime
+ *   node desktop/smoke.mjs --root <dir>    # dir holding server.js + demo-api.cjs
  */
 import { spawn } from "node:child_process"
 import path from "node:path"
@@ -15,7 +15,8 @@ import { fileURLToPath } from "node:url"
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const argument = process.argv.indexOf("--root")
-const root = argument > -1 ? path.resolve(process.argv[argument + 1]) : here
+const root =
+  argument > -1 ? path.resolve(process.argv[argument + 1]) : path.join(here, "runtime")
 
 // These must match the ports baked into the build by `prepare.mjs`: the API
 // base URL is inlined into the Next bundle at build time.
@@ -68,12 +69,12 @@ function check(name, condition, detail = "") {
 async function main() {
   console.log(`[smoke] root: ${root}`)
 
-  start(path.join(root, "build", "demo-api.cjs"), {
+  start(path.join(root, "demo-api.cjs"), {
     PREVIEW_GATEWAY_PORT: String(API_PORT),
     PREVIEW_GATEWAY_HOST: "127.0.0.1",
   })
 
-  start(path.join(root, "app", "server.js"), {
+  start(path.join(root, "server.js"), {
     PORT: String(WEB_PORT),
     HOSTNAME: "127.0.0.1",
   })

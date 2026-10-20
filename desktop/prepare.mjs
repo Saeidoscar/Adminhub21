@@ -7,7 +7,11 @@
  *   2. the Next.js build with `output: "standalone"`, compiled against the
  *      local demo API (the base URL is inlined at build time)
  *   3. the demo API bundled to a single CommonJS file
- *   4. `app/` — the standalone server plus the static assets it expects
+ *   4. `runtime/` — the standalone server, its static assets and the demo API
+ *
+ * The output directory is deliberately *not* called `app/`: electron-builder
+ * treats a sibling `app/` folder with a package.json as the two-package.json
+ * application root, would look for `app/index.js` and refuse to package.
  *
  * Run from `desktop/`:  node prepare.mjs
  */
@@ -22,6 +26,7 @@ const here = path.dirname(fileURLToPath(import.meta.url))
 const repo = path.resolve(here, "..")
 const web = path.join(repo, "apps", "web")
 const buildDir = path.join(here, ".build", "web")
+const runtimeDir = path.join(here, "runtime")
 
 const WEB_PORT = 41730
 const API_PORT = 41731
@@ -49,10 +54,9 @@ async function exists(target) {
 
 async function main() {
   console.log("[prepare] cleaning")
-  await rm(path.join(here, "app"), { recursive: true, force: true })
-  await rm(path.join(here, "build"), { recursive: true, force: true })
+  await rm(runtimeDir, { recursive: true, force: true })
   await rm(path.join(here, ".build"), { recursive: true, force: true })
-  await mkdir(path.join(here, "build"), { recursive: true })
+  await mkdir(runtimeDir, { recursive: true })
   await mkdir(buildDir, { recursive: true })
 
   console.log("[prepare] staging the web app")
@@ -100,7 +104,7 @@ async function main() {
   const esbuild = require("esbuild")
   await esbuild.build({
     entryPoints: [path.join(repo, "dev", "preview-gateway.mjs")],
-    outfile: path.join(here, "build", "demo-api.cjs"),
+    outfile: path.join(runtimeDir, "demo-api.cjs"),
     bundle: true,
     platform: "node",
     format: "cjs",
@@ -109,21 +113,25 @@ async function main() {
     logLevel: "warning",
   })
 
-  console.log("[prepare] assembling app/")
+  console.log("[prepare] assembling runtime/")
   const standalone = path.join(buildDir, ".next", "standalone")
   if (!(await exists(path.join(standalone, "server.js")))) {
     throw new Error("standalone output missing — did next build run with NEXT_STANDALONE=1?")
   }
 
-  await cp(standalone, path.join(here, "app"), { recursive: true, dereference: true })
+  await cp(standalone, runtimeDir, { recursive: true, dereference: true })
   await cp(
     path.join(buildDir, ".next", "static"),
-    path.join(here, "app", ".next", "static"),
+    path.join(runtimeDir, ".next", "static"),
     { recursive: true },
   )
-  await cp(path.join(buildDir, "public"), path.join(here, "app", "public"), {
+  await cp(path.join(buildDir, "public"), path.join(runtimeDir, "public"), {
     recursive: true,
   })
+
+  if (!(await exists(path.join(runtimeDir, "server.js")))) {
+    throw new Error("runtime/server.js missing after assembly")
+  }
 
   console.log("[prepare] done")
 }

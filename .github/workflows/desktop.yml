@@ -75,10 +75,10 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
-      # `extraResources` puts app/ and build/ straight under resources/, so the
-      # packaged layout is resources/{app,build} and not resources/app/app.
+      # `extraResources` copies runtime/ verbatim, so the packaged layout is
+      # resources/runtime/{server.js,demo-api.cjs,...}.
       - name: Smoke test the packaged app
-        run: node desktop/smoke.mjs --root desktop/release/win-unpacked/resources
+        run: node desktop/smoke.mjs --root desktop/release/win-unpacked/resources/runtime
 
       - name: Report a failed build on the pull request
         if: failure()

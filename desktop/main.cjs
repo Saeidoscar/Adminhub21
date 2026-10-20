@@ -18,12 +18,12 @@ const WEB_PORT = Number(process.env.ADMINHUB_WEB_PORT ?? 41730)
 const API_PORT = Number(process.env.ADMINHUB_API_PORT ?? 41731)
 const WEB_URL = `http://127.0.0.1:${WEB_PORT}`
 
-// Packaged builds put `app/` and `build/` in `resources/` (electron-builder's
-// extraResources copies them verbatim); `npm start` runs them from this folder.
+// Packaged builds put `runtime/` in `resources/` (electron-builder's
+// extraResources copies it verbatim); `npm start` runs it from this folder.
 const ROOT = app.isPackaged ? process.resourcesPath : __dirname
-const APP_DIR = path.join(ROOT, "app")
-const NEXT_SERVER = path.join(APP_DIR, "server.js")
-const DEMO_API = path.join(ROOT, "build", "demo-api.cjs")
+const RUNTIME_DIR = path.join(ROOT, "runtime")
+const NEXT_SERVER = path.join(RUNTIME_DIR, "server.js")
+const DEMO_API = path.join(RUNTIME_DIR, "demo-api.cjs")
 
 /** @type {import('node:child_process').ChildProcess[]} */
 const children = []

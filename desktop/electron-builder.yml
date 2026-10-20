@@ -14,14 +14,12 @@ files:
   - main.cjs
   - package.json
 
-# The Next runtime and the demo API are copied verbatim into resources/.
+# The Next runtime and the demo API are copied verbatim into resources/runtime.
 # They must not go through `files`: electron-builder prunes node_modules there,
 # and the standalone Next server needs its nested node_modules intact.
 extraResources:
-  - from: app
-    to: app
-  - from: build/demo-api.cjs
-    to: build/demo-api.cjs
+  - from: runtime
+    to: runtime
 
 win:
   target:

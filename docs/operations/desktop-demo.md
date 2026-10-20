@@ -68,7 +68,7 @@ pnpm install
 cd desktop
 npm install
 
-node prepare.mjs          # Next standalone + باندل API + مونتاژ app/
+node prepare.mjs          # Next standalone + باندل API + مونتاژ runtime/
 node smoke.mjs            # آزمون دود روی همان خروجی
 npx electron-builder --win --publish never
 ```
@@ -85,8 +85,8 @@ node smoke.mjs     # سرو می‌کند، تست می‌کند، می‌بند
 یا دستی:
 
 ```bash
-node build/demo-api.cjs &
-PORT=41730 HOSTNAME=127.0.0.1 node app/apps/web/server.js
+node runtime/demo-api.cjs &
+PORT=41730 HOSTNAME=127.0.0.1 node runtime/server.js
 # → http://127.0.0.1:41730
 ```
 
@@ -95,12 +95,11 @@ PORT=41730 HOSTNAME=127.0.0.1 node app/apps/web/server.js
 ```
 desktop/
 ├── main.cjs              پوسته‌ی Electron؛ دو فرزند را بالا می‌آورد و می‌بندد
-├── prepare.mjs           build → باندل API → مونتاژ app/
+├── prepare.mjs           build → باندل API → مونتاژ runtime/
 ├── smoke.mjs             آزمون دود روی خروجی (همان چیزی که CI اجرا می‌کند)
 ├── electron-builder.yml  NSIS + portable
-├── build/icon.ico        آیکن برنامه
-├── build/demo-api.cjs    (تولیدی)
-└── app/                  (تولیدی) standalone Next + static + public
+├── assets/icon.ico       آیکن برنامه (buildResources)
+└── runtime/              (تولیدی) standalone Next + static + public + demo-api.cjs
 ```
 
 **چرا `asar: false`؟** پوسته باید دو پروسه‌ی طولانی‌عمر را از فایل روی دیسک
