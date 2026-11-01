@@ -1,0 +1,71 @@
+name: Desktop demo
+
+# Builds the Windows demo installers. Kept separate from `ci.yml` because the
+# Electron toolchain is ~300 MB and only matters when a release is cut.
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "desktop-v*"
+
+permissions:
+  contents: read
+
+jobs:
+  windows:
+    name: Windows · installer
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: "10"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+
+      - name: Install workspace deps
+        run: pnpm install
+
+      - name: Install desktop deps
+        working-directory: apps/desktop
+        run: npm install --no-audit --no-fund
+
+      - name: Typecheck desktop server
+        run: pnpm typecheck:desktop
+
+      - name: Build renderer
+        run: pnpm build
+
+      - name: Bundle local server
+        working-directory: apps/desktop
+        run: node scripts/bundle-server.mjs
+
+      - name: Sync renderer
+        working-directory: apps/desktop
+        run: node scripts/sync-renderer.mjs
+
+      - name: Package installer + portable exe
+        working-directory: apps/desktop
+        run: npx electron-builder --win --publish never
+        env:
+          # Unsigned builds; set these repository secrets to sign.
+          CSC_LINK: ${{ secrets.CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: adminhub21-desktop-windows
+          path: |
+            apps/desktop/release/*.exe
+            apps/desktop/release/*.blockmap
+          if-no-files-found: error
+          retention-days: 14

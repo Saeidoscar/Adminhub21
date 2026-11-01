@@ -1,0 +1,26 @@
+{
+  "name": "@adminhub/desktop",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AdminHub21 desktop demo — offline marketplace walkthrough with a live MCP chat bar",
+  "license": "UNLICENSED",
+  "author": "AdminHub21",
+  "type": "module",
+  "main": "electron/main.mjs",
+  "scripts": {
+    "renderer": "pnpm --dir ../.. build",
+    "server": "node scripts/bundle-server.mjs",
+    "sync": "node scripts/sync-renderer.mjs",
+    "prepare:app": "npm run renderer && npm run server && npm run sync",
+    "start": "npm run prepare:app && electron .",
+    "dist": "npm run prepare:app && electron-builder --win",
+    "dist:portable": "npm run prepare:app && electron-builder --win portable",
+    "pack": "npm run prepare:app && electron-builder --dir"
+  },
+  "devDependencies": {
+    "electron": "33.4.11",
+    "electron-builder": "25.1.8",
+    "esbuild": "0.24.2"
+  },
+  "productName": "AdminHub21 Demo"
+}

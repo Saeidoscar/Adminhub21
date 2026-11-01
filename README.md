@@ -98,7 +98,7 @@ A five-step wizard (Parties → Scope → Payment → Terms → Review) produces
 
 ### AI assistant
 
-An MCP-connected chat interface provides hiring intelligence for employers and career guidance for admins. It supports multiple model providers and conversation management; completions run through `ProcessAiRequest` on the AI queues.
+An MCP-connected chat bar (available on every screen via `Ctrl+K`) provides hiring intelligence for employers and career guidance for admins. It supports multiple model providers and conversation management; completions run through `ProcessAiRequest` on the AI queues.
 
 Providers are resolved by `AIProviderFactory`: `openai`, `anthropic`, `openrouter`, plus `layercloud` — a cheap
 OpenAI-compatible gateway kept strictly as an opt-in **training-circle route** (`LAYERCLOUD_ENABLED=false` by
@@ -114,6 +114,20 @@ Super admins manage users, moderate stories/blogs/comments, triage support ticke
 ### Mobile
 
 The web shell is wrapped with Capacitor for Android. The UI is responsive by default, with a dedicated mobile topbar and collapsible sidebar.
+
+### Desktop demo (Windows .exe)
+
+A self-contained build of this UI — offline dataset, local server, and an MCP chat bar wired to the same
+free-tier models as the API — ships as a Windows installer and a portable single-file exe:
+
+```bash
+pnpm desktop:install   # electron + electron-builder, once
+pnpm desktop:dist      # → apps/desktop/release/AdminHub21-Demo-1.0.0-{setup,portable}.exe
+pnpm dev:demo          # or run the same app in a browser at :8443
+```
+
+Full build, packaging and security notes: [`docs/desktop/README.md`](docs/desktop/README.md).
+A `Desktop demo` workflow builds the installers on a Windows runner (manual dispatch or a `desktop-v*` tag).
 
 ## Prerequisites
 

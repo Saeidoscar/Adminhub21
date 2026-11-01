@@ -19,3 +19,10 @@ test-results/
 .phpunit.cache/
 coverage/
 coverage.xml
+
+# Desktop demo build output (generated: renderer copy, server bundle, installers)
+apps/desktop/renderer/
+apps/desktop/build/
+apps/desktop/release/
+apps/desktop/node_modules/
+.cache/desktop-demo/

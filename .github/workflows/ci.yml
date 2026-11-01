@@ -58,6 +58,11 @@ jobs:
 
       # The workspace (Vite) and the public surface (Next.js) are separate
       # builds; a 1.0 is only shippable when both compile.
+      # The desktop shell's local server is TypeScript too; it has its own
+      # tsconfig because it is excluded from the pnpm workspace.
+      - name: Typecheck desktop server
+        run: pnpm typecheck:desktop
+
       - name: Build workspace app
         run: pnpm build
 

@@ -1,3 +1,7 @@
 packages:
   - "apps/*"
   - "packages/*"
+  # The desktop shell keeps its own npm install (electron + electron-builder are
+  # ~300 MB). Excluding it keeps `pnpm install` in CI fast and lets the Windows
+  # installer build on its own runner. See docs/desktop/README.md.
+  - "!apps/desktop"
