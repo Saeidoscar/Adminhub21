@@ -6,9 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\AiConversation;
 use App\Models\AiMessage;
 use App\Models\AiModel;
+use App\Services\Ai\AIProviderFactory;
 use App\Services\Ai\AiService;
+use App\Services\Ai\Guardrails\TrialGuard;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class AiController extends Controller
 {
@@ -21,6 +24,27 @@ class AiController extends Controller
         $models = AiModel::query()->get();
 
         return response()->json(['models' => $models]);
+    }
+
+    /**
+     * Which providers this deployment can route to, plus the live state of the
+     * LayerCloud training-circle fence. Deliberately reports counts and flags
+     * only — never the API key or any prompt content.
+     */
+    public function providers(Request $request, TrialGuard $guard): JsonResponse
+    {
+        $layercloud = [
+            'enabled' => (bool) config('services.layercloud.enabled', false),
+            'trial_only' => (bool) config('services.layercloud.trial_only', true),
+            'default_model' => config('services.layercloud.default_model'),
+            'free_models' => $guard->allowedModels(),
+            'budget' => $guard->snapshot(),
+        ];
+
+        return response()->json([
+            'providers' => AIProviderFactory::supported(),
+            'layercloud' => $layercloud,
+        ]);
     }
 
     public function showConversation(Request $request, AiConversation $conversation): JsonResponse
@@ -87,7 +111,7 @@ class AiController extends Controller
         $request->validate([
             'text' => ['required', 'string'],
             'model_id' => ['nullable', 'integer', 'exists:ai_models,id'],
-            'provider' => ['nullable', 'string', 'in:openai,anthropic,openrouter'],
+            'provider' => ['nullable', 'string', Rule::in(AIProviderFactory::supported())],
         ]);
 
         $result = $this->aiService->analyze($request->text, [

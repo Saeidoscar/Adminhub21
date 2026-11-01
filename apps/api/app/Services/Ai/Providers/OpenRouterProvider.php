@@ -4,43 +4,24 @@ namespace App\Services\Ai\Providers;
 
 use GuzzleHttp\Client;
 
-class OpenRouterProvider implements AIProviderInterface
+/**
+ * OpenRouter relay. Used as the fallback when a first-choice provider fails;
+ * the attribution headers are what OpenRouter shows in its activity console.
+ */
+class OpenRouterProvider extends OpenAICompatibleProvider
 {
-    public function __construct(private readonly Client $httpClient, private readonly string $apiKey) {}
-
-    public function chat(array $messages, array $options = []): array
+    public function __construct(Client $httpClient, string $apiKey)
     {
-        $response = $this->httpClient->post('https://openrouter.ai/api/v1/chat/completions', [
-            'headers' => [
-                'Authorization' => 'Bearer ' . $this->apiKey,
-                'Content-Type' => 'application/json',
-                'HTTP-Referer' => 'https://adminhub21.com',
+        parent::__construct(
+            httpClient: $httpClient,
+            apiKey: $apiKey,
+            baseUrl: 'https://openrouter.ai/api/v1',
+            defaultModel: 'openai/gpt-4o-mini',
+            providerName: 'openrouter',
+            extraHeaders: [
+                'HTTP-Referer' => (string) config('app.url', 'https://adminhub21.com'),
                 'X-Title' => 'AdminHub21',
             ],
-            'json' => array_merge([
-                'model' => 'openai/gpt-4o-mini',
-                'messages' => $messages,
-            ], $options),
-        ]);
-
-        $data = json_decode($response->getBody()->getContents(), true);
-
-        return [
-            'content' => $data['choices'][0]['message']['content'] ?? '',
-            'usage' => [
-                'prompt_tokens' => $data['usage']['prompt_tokens'] ?? 0,
-                'completion_tokens' => $data['usage']['completion_tokens'] ?? 0,
-            ],
-            'provider' => 'openrouter',
-            'model_code' => $data['model'] ?? 'openai/gpt-4o-mini',
-        ];
-    }
-
-    public function analyze(string $text, array $options = []): array
-    {
-        return $this->chat([
-            ['role' => 'system', 'content' => 'You are a helpful assistant. Analyze the following text and provide insights.'],
-            ['role' => 'user', 'content' => $text],
-        ], $options);
+        );
     }
 }
