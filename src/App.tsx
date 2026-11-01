@@ -27,6 +27,7 @@ import EmployerDashboard from "./components/dashboard/EmployerDashboard"
 import AdminDashboard from "./components/dashboard/AdminDashboard"
 import Marketplace from "./pages/Marketplace"
 import { DemoRoleSwitcher } from "./components/demo/DemoRoleSwitcher"
+import { McpChatBar } from "./components/mcp/McpChatBar"
 import { isDemoMode } from "./lib/demo-mode"
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -522,6 +523,10 @@ export default function App() {
               />
             </Routes>
           </div>
+
+          {/* The MCP chat bar floats over every screen; it is the same bundle
+              in the browser demo and in the packaged desktop app. */}
+          <McpChatBar lang={lang} role={role} />
 
           {isDemoMode && <DemoRoleSwitcher role={role} lang={lang} />}
         </div>

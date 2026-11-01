@@ -1,0 +1,54 @@
+appId: ir.adminhub21.demo
+productName: AdminHub21 Demo
+copyright: Copyright © 2026 AdminHub21
+
+directories:
+  output: release
+  # `build/` holds the staged icon.ico / icon.png (copied from assets/ by
+  # scripts/bundle-server.mjs), which is where electron-builder looks by default.
+  buildResources: build
+
+# Only the shell, the bundled server and the renderer ship. No node_modules:
+# the server bundle is self-contained and esbuild inlines the demo dataset.
+files:
+  - electron/**/*
+  - build/server.cjs
+  - package.json
+
+extraResources:
+  - from: renderer
+    to: renderer
+
+asar: true
+compression: maximum
+
+win:
+  target:
+    - target: nsis
+      arch: [x64]
+    - target: portable
+      arch: [x64]
+  artifactName: AdminHub21-Demo-${version}-setup.${ext}
+  # Icon and version metadata are stamped in, but the binaries are unsigned.
+  # SmartScreen will warn on first run until a code-signing certificate is set
+  # via CSC_LINK / CSC_KEY_PASSWORD. Set signAndEditExecutable: false if the
+  # build runs on a machine where rcedit cannot write to the exe.
+  signAndEditExecutable: true
+
+nsis:
+  oneClick: false
+  perMachine: false
+  allowElevation: true
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: AdminHub21 Demo
+  uninstallDisplayName: AdminHub21 Demo
+  deleteAppDataOnUninstall: false
+
+portable:
+  artifactName: AdminHub21-Demo-${version}-portable.${ext}
+
+linux:
+  target: [AppImage]
+  category: Office

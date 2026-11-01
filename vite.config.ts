@@ -5,6 +5,7 @@ import path from "node:path"
 
 import siteConfiguration from "./.figma/make/site.json"
 import { demoApiPlugin } from "./dev/demo-api-plugin"
+import { mcpApiPlugin } from "./dev/mcp-api-plugin"
 
 // Vite config — https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
@@ -24,7 +25,8 @@ export default defineConfig(({ mode }) => {
     plugins: [
       react(),
       tailwindcss(),
-      ...(isDemo ? [demoApiPlugin()] : []),
+      // MCP/AI endpoints first: the demo plugin answers the rest of /api.
+      ...(isDemo ? [mcpApiPlugin(), demoApiPlugin()] : []),
       figmaSiteConfiguration(siteConfiguration),
       figmaErrorOverlayReplay(),
       figmaReactRefreshBoundaryFallback(),

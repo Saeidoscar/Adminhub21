@@ -34,6 +34,20 @@ export function Topbar({
         <h1 className="text-sm font-bold text-text">{pageTitle}</h1>
       </div>
       <div className="flex items-center gap-3">
+        <button
+          type="button"
+          onClick={() => window.dispatchEvent(new CustomEvent("adminhub:mcp-open"))}
+          className="hidden xl:flex items-center gap-2 rounded-lg border border-border bg-surface2 px-2.5 py-1.5 text-xs font-medium text-muted transition hover:border-primary/30 hover:text-navy"
+          title={lang === "fa" ? "دستیار MCP (Ctrl+K)" : "MCP assistant (Ctrl+K)"}
+        >
+          <Icon name="search" size={13} />
+          <span className="max-w-[150px] truncate">
+            {lang === "fa" ? "از دستیار بپرس…" : "Ask the assistant…"}
+          </span>
+          <span className="rounded border border-border bg-card px-1 py-0.5 font-mono text-[9px] text-muted">
+            {lang === "fa" ? "Ctrl K" : "⌘K"}
+          </span>
+        </button>
         {children}
         {fontSize && onChangeFontSize && (
           <div className="flex items-center gap-1">
