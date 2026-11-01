@@ -27,15 +27,19 @@ apps/desktop/
 
 ## 1. Get the .exe
 
-**Option A — download it (no toolchain needed).** Run the `Desktop demo` workflow on GitHub
-(*Actions → Desktop demo → Run workflow*). It builds on `windows-latest` and attaches both exes to the run:
+**Option A — download it (no toolchain needed).** Take the latest release:
+
+<https://github.com/Saeidoscar/Adminhub21/releases/latest>
 
 ```
-adminhub21-desktop-windows → AdminHub21-Demo-1.0.0-setup.exe
-                             AdminHub21-Demo-1.0.0-portable.exe
+AdminHub21-Demo-1.0.0-setup.exe       installer, per-user, no admin prompt
+AdminHub21-Demo-1.0.0-portable.exe    single file, double-click, done
+SHA256SUMS.txt                        verify the download (§7)
 ```
 
-The portable one is a single file: download, double-click, done.
+Pushing a `desktop-v*` tag builds on `windows-latest` and publishes those three files to a release
+automatically. To build without tagging, run the workflow by hand (*Actions → Desktop demo → Run workflow*);
+the same files then arrive as the `adminhub21-desktop-windows` artifact, which expires after 14 days.
 
 **Option B — build it yourself.**
 

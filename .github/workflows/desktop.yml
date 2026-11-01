@@ -9,7 +9,7 @@ on:
       - "desktop-v*"
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   windows:
@@ -100,3 +100,47 @@ jobs:
             apps/desktop/release/SHA256SUMS.txt
           if-no-files-found: error
           retention-days: 14
+
+      # A tag push is a release. Publishing here means the download link is the
+      # release page, not an expiring artifact zip — the binaries, their blockmaps
+      # and SHA256SUMS.txt all land next to each other in one place.
+      - name: Publish GitHub release
+        if: startsWith(github.ref, 'refs/tags/desktop-v')
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        working-directory: apps/desktop/release
+        run: |
+          cat > "$RUNNER_TEMP/notes.md" <<'EOF'
+          Windows demo build of AdminHub21. Opens straight into the assistant.
+
+          **Unsigned.** Windows SmartScreen will warn on first launch — see
+          [docs/desktop/README.md §7](https://github.com/Saeidoscar/Adminhub21/blob/main/docs/desktop/README.md#7-signing)
+          for why, how to verify the download, and how to sign it.
+
+          Verify before running:
+
+          ```bash
+          sha256sum -c SHA256SUMS.txt
+          ```
+
+          `-setup.exe` installs under your user profile; `-portable.exe` runs without installing.
+          Both carry the same 12-tool MCP registry and talk only to `127.0.0.1`.
+          EOF
+
+          # Only hand gh the files that actually exist, so a build without
+          # blockmaps still publishes.
+          files=()
+          for f in ./*-setup.exe ./*-portable.exe ./*.blockmap ./SHA256SUMS.txt; do
+            [ -e "$f" ] && files+=("$f")
+          done
+
+          printf 'publishing %s with:\n' "$TAG"
+          printf '  %s\n' "${files[@]}"
+
+          gh release create "$TAG" \
+            --title "AdminHub21 Desktop 1.0.0 · assistant home screen" \
+            --notes-file "$RUNNER_TEMP/notes.md" \
+            --verify-tag \
+            "${files[@]}"
