@@ -63,6 +63,9 @@ type CopyShape = {
   demoNote: string
   errorTitle: string
   clearConfirm: string
+  homeGreeting: string
+  homeIntro: string
+  back: string
 }
 
 const COPY: Record<"en" | "fa", CopyShape> = {
@@ -123,6 +126,10 @@ const COPY: Record<"en" | "fa", CopyShape> = {
     demoNote: "Answers come from local demo data. Add a key in Settings for a live model.",
     errorTitle: "Something went wrong",
     clearConfirm: "Clear the whole thread?",
+    homeGreeting: "What can I get done for you?",
+    homeIntro:
+      "I can search the marketplace, compare packages, price a service, draft a brief or find open tickets — answering from your own data.",
+    back: "Back to the dashboard",
   },
   fa: {
     launcher: "از AdminHub بپرس",
@@ -178,6 +185,10 @@ const COPY: Record<"en" | "fa", CopyShape> = {
     demoNote: "پاسخ‌ها از دادهٔ دموی محلی ساخته می‌شوند. برای مدل زنده در تنظیمات کلید وارد کنید.",
     errorTitle: "مشکلی پیش آمد",
     clearConfirm: "کل گفتگو پاک شود؟",
+    homeGreeting: "چه کاری برایتان انجام بدهم؟",
+    homeIntro:
+      "می‌توانم بازار را جستجو کنم، پکیج‌ها را مقایسه کنم، قیمت پیشنهاد بدهم، طرح پروژه بنویسم یا تیکت‌های باز را نشان بدهم — همه بر پایه دادهٔ خودتان.",
+    back: "بازگشت به داشبورد",
   },
 }
 
@@ -190,10 +201,28 @@ const money = (value: number | null | undefined) => {
 
 const compact = (value: number) => (value >= 1000 ? `${(value / 1000).toFixed(1)}k` : String(value))
 
-export function McpChatBar({ lang, role }: { lang: Lang; role: string }) {
+/**
+ * The conversation surface, shared by the floating panel and the home screen.
+ *
+ * `variant="floating"` is the Ctrl+K overlay; `variant="page"` is the full
+ * height home route. Both drive the same transport and the same MCP tools —
+ * only the chrome differs.
+ */
+export function ChatSurface({
+  lang,
+  role,
+  variant = "floating",
+  startInSettings = false,
+  onClose,
+}: {
+  lang: Lang
+  role: string
+  variant?: "floating" | "page"
+  startInSettings?: boolean
+  onClose?: () => void
+}) {
   const copy = COPY[lang]
-  const [open, setOpen] = useState(false)
-  const [showSettings, setShowSettings] = useState(false)
+  const [showSettings, setShowSettings] = useState(startInSettings)
   const [draft, setDraft] = useState("")
 
   const normalisedRole: Role = role === "admin" || role === "super_admin" ? "admin" : "employer"
@@ -205,15 +234,7 @@ export function McpChatBar({ lang, role }: { lang: Lang; role: string }) {
   const previousPrompts = useRef<string[]>([])
   const historyIndex = useRef(-1)
 
-  const openPanel = useCallback(() => {
-    setOpen(true)
-    window.setTimeout(() => inputRef.current?.focus(), 60)
-  }, [])
-
-  const closePanel = useCallback(() => {
-    setOpen(false)
-    setShowSettings(false)
-  }, [])
+  const isPage = variant === "page"
 
   const submit = useCallback(() => {
     const text = draft.trim()
@@ -233,55 +254,30 @@ export function McpChatBar({ lang, role }: { lang: Lang; role: string }) {
     [busy, send],
   )
 
-  // Global shortcut + menu commands from the Electron main process.
+  // On the home screen Ctrl+K means "put the cursor in the box", not "open the
+  // panel" — the panel is already open.
   useEffect(() => {
+    if (!isPage) return
+
     const onKeyDown = (event: KeyboardEvent) => {
       const mod = event.metaKey || event.ctrlKey
       if (mod && event.key.toLowerCase() === "k") {
         event.preventDefault()
-        setOpen((current) => {
-          const next = !current
-          if (next) window.setTimeout(() => inputRef.current?.focus(), 60)
-          return next
-        })
+        inputRef.current?.focus()
       }
-      if (event.key === "Escape" && open) {
-        event.preventDefault()
-        closePanel()
-      }
+      if (event.key === "Escape" && showSettings) setShowSettings(false)
     }
 
     window.addEventListener("keydown", onKeyDown)
     return () => window.removeEventListener("keydown", onKeyDown)
-  }, [closePanel, open])
-
-  // Any screen can open the panel (the topbar pill dispatches this).
-  useEffect(() => {
-    const open = () => openPanel()
-    window.addEventListener("adminhub:mcp-open", open)
-    return () => window.removeEventListener("adminhub:mcp-open", open)
-  }, [openPanel])
-
-  useEffect(() => {
-    const bridge = desktopBridge()
-    if (!bridge) return
-
-    return bridge.onCommand((command) => {
-      if (command === "chat") openPanel()
-      if (command === "settings") {
-        setOpen(true)
-        setShowSettings(true)
-      }
-    })
-  }, [openPanel])
+  }, [isPage, showSettings])
 
   // Keep the newest turn in view, including while it streams.
   useEffect(() => {
-    if (!open) return
     const node = scrollRef.current
     if (!node) return
     node.scrollTo({ top: node.scrollHeight, behavior: turns.length > 1 ? "smooth" : "auto" })
-  }, [open, turns, statusText])
+  }, [turns, statusText])
 
   // Autosize the composer between one and five lines.
   useEffect(() => {
@@ -289,7 +285,7 @@ export function McpChatBar({ lang, role }: { lang: Lang; role: string }) {
     if (!node) return
     node.style.height = "auto"
     node.style.height = `${Math.min(node.scrollHeight, 132)}px`
-  }, [draft, open])
+  }, [draft])
 
   const lastPrompt = useMemo(() => {
     const lastUser = [...turns].reverse().find((turn) => turn.role === "user")
@@ -315,13 +311,306 @@ export function McpChatBar({ lang, role }: { lang: Lang; role: string }) {
   const budgetPct =
     budget && budget.limit > 0 ? Math.min(100, (budget.used / budget.limit) * 100) : 0
   const live = status?.configured ?? false
+  const empty = turns.length === 0
+
+  return (
+    <div className="flex min-h-0 flex-1 flex-col">
+      {!isPage && (
+        <header className="flex shrink-0 items-center gap-3 border-b border-border bg-card px-4 py-3">
+          <span className="mcp-orb flex h-9 w-9 items-center justify-center rounded-xl text-white">
+            <Icon name="ai" size={18} />
+          </span>
+
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2">
+              <h2 className="truncate text-sm font-bold">{copy.title}</h2>
+              <SourceBadge live={live} copy={copy} />
+            </div>
+            <p className="truncate text-[11px] text-muted">
+              {status?.configured
+                ? `${status.models.find((entry) => entry.id === model)?.name ?? model} · ${copy.subtitle}`
+                : copy.demoNote}
+            </p>
+          </div>
+
+          {status && status.models.length > 0 && (
+            <ModelPicker
+              models={status.models}
+              value={model}
+              onChange={setModel}
+              label={copy.model}
+            />
+          )}
+
+          <button
+            type="button"
+            onClick={() => setShowSettings(true)}
+            className="rounded-lg p-2 text-muted transition hover:bg-surface2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            aria-label={copy.settings}
+            title={copy.settings}
+          >
+            <Icon name="settings" size={17} />
+          </button>
+
+          {onClose && (
+            <button
+              type="button"
+              onClick={onClose}
+              className="rounded-lg p-2 text-muted transition hover:bg-surface2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+              aria-label={copy.close}
+              title={copy.close}
+            >
+              <Icon name="x" size={17} />
+            </button>
+          )}
+        </header>
+      )}
+
+      {isPage && (
+        <div className="hidden shrink-0 items-center gap-3 border-b border-border bg-card/80 px-6 py-2.5 backdrop-blur lg:flex">
+          <span className="min-w-0 flex-1 truncate text-[11px] text-muted">
+            {status?.configured
+              ? `${copy.subtitle} · ${status.models.find((entry) => entry.id === model)?.name ?? model}`
+              : copy.demoNote}
+          </span>
+
+          {status && status.models.length > 0 && (
+            <ModelPicker
+              models={status.models}
+              value={model}
+              onChange={setModel}
+              label={copy.model}
+            />
+          )}
+
+          <button
+            type="button"
+            onClick={() => setShowSettings(true)}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-surface px-2.5 py-1.5 text-[11px] font-medium text-muted transition hover:bg-surface2 hover:text-foreground"
+          >
+            <Icon name="settings" size={13} />
+            {copy.settings}
+          </button>
+
+          {turns.length > 0 && (
+            <button
+              type="button"
+              onClick={() => {
+                if (window.confirm(copy.clearConfirm)) clear()
+              }}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-surface px-2.5 py-1.5 text-[11px] font-medium text-muted transition hover:bg-surface2 hover:text-foreground"
+            >
+              <Icon name="trash" size={13} />
+              {copy.clear}
+            </button>
+          )}
+        </div>
+      )}
+
+      <div className="relative flex min-h-0 flex-1">
+        <div
+          ref={scrollRef}
+          className={`mcp-scroll flex-1 overflow-y-auto ${isPage ? "px-4 py-6" : "px-4 py-4"}`}
+          aria-live="polite"
+          aria-busy={busy}
+        >
+          {empty ? (
+            <EmptyState
+              copy={copy}
+              variant={variant}
+              live={live}
+              onPick={(prompt) => void send({ text: prompt })}
+            />
+          ) : (
+            <div
+              className={`mx-auto flex w-full flex-col gap-5 ${isPage ? "max-w-[760px]" : "max-w-[720px]"}`}
+            >
+              {turns.map((turn, index) => (
+                <TurnView
+                  key={turn.id}
+                  turn={turn}
+                  copy={copy}
+                  lang={lang}
+                  streaming={busy && index === turns.length - 1 && turn.role === "assistant"}
+                  onRetry={() => retry(lastPrompt)}
+                />
+              ))}
+
+              {busy && !statusText && turns[turns.length - 1]?.status === "pending" && (
+                <div className="flex items-center gap-2 text-xs text-muted">
+                  <span className="flex gap-1">
+                    <span className="typing-dot" />
+                    <span className="typing-dot" />
+                    <span className="typing-dot" />
+                  </span>
+                  {copy.thinking}
+                </div>
+              )}
+
+              {statusText && <p className="text-xs text-muted">{statusText}</p>}
+            </div>
+          )}
+        </div>
+
+        {showSettings && (
+          <SettingsSheet
+            copy={copy}
+            status={status}
+            onClose={() => setShowSettings(false)}
+            onRefresh={refreshStatus}
+          />
+        )}
+      </div>
+
+      <footer
+        className={`shrink-0 border-t border-border bg-card ${isPage ? "px-4 pb-4 pt-3" : "px-4 pb-3 pt-2.5"}`}
+      >
+        <div className={`mx-auto w-full ${isPage ? "max-w-[760px]" : "max-w-[720px]"}`}>
+          <div className="flex items-end gap-2 rounded-xl border border-border bg-surface px-3 py-2 transition focus-within:border-primary/40 focus-within:bg-card">
+            <textarea
+              ref={inputRef}
+              value={draft}
+              rows={1}
+              onChange={(event) => setDraft(event.target.value)}
+              onKeyDown={handleDraftKeys}
+              placeholder={copy.placeholder}
+              className="mcp-input max-h-[132px] flex-1 resize-none bg-transparent py-1 text-sm leading-6 text-foreground outline-none placeholder:text-muted"
+              aria-label={copy.placeholder}
+              autoFocus={isPage}
+            />
+
+            {busy ? (
+              <button
+                type="button"
+                onClick={stop}
+                className="flex h-8 shrink-0 items-center gap-1.5 rounded-lg bg-rose/10 px-2.5 text-xs font-semibold text-rose transition hover:bg-rose/15"
+              >
+                <span className="h-2 w-2 rounded-[2px] bg-rose" />
+                {copy.stop}
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={submit}
+                disabled={draft.trim().length === 0}
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary text-white transition enabled:hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-35"
+                aria-label={copy.send}
+                title={copy.send}
+              >
+                <Icon name="send" size={15} className={lang === "fa" ? "-scale-x-100" : ""} />
+              </button>
+            )}
+          </div>
+
+          <div className="mt-2 flex items-center gap-3 text-[10.5px] text-muted">
+            <span className="hidden sm:inline">{copy.hint}</span>
+
+            {budget && (
+              <span className="ms-auto flex items-center gap-2" title={copy.budget}>
+                <span className="tabular-nums">
+                  {compact(budget.used)}/{compact(budget.limit)} {copy.tokens}
+                </span>
+                <span className="h-1 w-16 overflow-hidden rounded-full bg-surface2">
+                  <span
+                    className={`block h-full rounded-full transition-[width] duration-500 ${
+                      budgetPct > 85 ? "bg-rose" : budgetPct > 60 ? "bg-amber" : "bg-emerald"
+                    }`}
+                    style={{ width: `${Math.max(2, budgetPct)}%` }}
+                  />
+                </span>
+              </span>
+            )}
+
+            {!isPage && turns.length > 0 && (
+              <button
+                type="button"
+                onClick={() => {
+                  if (window.confirm(copy.clearConfirm)) clear()
+                }}
+                className="rounded px-1.5 py-0.5 transition hover:bg-surface2 hover:text-foreground"
+              >
+                {copy.clear}
+              </button>
+            )}
+          </div>
+        </div>
+      </footer>
+    </div>
+  )
+}
+
+/** Floating Ctrl+K panel. Thin wrapper around {@link ChatSurface}. */
+export function McpChatBar({ lang, role }: { lang: Lang; role: string }) {
+  const copy = COPY[lang]
+  const [open, setOpen] = useState(false)
+  const [openSettings, setOpenSettings] = useState(false)
+  const [live, setLive] = useState(false)
+
+  const openPanel = useCallback((settings = false) => {
+    setOpenSettings(settings)
+    setOpen(true)
+  }, [])
+
+  const closePanel = useCallback(() => {
+    setOpen(false)
+    setOpenSettings(false)
+  }, [])
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      const mod = event.metaKey || event.ctrlKey
+      if (mod && event.key.toLowerCase() === "k") {
+        event.preventDefault()
+        setOpen((current) => !current)
+      }
+      if (event.key === "Escape" && open) {
+        event.preventDefault()
+        closePanel()
+      }
+    }
+
+    window.addEventListener("keydown", onKeyDown)
+    return () => window.removeEventListener("keydown", onKeyDown)
+  }, [closePanel, open])
+
+  // Any screen can open the panel (the topbar pill dispatches this).
+  useEffect(() => {
+    const open = () => openPanel()
+    window.addEventListener("adminhub:mcp-open", open)
+    return () => window.removeEventListener("adminhub:mcp-open", open)
+  }, [openPanel])
+
+  useEffect(() => {
+    let cancelled = false
+
+    void fetch("/api/ai/status", { headers: { Accept: "application/json" } })
+      .then((response) => (response.ok ? response.json() : null))
+      .then((data: { configured?: boolean } | null) => {
+        if (!cancelled) setLive(Boolean(data?.configured))
+      })
+      .catch(() => undefined)
+
+    return () => {
+      cancelled = true
+    }
+  }, [open])
+
+  useEffect(() => {
+    const bridge = desktopBridge()
+    if (!bridge) return
+
+    return bridge.onCommand((command) => {
+      if (command === "chat") openPanel()
+      if (command === "settings") openPanel(true)
+    })
+  }, [openPanel])
 
   return (
     <>
       {!open && (
         <button
           type="button"
-          onClick={openPanel}
+          onClick={() => openPanel()}
           className="mcp-launcher group fixed bottom-5 left-1/2 z-40 flex -translate-x-1/2 items-center gap-2.5 rounded-full border border-border bg-card px-4 py-2.5 text-sm font-semibold text-foreground shadow-[0_10px_30px_-12px_rgba(15,23,42,0.45)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_40px_-14px_rgba(15,23,42,0.5)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
           aria-label={`${copy.launcher} (${copy.launcherHint})`}
         >
@@ -332,10 +621,7 @@ export function McpChatBar({ lang, role }: { lang: Lang; role: string }) {
           <span className="hidden items-center gap-1 rounded-md border border-border bg-surface2 px-1.5 py-0.5 text-[10px] font-medium text-muted sm:inline-flex">
             {lang === "fa" ? "Ctrl K" : "⌘K"}
           </span>
-          <span
-            className={`ml-0.5 h-1.5 w-1.5 rounded-full ${live ? "bg-emerald" : "bg-amber"}`}
-            title={live ? copy.live : copy.demo}
-          />
+          <span className={`ml-0.5 h-1.5 w-1.5 rounded-full ${live ? "bg-emerald" : "bg-amber"}`} />
         </button>
       )}
 
@@ -354,180 +640,12 @@ export function McpChatBar({ lang, role }: { lang: Lang; role: string }) {
             dir={lang === "fa" ? "rtl" : "ltr"}
             className="mcp-panel fixed bottom-4 left-1/2 z-50 flex h-[min(78vh,700px)] w-[min(940px,calc(100vw-1.5rem))] -translate-x-1/2 flex-col overflow-hidden rounded-2xl border border-border bg-card text-foreground shadow-[0_30px_80px_-24px_rgba(15,23,42,0.55)]"
           >
-            <header className="flex shrink-0 items-center gap-3 border-b border-border bg-card px-4 py-3">
-              <span className="mcp-orb flex h-9 w-9 items-center justify-center rounded-xl text-white">
-                <Icon name="ai" size={18} />
-              </span>
-
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2">
-                  <h2 className="truncate text-sm font-bold">{copy.title}</h2>
-                  <span
-                    className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${
-                      live ? "bg-emerald/10 text-emerald" : "bg-amber/10 text-amber"
-                    }`}
-                  >
-                    <span
-                      className={`h-1.5 w-1.5 rounded-full ${live ? "bg-emerald" : "bg-amber"}`}
-                    />
-                    {live ? copy.live : copy.demo}
-                  </span>
-                </div>
-                <p className="truncate text-[11px] text-muted">
-                  {status?.configured
-                    ? `${status.models.find((entry) => entry.id === model)?.name ?? model} · ${copy.subtitle}`
-                    : copy.demoNote}
-                </p>
-              </div>
-
-              {status && status.models.length > 0 && (
-                <ModelPicker
-                  models={status.models}
-                  value={model}
-                  onChange={setModel}
-                  label={copy.model}
-                />
-              )}
-
-              <button
-                type="button"
-                onClick={() => setShowSettings(true)}
-                className="rounded-lg p-2 text-muted transition hover:bg-surface2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-                aria-label={copy.settings}
-                title={copy.settings}
-              >
-                <Icon name="settings" size={17} />
-              </button>
-
-              <button
-                type="button"
-                onClick={closePanel}
-                className="rounded-lg p-2 text-muted transition hover:bg-surface2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-                aria-label={copy.close}
-                title={copy.close}
-              >
-                <Icon name="x" size={17} />
-              </button>
-            </header>
-
-            <div className="relative flex min-h-0 flex-1">
-              <div
-                ref={scrollRef}
-                className="mcp-scroll flex-1 overflow-y-auto px-4 py-4"
-                aria-live="polite"
-                aria-busy={busy}
-              >
-                {turns.length === 0 ? (
-                  <EmptyState copy={copy} onPick={(prompt) => void send({ text: prompt })} />
-                ) : (
-                  <div className="mx-auto flex max-w-[720px] flex-col gap-5">
-                    {turns.map((turn, index) => (
-                      <TurnView
-                        key={turn.id}
-                        turn={turn}
-                        copy={copy}
-                        lang={lang}
-                        streaming={busy && index === turns.length - 1 && turn.role === "assistant"}
-                        onRetry={() => retry(lastPrompt)}
-                      />
-                    ))}
-
-                    {busy && !statusText && turns[turns.length - 1]?.status === "pending" && (
-                      <div className="flex items-center gap-2 text-xs text-muted">
-                        <span className="flex gap-1">
-                          <span className="typing-dot" />
-                          <span className="typing-dot" />
-                          <span className="typing-dot" />
-                        </span>
-                        {copy.thinking}
-                      </div>
-                    )}
-
-                    {statusText && <p className="text-xs text-muted">{statusText}</p>}
-                  </div>
-                )}
-              </div>
-
-              {showSettings && (
-                <SettingsSheet
-                  copy={copy}
-                  status={status}
-                  onClose={() => setShowSettings(false)}
-                  onRefresh={refreshStatus}
-                />
-              )}
-            </div>
-
-            <footer className="shrink-0 border-t border-border bg-card px-4 pb-3 pt-2.5">
-              <div className="mx-auto max-w-[720px]">
-                <div className="flex items-end gap-2 rounded-xl border border-border bg-surface px-3 py-2 transition focus-within:border-primary/40 focus-within:bg-card">
-                  <textarea
-                    ref={inputRef}
-                    value={draft}
-                    rows={1}
-                    onChange={(event) => setDraft(event.target.value)}
-                    onKeyDown={handleDraftKeys}
-                    placeholder={copy.placeholder}
-                    className="mcp-input max-h-[132px] flex-1 resize-none bg-transparent py-1 text-sm leading-6 text-foreground outline-none placeholder:text-muted"
-                    aria-label={copy.placeholder}
-                  />
-
-                  {busy ? (
-                    <button
-                      type="button"
-                      onClick={stop}
-                      className="flex h-8 shrink-0 items-center gap-1.5 rounded-lg bg-rose/10 px-2.5 text-xs font-semibold text-rose transition hover:bg-rose/15"
-                    >
-                      <span className="h-2 w-2 rounded-[2px] bg-rose" />
-                      {copy.stop}
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={submit}
-                      disabled={draft.trim().length === 0}
-                      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary text-white transition enabled:hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-35"
-                      aria-label={copy.send}
-                      title={copy.send}
-                    >
-                      <Icon name="send" size={15} className={lang === "fa" ? "-scale-x-100" : ""} />
-                    </button>
-                  )}
-                </div>
-
-                <div className="mt-2 flex items-center gap-3 text-[10.5px] text-muted">
-                  <span className="hidden sm:inline">{copy.hint}</span>
-
-                  {budget && (
-                    <span className="ms-auto flex items-center gap-2" title={copy.budget}>
-                      <span className="tabular-nums">
-                        {compact(budget.used)}/{compact(budget.limit)} {copy.tokens}
-                      </span>
-                      <span className="h-1 w-16 overflow-hidden rounded-full bg-surface2">
-                        <span
-                          className={`block h-full rounded-full transition-[width] duration-500 ${
-                            budgetPct > 85 ? "bg-rose" : budgetPct > 60 ? "bg-amber" : "bg-emerald"
-                          }`}
-                          style={{ width: `${Math.max(2, budgetPct)}%` }}
-                        />
-                      </span>
-                    </span>
-                  )}
-
-                  {turns.length > 0 && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (window.confirm(copy.clearConfirm)) clear()
-                      }}
-                      className="rounded px-1.5 py-0.5 transition hover:bg-surface2 hover:text-foreground"
-                    >
-                      {copy.clear}
-                    </button>
-                  )}
-                </div>
-              </div>
-            </footer>
+            <ChatSurface
+              lang={lang}
+              role={role}
+              startInSettings={openSettings}
+              onClose={closePanel}
+            />
           </section>
         </>
       )}
@@ -539,7 +657,86 @@ export function McpChatBar({ lang, role }: { lang: Lang; role: string }) {
 
 type Copy = CopyShape
 
-function EmptyState({ copy, onPick }: { copy: Copy; onPick: (prompt: string) => void }) {
+function SourceBadge({ live, copy }: { live: boolean; copy: Copy }) {
+  return (
+    <span
+      className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+        live ? "bg-emerald/10 text-emerald" : "bg-amber/10 text-amber"
+      }`}
+    >
+      <span className={`h-1.5 w-1.5 rounded-full ${live ? "bg-emerald" : "bg-amber"}`} />
+      {live ? copy.live : copy.demo}
+    </span>
+  )
+}
+
+function EmptyState({
+  copy,
+  variant,
+  live,
+  onPick,
+}: {
+  copy: Copy
+  variant: "floating" | "page"
+  live: boolean
+  onPick: (prompt: string) => void
+}) {
+  if (variant === "page") {
+    return (
+      <div className="mx-auto flex h-full w-full max-w-[720px] flex-col items-center justify-center gap-6 py-10 text-center">
+        <div className="relative">
+          <span className="mcp-orb mcp-orb-lg flex h-16 w-16 items-center justify-center rounded-[22px] text-white">
+            <Icon name="ai" size={30} />
+          </span>
+          <span className="absolute -bottom-1 -end-1 flex h-5 w-5 items-center justify-center rounded-full border-2 border-card bg-emerald text-white">
+            <Icon name="check" size={11} />
+          </span>
+        </div>
+
+        <div className="space-y-2">
+          <h1 className="text-2xl font-extrabold tracking-tight text-foreground">
+            {copy.homeGreeting}
+          </h1>
+          <p className="mx-auto max-w-[480px] text-sm leading-6 text-muted">{copy.homeIntro}</p>
+        </div>
+
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-2.5 py-1 text-[10.5px] font-medium text-muted">
+          <SourceBadge live={live} copy={copy} />
+          {live ? copy.subtitle : copy.demoNote}
+        </span>
+
+        <div className="grid w-full gap-2.5 sm:grid-cols-2">
+          {copy.suggestions.map((suggestion, index) => (
+            <button
+              key={suggestion.label}
+              type="button"
+              onClick={() => onPick(suggestion.prompt)}
+              className="group flex items-center gap-3 rounded-xl border border-border bg-card px-3.5 py-3 text-start transition hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-[0_10px_24px_-16px_rgba(15,23,42,0.4)]"
+            >
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/8 text-primary transition group-hover:bg-primary group-hover:text-white">
+                <Icon
+                  name={["search", "compare", "chart", "tickets"][index] ?? "search"}
+                  size={14}
+                />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-xs font-semibold text-foreground">
+                  {suggestion.label}
+                </span>
+                <span className="block truncate text-[10.5px] text-muted">{suggestion.prompt}</span>
+              </span>
+              <Icon
+                name="chevronRight"
+                size={13}
+                className="shrink-0 text-muted rtl:-scale-x-100"
+              />
+            </button>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="mx-auto flex max-w-[640px] flex-col items-center gap-5 py-8 text-center">
       <span className="mcp-orb flex h-12 w-12 items-center justify-center rounded-2xl text-white">

@@ -100,13 +100,22 @@ Open the assistant (`Ctrl+K`) → gear icon → paste a LayerCloud API key → *
 Without a key, everything still works: the assistant routes the question to the right MCP tool and streams the
 answer from the local dataset, labelled **Demo** instead of **Live**.
 
-## 5. The chat bar
+## 5. The assistant is the home screen
+
+The app opens **straight into the conversation**: `/` renders the MCP assistant full height, with the composer,
+suggestion cards and the greeting. The dashboard moved to `/dashboard` and is one click away in the sidebar.
+
+The same surface is available as a floating panel on every other screen — identical transport, identical tools,
+only the chrome differs.
 
 | | |
 | --- | --- |
-| Open / close | `Ctrl+K`, the floating pill at the bottom, or the topbar "Ask the assistant…" button |
+| Home | `/` — full-height assistant |
+| Dashboard | `/dashboard` — the previous landing page |
+| Floating panel | `Ctrl+K` anywhere except `/`, the pill at the bottom, or the topbar "Ask the assistant…" button |
+| Focus the composer | `Ctrl+K` on `/` |
 | Send | `Enter` · newline `Shift+Enter` · previous prompts `↑` |
-| Settings | `Ctrl+,` or the gear icon |
+| Settings | the gear icon, or `Ctrl+,` from the desktop menu |
 | Stop | the stop button while a reply streams |
 
 Each assistant turn shows *how* it was produced: which MCP tool ran, how long it took, the exact JSON the tool
@@ -133,7 +142,83 @@ quote a number that is not on screen.
 | POST | `/api/ai/redact-check` | shows what the PII filter would strip |
 | — | everything else | the demo dataset (`dev/demo-api-handler.ts`) and the SPA |
 
-## 7. Security posture
+## 7. Signing
+
+The workflow ships **unsigned** binaries by default: the build succeeds, Windows warns once
+(*More info → Run anyway*), and a `SHA256SUMS.txt` is published next to each exe so a download can be verified.
+That is the intended state for a demo, not an oversight.
+
+### Verify a download
+
+```powershell
+Get-FileHash .\AdminHub21-Demo-1.0.0-portable.exe -Algorithm SHA256
+Get-AuthenticodeSignature .\AdminHub21-Demo-1.0.0-portable.exe | Format-List Status, SignerCertificate
+```
+
+`Status: NotSigned` is expected. Compare the hash with `SHA256SUMS.txt` from the same workflow run — the two
+artifacts are produced together, so a mismatch means the file was altered or truncated.
+
+### Which certificate gets rid of the warning
+
+| Option | Cost | Clears SmartScreen for other people? |
+| --- | --- | --- |
+| Unsigned | €0 | No |
+| Self-signed | €0 | **No** — only on machines where you install it as trusted |
+| Azure Trusted Signing | ~$10/month | Yes, once identity verification completes |
+| OV code-signing (DigiCert/Sectigo/SSL.com) | ~€250–400/yr | Yes, gradually, as reputation builds |
+| EV code-signing | ~€400–600/yr | Yes, immediately |
+
+Since 2023, OV/EV private keys may not live in a plain downloadable `.pfx`; CAs keep them in FIPS 140-2 hardware or
+a cloud service (DigiCert KeyLocker, SSL.com eSigner, Azure Trusted Signing). Those flows sign through
+`win.azureSignOptions` / KeyLocker options in `electron-builder.yml`, not `CSC_LINK`.
+
+CAs run KYC with restricted-party screening. For an Iranian-registered entity, expect a decline — which is why the
+default here is unsigned plus checksums.
+
+### Self-signed: for machines you control
+
+`scripts/sign-self-signed.ps1` creates the certificate, exports it, and puts the base64 for `CSC_LINK` on your
+clipboard.
+
+```powershell
+# 1. create + export (writes adminhub21-demo.pfx / .cer, prints CSC_LINK)
+.\scripts\sign-self-signed.ps1
+
+# 2. trust it on this machine (elevated; Root AND TrustedPublisher)
+.\scripts\sign-self-signed.ps1 -InstallTrust
+
+# 3. or sign an existing binary immediately
+.\scripts\sign-self-signed.ps1 -Sign ".\apps\desktop\release\AdminHub21 Demo.exe"
+```
+
+Then add the two repository secrets — **Settings → Secrets and variables → Actions → New repository secret**:
+
+| Secret | Value |
+| --- | --- |
+| `CSC_LINK` | the base64 string the script copies to your clipboard |
+| `CSC_KEY_PASSWORD` | the `.pfx` password you chose |
+
+`desktop.yml` already passes both to electron-builder, so the next run produces signed binaries. Locally, export
+both and run `pnpm desktop:dist`.
+
+Trust is per machine: `Import-Certificate` into `Cert:\LocalMachine\Root` **and**
+`Cert:\LocalMachine\TrustedPublisher` (or push both by GPO). Root alone is not enough — Authenticode checks the
+signer against TrustedPublisher.
+
+Two things that still bite after trusting the certificate:
+
+- **Mark-of-the-Web.** A browser download is tagged, so SmartScreen still blocks it on a trusted machine. Run
+  `Unblock-File .\AdminHub21-Demo-1.0.0-portable.exe`, or copy the file over a share/USB.
+- **Reputation is per certificate.** Even a paid OV certificate warns until enough installs accumulate. A
+  self-signed one never accrues reputation at all.
+
+### Release notes template
+
+> **Unsigned build.** Windows shows "Windows protected your PC" the first time you run this —
+> click *More info* → *Run anyway*. Verify your download against `SHA256SUMS.txt`:
+> `Get-FileHash .\AdminHub21-Demo-1.0.0-portable.exe -Algorithm SHA256`
+
+## 8. Security posture
 
 Applies to the packaged build:
 
@@ -147,7 +232,7 @@ Applies to the packaged build:
 - No telemetry, no analytics, no remote fonts — the build strips the Google Fonts `@import` from the CSS and falls
   back to `system-ui` (Segoe UI), so the app is fully offline.
 
-## 8. What this demo is not
+## 9. What this demo is not
 
 It is a **walkthrough build**: data lives in memory and resets on launch, there is no auth server, and nothing is
 written to Postgres. Contracts, invoices and payments are shown as UI only — the real flows stay in `apps/api`.

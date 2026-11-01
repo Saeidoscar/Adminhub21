@@ -2,6 +2,7 @@ export const fa = {
   brand: "ادمین‌هاب",
   tagline: "بازار کار متخصصان شبکه‌های اجتماعی و فروشگاه‌های آنلاین",
   nav: {
+    home: "دستیار",
     dashboard: "داشبورد",
     marketplace: "بازار کار",
     toolsRental: "اجاره ابزار",

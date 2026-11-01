@@ -26,3 +26,10 @@ apps/desktop/build/
 apps/desktop/release/
 apps/desktop/node_modules/
 .cache/desktop-demo/
+
+# Code-signing material — never commit a private key or its password.
+*.pfx
+*.p12
+*.cer
+*.key
+CSC_LINK.txt
