@@ -64,6 +64,15 @@ services:
       MAIL_PORT: 1025
       MAIL_ENCRYPTION: ""
       MEDIA_DISK: public
+      # LayerCloud trial route — values come from the gitignored root `.env`
+      # (compose interpolates `${...}` from it). Leave the key unset to keep
+      # the provider disabled. See docs/ai/layercloud-trial.md.
+      LAYERCLOUD_ENABLED: ${LAYERCLOUD_ENABLED:-false}
+      LAYERCLOUD_TRIAL_ONLY: ${LAYERCLOUD_TRIAL_ONLY:-true}
+      LAYERCLOUD_API_KEY: ${LAYERCLOUD_API_KEY:-}
+      LAYERCLOUD_DEFAULT_MODEL: ${LAYERCLOUD_DEFAULT_MODEL:-zai/glm-5.3-flash}
+      LAYERCLOUD_DAILY_TOKEN_BUDGET: ${LAYERCLOUD_DAILY_TOKEN_BUDGET:-200000}
+      LAYERCLOUD_MAX_OUTPUT_TOKENS: ${LAYERCLOUD_MAX_OUTPUT_TOKENS:-1024}
     volumes:
       - ./apps/api:/var/www/html
       - /var/www/html/vendor
@@ -115,6 +124,14 @@ services:
       CACHE_DRIVER: redis
       QUEUE_CONNECTION: redis
       SESSION_DRIVER: redis
+      # ProcessAiRequest runs here, so the trial route needs the same values as
+      # the api service (compose reads them from the gitignored root `.env`).
+      LAYERCLOUD_ENABLED: ${LAYERCLOUD_ENABLED:-false}
+      LAYERCLOUD_TRIAL_ONLY: ${LAYERCLOUD_TRIAL_ONLY:-true}
+      LAYERCLOUD_API_KEY: ${LAYERCLOUD_API_KEY:-}
+      LAYERCLOUD_DEFAULT_MODEL: ${LAYERCLOUD_DEFAULT_MODEL:-zai/glm-5.3-flash}
+      LAYERCLOUD_DAILY_TOKEN_BUDGET: ${LAYERCLOUD_DAILY_TOKEN_BUDGET:-200000}
+      LAYERCLOUD_MAX_OUTPUT_TOKENS: ${LAYERCLOUD_MAX_OUTPUT_TOKENS:-1024}
     volumes:
       - ./apps/api:/var/www/html
       - /var/www/html/vendor

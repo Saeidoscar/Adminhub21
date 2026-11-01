@@ -10,6 +10,7 @@
     "preview": "vite preview",
     "format": "oxfmt src apps/web/src dev packages e2e",
     "dev:api": "docker compose up api nginx horizon",
+    "layercloud:smoke": "node scripts/layercloud-smoke.mjs",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "dev:api:legacy": "pnpm --filter @adminhub/server dev",

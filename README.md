@@ -100,6 +100,13 @@ A five-step wizard (Parties → Scope → Payment → Terms → Review) produces
 
 An MCP-connected chat interface provides hiring intelligence for employers and career guidance for admins. It supports multiple model providers and conversation management; completions run through `ProcessAiRequest` on the AI queues.
 
+Providers are resolved by `AIProviderFactory`: `openai`, `anthropic`, `openrouter`, plus `layercloud` — a cheap
+OpenAI-compatible gateway kept strictly as an opt-in **training-circle route** (`LAYERCLOUD_ENABLED=false` by
+default, refuses to run in production while `LAYERCLOUD_TRIAL_ONLY=true`, free-badge models only, daily token budget,
+PII redaction before the payload leaves the process). Scope and guard rails:
+[`docs/ai/layercloud-trial.md`](docs/ai/layercloud-trial.md); the commercial assessment behind that decision is in
+[`docs/research/layercloud-gateway-assessment.md`](docs/research/layercloud-gateway-assessment.md).
+
 ### Admin panel
 
 Super admins manage users, moderate stories/blogs/comments, triage support tickets, and oversee workspace cases, tasks, events, and time logs. Admins manage their own portfolios and packages.
@@ -197,6 +204,13 @@ Next.js workspace — `apps/web` reads `NEXT_PUBLIC_API_BASE_URL` (default
 action, so the browser never receives the API origin or the session token.
 
 Backend — copy `apps/api/.env.example` to `apps/api/.env` and run `php artisan key:generate`. The template documents every variable the files in `apps/api/config/` read, including Redis, Sanctum, hashing, mail, AI providers, and payment callbacks.
+
+Docker Compose additionally interpolates the root `.env` (see `.env.example`) into the `api` and `horizon`
+containers — that is where `LAYERCLOUD_API_KEY` goes for the containerised stack. Neither file is committed.
+
+```bash
+node scripts/layercloud-smoke.mjs   # proves the LayerCloud key + free models work
+```
 
 > **Security note:** the example file ships with empty secrets. Set real values for `APP_KEY` and every `*_CALLBACK_SECRET` before deploying, and keep `APP_DEBUG=false` outside local development.
 

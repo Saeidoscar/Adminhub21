@@ -4,41 +4,20 @@ namespace App\Services\Ai\Providers;
 
 use GuzzleHttp\Client;
 
-class OpenAIProvider implements AIProviderInterface
+/**
+ * OpenAI direct. Compliance-grade route: this is the default for anything that
+ * carries contract text, identity documents or payment data.
+ */
+class OpenAIProvider extends OpenAICompatibleProvider
 {
-    public function __construct(private readonly Client $httpClient, private readonly string $apiKey) {}
-
-    public function chat(array $messages, array $options = []): array
+    public function __construct(Client $httpClient, string $apiKey)
     {
-        $response = $this->httpClient->post('https://api.openai.com/v1/chat/completions', [
-            'headers' => [
-                'Authorization' => 'Bearer ' . $this->apiKey,
-                'Content-Type' => 'application/json',
-            ],
-            'json' => array_merge([
-                'model' => 'gpt-4o-mini',
-                'messages' => $messages,
-            ], $options),
-        ]);
-
-        $data = json_decode($response->getBody()->getContents(), true);
-
-        return [
-            'content' => $data['choices'][0]['message']['content'] ?? '',
-            'usage' => [
-                'prompt_tokens' => $data['usage']['prompt_tokens'] ?? 0,
-                'completion_tokens' => $data['usage']['completion_tokens'] ?? 0,
-            ],
-            'provider' => 'openai',
-            'model_code' => $data['model'] ?? 'gpt-4o-mini',
-        ];
-    }
-
-    public function analyze(string $text, array $options = []): array
-    {
-        return $this->chat([
-            ['role' => 'system', 'content' => 'You are a helpful assistant. Analyze the following text and provide insights.'],
-            ['role' => 'user', 'content' => $text],
-        ], $options);
+        parent::__construct(
+            httpClient: $httpClient,
+            apiKey: $apiKey,
+            baseUrl: 'https://api.openai.com/v1',
+            defaultModel: 'gpt-4o-mini',
+            providerName: 'openai',
+        );
     }
 }

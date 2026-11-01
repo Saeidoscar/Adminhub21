@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->group(function (): void {
     Route::get('/ai/models', [AiController::class, 'models']);
+    Route::get('/ai/providers', [AiController::class, 'providers']);
     Route::get('/ai/conversations', [AiController::class, 'conversations']);
     Route::post('/ai/conversations', [AiController::class, 'storeConversation']);
     Route::get('/ai/conversations/{conversation}', [AiController::class, 'showConversation']);
