@@ -28,12 +28,14 @@ import AdminDashboard from "./components/dashboard/AdminDashboard"
 import Marketplace from "./pages/Marketplace"
 import { DemoRoleSwitcher } from "./components/demo/DemoRoleSwitcher"
 import { McpChatBar } from "./components/mcp/McpChatBar"
+import ChatHomePage from "./pages/ChatHomePage"
 import { isDemoMode } from "./lib/demo-mode"
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 type Role = "employer" | "admin" | "super_admin"
 type Page =
+  | "chat"
   | "dashboard"
   | "marketplace"
   | "toolsRental"
@@ -67,7 +69,7 @@ const Ctx = createContext<AppCtx>({
   lang: "en",
   setLang: () => {},
   role: "employer",
-  page: "dashboard",
+  page: "chat",
   setPage: () => {},
   tr: t.en,
   dir: "ltr",
@@ -94,7 +96,8 @@ const ROUTE_META: Record<string, { page: Page; titleKey?: string }> = {
   "/compare": { page: "compare", titleKey: "compare" },
   "/ai": { page: "ai", titleKey: "ai" },
   "/profile": { page: "profile", titleKey: "profile" },
-  "/": { page: "dashboard", titleKey: "dashboard" },
+  "/": { page: "chat", titleKey: "home" },
+  "/dashboard": { page: "dashboard", titleKey: "dashboard" },
 }
 
 function getPageMeta(
@@ -205,7 +208,7 @@ export default function App() {
     setLang,
     role,
     page,
-    setPage: (p: Page) => navigate(`/${p === "dashboard" ? "" : p}`),
+    setPage: (p: Page) => navigate(p === "chat" ? "/" : `/${p}`),
     tr,
     dir,
   }
@@ -298,6 +301,18 @@ export default function App() {
             <Routes>
               <Route
                 path="/"
+                element={
+                  <ProtectedRoute>
+                    {/* The assistant is the home screen; the dashboard moved to
+                        /dashboard and the sidebar links there. */}
+                    <div className="flex min-h-0 flex-1">
+                      <ChatHomePage lang={lang} role={role} />
+                    </div>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/dashboard"
                 element={
                   <ProtectedRoute>
                     <div className="flex-1 overflow-y-auto">
@@ -524,9 +539,10 @@ export default function App() {
             </Routes>
           </div>
 
-          {/* The MCP chat bar floats over every screen; it is the same bundle
-              in the browser demo and in the packaged desktop app. */}
-          <McpChatBar lang={lang} role={role} />
+          {/* The floating MCP panel is for every screen except the home route,
+              which is the assistant itself — there Ctrl+K just focuses the
+              composer instead of opening a second copy of it. */}
+          {pathname !== "/" && <McpChatBar lang={lang} role={role} />}
 
           {isDemoMode && <DemoRoleSwitcher role={role} lang={lang} />}
         </div>

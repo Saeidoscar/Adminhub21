@@ -100,13 +100,22 @@ Open the assistant (`Ctrl+K`) → gear icon → paste a LayerCloud API key → *
 Without a key, everything still works: the assistant routes the question to the right MCP tool and streams the
 answer from the local dataset, labelled **Demo** instead of **Live**.
 
-## 5. The chat bar
+## 5. The assistant is the home screen
+
+The app opens **straight into the conversation**: `/` renders the MCP assistant full height, with the composer,
+suggestion cards and the greeting. The dashboard moved to `/dashboard` and is one click away in the sidebar.
+
+The same surface is available as a floating panel on every other screen — identical transport, identical tools,
+only the chrome differs.
 
 | | |
 | --- | --- |
-| Open / close | `Ctrl+K`, the floating pill at the bottom, or the topbar "Ask the assistant…" button |
+| Home | `/` — full-height assistant |
+| Dashboard | `/dashboard` — the previous landing page |
+| Floating panel | `Ctrl+K` anywhere except `/`, the pill at the bottom, or the topbar "Ask the assistant…" button |
+| Focus the composer | `Ctrl+K` on `/` |
 | Send | `Enter` · newline `Shift+Enter` · previous prompts `↑` |
-| Settings | `Ctrl+,` or the gear icon |
+| Settings | the gear icon, or `Ctrl+,` from the desktop menu |
 | Stop | the stop button while a reply streams |
 
 Each assistant turn shows *how* it was produced: which MCP tool ran, how long it took, the exact JSON the tool

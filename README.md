@@ -98,7 +98,8 @@ A five-step wizard (Parties → Scope → Payment → Terms → Review) produces
 
 ### AI assistant
 
-An MCP-connected chat bar (available on every screen via `Ctrl+K`) provides hiring intelligence for employers and career guidance for admins. It supports multiple model providers and conversation management; completions run through `ProcessAiRequest` on the AI queues.
+The MCP assistant **is the home screen** (`/`), with the dashboard at `/dashboard`; the same conversation is
+available as a floating panel via `Ctrl+K` on every other screen. It provides hiring intelligence for employers and career guidance for admins. It supports multiple model providers and conversation management; completions run through `ProcessAiRequest` on the AI queues.
 
 Providers are resolved by `AIProviderFactory`: `openai`, `anthropic`, `openrouter`, plus `layercloud` — a cheap
 OpenAI-compatible gateway kept strictly as an opt-in **training-circle route** (`LAYERCLOUD_ENABLED=false` by

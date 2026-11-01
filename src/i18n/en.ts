@@ -2,6 +2,7 @@ export const en = {
   brand: "AdminHub21",
   tagline: "The marketplace for social media & e-commerce professionals",
   nav: {
+    home: "Assistant",
     dashboard: "Dashboard",
     marketplace: "Marketplace",
     toolsRental: "Tools Rental",
