@@ -73,7 +73,7 @@ export default function AuthPage({ lang, tr, dir, setLang }: AuthPageProps) {
     }
     setIsSubmitting(true)
     try {
-      await login(result.data.email, result.data.password)
+      await login(result.data.email, result.data.password, role === "admin" ? "admin" : "employer")
       navigate("/")
     } catch (err) {
       setLocalError(err instanceof Error ? err.message : "Login failed")

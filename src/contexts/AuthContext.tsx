@@ -33,7 +33,8 @@ export interface AuthContextValue {
     nameFa: string
     phone?: string
   }) => Promise<void>
-  login: (email: string, password: string) => Promise<void>
+  /** `role` only matters in demo mode, where it picks the persona. */
+  login: (email: string, password: string, role?: DemoRole) => Promise<void>
   loginWithOtp: (phone: string, code: string) => Promise<void>
   sendOtp: (phone: string) => Promise<void>
   logout: () => Promise<void>
@@ -59,6 +60,21 @@ const AuthContext = createContext<AuthContextValue>({
   fetchMe: async () => {},
   loginDemo: () => {},
 })
+
+/**
+ * `fetch` rejects with a bare "Failed to fetch" when the server is down, the URL
+ * is wrong or the browser blocks it — a message that tells the user nothing and
+ * suggests a credential problem. Say what actually happened instead.
+ */
+function readableAuthError(err: unknown): Error {
+  if (err instanceof TypeError) {
+    return new Error(
+      "Can't reach the server. Check that it is running and try again — this is a connection problem, not a wrong password.",
+    )
+  }
+
+  return err instanceof Error ? err : new Error("Sign-in failed")
+}
 
 export function useAuth() {
   return useContext(AuthContext)
@@ -138,34 +154,64 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       phone?: string
     }) => {
       setError(null)
-      const { user: newUser, accessToken: token } = await registerApi(input)
-      setTokens(token)
-      setUser(newUser)
+
+      // A demo session is local. Calling the demo API here only added a way to
+      // fail — "Failed to fetch" when the local server was slow, restarting, or
+      // simply not there yet — for a sign-in that hands back a fixed persona.
+      if (isDemoMode) {
+        handleDemoLogin(input.role === "admin" ? "admin" : "employer")
+        return
+      }
+
+      try {
+        const { user: newUser, accessToken: token } = await registerApi(input)
+        setTokens(token)
+        setUser(newUser)
+      } catch (err) {
+        throw readableAuthError(err)
+      }
     },
-    [setTokens],
+    [handleDemoLogin, setTokens],
   )
 
   const handleLogin = useCallback(
-    async (email: string, password: string) => {
+    async (email: string, password: string, role?: DemoRole) => {
       setError(null)
-      const { user: loggedInUser, accessToken: token } = await loginApi({
-        email,
-        password,
-      })
-      setTokens(token)
-      setUser(loggedInUser)
+
+      if (isDemoMode) {
+        handleDemoLogin(role ?? readStoredDemoRole())
+        return
+      }
+
+      try {
+        const { user: loggedInUser, accessToken: token } = await loginApi({
+          email,
+          password,
+        })
+        setTokens(token)
+        setUser(loggedInUser)
+      } catch (err) {
+        throw readableAuthError(err)
+      }
     },
-    [setTokens],
+    [handleDemoLogin, setTokens],
   )
 
   const handleSendOtp = useCallback(async (phone: string) => {
     setError(null)
+    if (isDemoMode) return
     await sendOtpApi({ phone })
   }, [])
 
   const handleVerifyOtp = useCallback(
     async (phone: string, code: string) => {
       setError(null)
+
+      if (isDemoMode) {
+        handleDemoLogin(readStoredDemoRole())
+        return
+      }
+
       const { user: otpUser, accessToken: token } = await verifyOtpApi({
         phone,
         code,
@@ -173,7 +219,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setTokens(token)
       setUser(otpUser)
     },
-    [setTokens],
+    [handleDemoLogin, setTokens],
   )
 
   const handleFetchMe = useCallback(async () => {
