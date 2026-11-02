@@ -104,7 +104,19 @@ Open the assistant (`Ctrl+K`) → gear icon → paste a LayerCloud API key → *
 Without a key, everything still works: the assistant routes the question to the right MCP tool and streams the
 answer from the local dataset, labelled **Demo** instead of **Live**.
 
-## 5. The assistant is the home screen
+## 5. Signing in
+
+The packaged app **signs itself in** — you land on the assistant, no login. It boots in demo mode
+(`VITE_DEMO_MODE=true`, baked in by `pnpm build:demo`), so the session is a demo persona rather than a real account.
+
+If you sign out and land back on the login screen, use the **Quick demo login** button, or simply type any email and
+any password of 8+ characters — the local demo server accepts everything and returns the demo persona. The role
+toggle only has an effect when *registering*; signing in always returns the employer persona.
+
+Demo accounts on machine: `employer@adminhub.ir` (Ali Rezaei) and `sarah@adminhub.ir` (Sarah Johnson, admin). Passwords
+are not checked.
+
+## 6. The assistant is the home screen
 
 The app opens **straight into the conversation**: `/` renders the MCP assistant full height, with the composer,
 suggestion cards and the greeting. The dashboard moved to `/dashboard` and is one click away in the sidebar.
@@ -131,7 +143,7 @@ Twelve tools ship in the demo — `find-admin`, `list-packages`, `compare-packag
 `wallet-summary`, `navigate` — all reading the same in-memory dataset the UI renders, so the assistant cannot
 quote a number that is not on screen.
 
-## 6. Endpoints
+## 7. Endpoints
 
 | Method | Path | Purpose |
 | --- | --- | --- |
@@ -146,7 +158,7 @@ quote a number that is not on screen.
 | POST | `/api/ai/redact-check` | shows what the PII filter would strip |
 | — | everything else | the demo dataset (`dev/demo-api-handler.ts`) and the SPA |
 
-## 7. Signing
+## 8. Signing
 
 The workflow ships **unsigned** binaries by default: the build succeeds, Windows warns once
 (*More info → Run anyway*), and a `SHA256SUMS.txt` is published next to each exe so a download can be verified.
@@ -222,7 +234,7 @@ Two things that still bite after trusting the certificate:
 > click *More info* → *Run anyway*. Verify your download against `SHA256SUMS.txt`:
 > `Get-FileHash .\AdminHub21-Demo-1.0.0-portable.exe -Algorithm SHA256`
 
-## 8. Security posture
+## 9. Security posture
 
 Applies to the packaged build:
 
@@ -236,7 +248,7 @@ Applies to the packaged build:
 - No telemetry, no analytics, no remote fonts — the build strips the Google Fonts `@import` from the CSS and falls
   back to `system-ui` (Segoe UI), so the app is fully offline.
 
-## 9. What this demo is not
+## 10. What this demo is not
 
 It is a **walkthrough build**: data lives in memory and resets on launch, there is no auth server, and nothing is
 written to Postgres. Contracts, invoices and payments are shown as UI only — the real flows stay in `apps/api`.

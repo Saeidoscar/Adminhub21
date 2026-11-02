@@ -7,6 +7,7 @@
     "dev": "vite --host 0.0.0.0",
     "dev:demo": "vite --mode demo --host 0.0.0.0",
     "build": "vite build",
+    "build:demo": "vite build --mode demo",
     "preview": "vite preview",
     "format": "oxfmt src apps/web/src dev packages e2e",
     "dev:api": "docker compose up api nginx horizon",

@@ -41,8 +41,11 @@ jobs:
       - name: Typecheck desktop server
         run: pnpm typecheck:desktop
 
-      - name: Build renderer
-        run: pnpm build
+      - name: Build renderer (demo mode)
+        # `--mode demo` bakes in VITE_DEMO_MODE=true. The packaged app then signs
+        # itself in and opens on the assistant, instead of showing a login wall in
+        # front of a demo whose server accepts any password.
+        run: pnpm build:demo
 
       - name: Bundle local server
         working-directory: apps/desktop
@@ -59,7 +62,7 @@ jobs:
           # Optional. Without these the build succeeds and the binaries are
           # unsigned (SmartScreen warns once). Add both repository secrets to
           # sign: CSC_LINK is the .pfx as base64 or a URL, CSC_KEY_PASSWORD is
-          # its password. See docs/desktop/README.md#7-signing.
+          # its password. See docs/desktop/README.md#8-signing.
           CSC_LINK: ${{ secrets.CSC_LINK }}
           CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
 
@@ -116,7 +119,7 @@ jobs:
           Windows demo build of AdminHub21. Opens straight into the assistant.
 
           **Unsigned.** Windows SmartScreen will warn on first launch — see
-          [docs/desktop/README.md §7](https://github.com/Saeidoscar/Adminhub21/blob/main/docs/desktop/README.md#7-signing)
+          [docs/desktop/README.md §8](https://github.com/Saeidoscar/Adminhub21/blob/main/docs/desktop/README.md#8-signing)
           for why, how to verify the download, and how to sign it.
 
           Verify before running:
