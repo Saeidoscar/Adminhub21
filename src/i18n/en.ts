@@ -39,7 +39,8 @@ export const en = {
     noAccount: "Don't have an account?",
     forgotPw: "Forgot password?",
     demo: "Quick demo login",
-    demoHint: "Demo build — any email and any password of 8+ characters will sign you in.",
+    demoHint:
+      "Demo build — any email and any password of 8+ characters signs you in as the role above.",
     processing: "Processing...",
     loginFailed: "Login failed",
     registerFailed: "Registration failed",

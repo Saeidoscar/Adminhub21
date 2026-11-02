@@ -107,14 +107,21 @@ answer from the local dataset, labelled **Demo** instead of **Live**.
 ## 5. Signing in
 
 The packaged app **signs itself in** — you land on the assistant, no login. It boots in demo mode
-(`VITE_DEMO_MODE=true`, baked in by `pnpm build:demo`), so the session is a demo persona rather than a real account.
+(`VITE_DEMO_MODE=true`, baked in by `pnpm build:demo`), so the session is a demo persona, not a real account.
 
-If you sign out and land back on the login screen, use the **Quick demo login** button, or simply type any email and
-any password of 8+ characters — the local demo server accepts everything and returns the demo persona. The role
-toggle only has an effect when *registering*; signing in always returns the employer persona.
+If you sign out and land back on the login screen, any credentials work:
 
-Demo accounts on machine: `employer@adminhub.ir` (Ali Rezaei) and `sarah@adminhub.ir` (Sarah Johnson, admin). Passwords
-are not checked.
+| Tab | Input | Result |
+| --- | --- | --- |
+| Email | any address + **any password of 8+ characters** | signed in |
+| Phone | any 10+ digit number, then **any 6 digits** | signed in |
+
+The **role toggle** picks the persona: *Employer* → Ali Rezaei (`employer@adminhub.ir`), *Admin / Specialist* →
+Sarah Johnson (`sarah@adminhub.ir`). The «ورود دمو سریع» button is a one-click way in.
+
+In demo mode **no network call is made to sign in** — the persona is resolved locally and the token is a fixed demo
+token. That is deliberate: the sign-in screen used to depend on the local server, which meant a slow or restarting
+server surfaced as `Failed to fetch` on a form whose password is never checked. There is nothing to fetch.
 
 ## 6. The assistant is the home screen
 
