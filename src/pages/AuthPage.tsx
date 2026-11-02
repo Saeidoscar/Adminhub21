@@ -74,7 +74,7 @@ export default function AuthPage({ lang, tr, dir, setLang }: AuthPageProps) {
     setIsSubmitting(true)
     try {
       await login(result.data.email, result.data.password)
-      navigate("/dashboard")
+      navigate("/")
     } catch (err) {
       setLocalError(err instanceof Error ? err.message : "Login failed")
     } finally {
@@ -112,7 +112,7 @@ export default function AuthPage({ lang, tr, dir, setLang }: AuthPageProps) {
         nameFa: result.data.nameFa,
         phone: result.data.phone,
       })
-      navigate("/dashboard")
+      navigate("/")
     } catch (err) {
       setLocalError(err instanceof Error ? err.message : "Registration failed")
     } finally {
@@ -397,19 +397,22 @@ export default function AuthPage({ lang, tr, dir, setLang }: AuthPageProps) {
                       : tr.auth.register}
                 </button>
 
-                <button
-                  onClick={() => {
-                    if (isDemoMode) {
-                      loginDemo()
-                      navigate("/dashboard")
-                    } else {
-                      navigate("/dashboard")
-                    }
-                  }}
-                  className="w-full py-3 rounded-xl border border-[#e2e8f0] bg-white text-[#64748b] text-sm hover:bg-[#f2f5fa] transition-colors btn-press"
-                >
-                  {tr.auth.demo} {tr.auth.demoArrow}
-                </button>
+                {/* Only meaningful against the demo API. In a real build this was a
+                    dead button that navigated without a session. */}
+                {isDemoMode && (
+                  <>
+                    <button
+                      onClick={() => {
+                        loginDemo()
+                        navigate("/")
+                      }}
+                      className="w-full py-3 rounded-xl border border-[#e2e8f0] bg-white text-[#64748b] text-sm hover:bg-[#f2f5fa] transition-colors btn-press"
+                    >
+                      {tr.auth.demo} {tr.auth.demoArrow}
+                    </button>
+                    <p className="mt-2 text-center text-xs text-[#94a3b8]">{tr.auth.demoHint}</p>
+                  </>
+                )}
 
                 <p className="text-center text-sm text-[#64748b] mt-6">
                   {tab === "login" ? tr.auth.noAccount : tr.auth.haveAccount}{" "}
