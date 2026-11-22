@@ -35,18 +35,9 @@ class ProcessAiRequest implements ShouldQueue
     {
         $conversation = AiConversation::findOrFail($this->conversationId);
 
-        $response = $aiService->sendMessage(
-            conversation: $conversation,
-            prompt: $this->prompt,
-            userId: $this->userId
-        );
-
-        if ($response === null) {
-            Log::error('AI request failed', [
-                'conversation_id' => $this->conversationId,
-                'user_id' => $this->userId,
-            ]);
-        }
+        $aiService->sendMessage($conversation, [
+            'prompt' => $this->prompt,
+        ]);
     }
 
     public function failed(Throwable $exception): void
@@ -59,8 +50,8 @@ class ProcessAiRequest implements ShouldQueue
 
         AiMessage::create([
             'conversation_id' => $this->conversationId,
-            'role' => 'system',
-            'content' => 'An error occurred while processing your request. Please try again.',
+            'prompt' => $this->prompt,
+            'response' => 'An error occurred while processing your request. Please try again.',
         ]);
     }
 }

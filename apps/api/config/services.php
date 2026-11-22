@@ -8,6 +8,18 @@ return [
     |--------------------------------------------------------------------------
     */
 
+    'arvancloud' => [
+        'api_key' => env('ARVANCLOUD_AI_API_KEY', ''),
+        'base_url' => env('ARVANCLOUD_AI_BASE_URL', 'https://arvancloudai.ir/v1'),
+        'default_model' => env('ARVANCLOUD_AI_DEFAULT_MODEL', 'gpt-5-mini'),
+    ],
+
+    'avalai' => [
+        'api_key' => env('AVALAI_API_KEY', ''),
+        'base_url' => env('AVALAI_BASE_URL', 'https://api.avalai.ir/v1'),
+        'default_model' => env('AVALAI_DEFAULT_MODEL', 'deepseek-v4.1-flash'),
+    ],
+
     'openai' => [
         'api_key' => env('OPENAI_API_KEY'),
     ],
