@@ -47,7 +47,7 @@ class AiConversation extends Model
 
     public function messages(): HasMany
     {
-        return $this->hasMany(AiMessage::class);
+        return $this->hasMany(AiMessage::class, 'conversation_id');
     }
 
     /*

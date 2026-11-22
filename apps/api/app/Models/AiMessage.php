@@ -13,6 +13,9 @@ class AiMessage extends Model
         'response',
         'in_tokens',
         'out_tokens',
+        'cost_toman',
+        'raw_cost_usd',
+        'billing_source',
         'provider',
         'model_code',
     ];
@@ -23,6 +26,8 @@ class AiMessage extends Model
             'conversation_id' => 'integer',
             'in_tokens' => 'integer',
             'out_tokens' => 'integer',
+            'cost_toman' => 'integer',
+            'raw_cost_usd' => 'decimal:8',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
         ];
@@ -36,7 +41,7 @@ class AiMessage extends Model
 
     public function conversation(): BelongsTo
     {
-        return $this->belongsTo(AiConversation::class);
+        return $this->belongsTo(AiConversation::class, 'conversation_id');
     }
 
     /*

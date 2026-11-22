@@ -318,6 +318,9 @@ export interface AiMessageRow {
   inputCost?: number
   outputCost?: number
   totalCost?: number
+  costToman?: number
+  rawCostUsd?: number
+  billingSource?: string
   responseTimeMs?: number
   createdAt: string
 }
@@ -330,6 +333,11 @@ export interface AiModelRow {
   description?: string
   inputCost: number
   outputCost: number
+  inTomanPer1m?: number
+  outTomanPer1m?: number
+  estimatedTurnToman?: number
+  usdToToman?: number
+  markupRate?: number
   contextWindow?: number
   apiBaseUrl?: string
   defaultTemperature?: number
